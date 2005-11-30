@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<project name="MapExplorer" default="compile">
+  <description>DDM Map Explorer</description>
+
+  <property environment="env" />
+  <property name="build.dir" location="build" />
+  <property name="classes.dir" location="${build.dir}/classes" />
+  <property name="build.debug" value="false" />
+
+  <property name="findbugs.home" value="${env.HOME}/bin/findbugs" />
+  <taskdef name="findbugs"
+  	       classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+           classpath="${findbugs.home}/lib/findbugs-ant.jar" />
+
+  <path id="compile.classpath">
+    <pathelement location="${classes.dir}" />
+  	<fileset dir="lib">
+  	  <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${classes.dir}" />
+    <mkdir dir="dist" />
+    <mkdir dir="doc" />
+    <mkdir dir="tmp" />
+  </target>
+
+  <target name="compile" depends="init" description="Compile">
+    <javac srcdir="src"
+           destdir="${classes.dir}"
+	   source="1.5"
+	   encoding="utf-8"
+	   debug="${build.debug}">
+      <classpath refid="compile.classpath" />
+      <compilerarg value="-Xlint:all" />
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile, manifest" description="Make jar">
+    <jar destfile="dist/${ant.project.name}.jar"
+         manifest="tmp/MANIFEST.MF"
+         basedir="${classes.dir}">
+    </jar>
+  </target>
+
+  <target name="dist" depends="jar" description="Make distribution archive">
+  	<zip destfile="dist/${ant.project.name}.zip">
+  	  <zipfileset dir="dist" prefix="MapExplorer" includes="${ant.project.name}.jar" />
+  	  <zipfileset dir="lib" prefix="MapExplorer">
+  	  	<include name="*.jar" />
+  	  	<include name="*.map" />
+  	  	<!-- <include name="mapexplorer" /> -->
+  	  	<include name="*.bat" />
+  	  	<include name="README.*" />
+  	  </zipfileset>
+  	</zip>
+  </target>
+
+  <target name="manifest" depends="init" description="Manifest für jar Datei erzeugen">
+    <manifest file="tmp/MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}" />
+      <attribute name="Built-On" value="${timestamp.isoformat}" />
+      <attribute name="Main-Class" value="de.bokeh.ddm.mapexplorer.MapExplorer" />
+      <!-- <attribute name="Class-Path" value="log4j-1.2.12.jar" /> -->
+    </manifest>
+  </target>
+
+  <target name="findbugs" depends="dist">
+    <findbugs home="${findbugs.home}"
+              output="xml"
+              outputFile="${ant.project.name}-fb.xml"
+	      reportLevel="low"
+              effort="max" >
+      <sourcePath path="src" />
+      <class location="dist/${ant.project.name}.jar" />
+    </findbugs>
+  </target>
+
+  <target name="javadocs" depends="compile" description="Generate Javadoc documentation">
+    <javadoc destdir="doc"
+             packagenames="de.bokeh.ddm.*"
+             sourcepath="src"
+             source="1.5"
+	     encoding="utf-8"
+	     locale="de_DE"
+	     use="true">
+      <tag name="to.do" description="To Do:" />
+      <classpath refid="compile.classpath" />
+    </javadoc>
+  </target>
+
+  <target name="clean" description="Delete temporary build files">
+    <delete dir="${build.dir}" />
+    <delete dir="dist" />
+    <delete dir="doc" />
+    <delete dir="tmp" />
+  </target>
+
+</project>

@@ -1,0 +1,41 @@
+map Shrine of Lolth
+# from Fane of the Drow
+width 30
+height 21
+basecolor 8c32c8
+
+# outside walls
+wall south A5-A26  north U5-U26
+wall west A1-H1  N1-U1
+wall east A30-H30  N30-U30
+
+wall south O4-O7 west O4-R4 east O7-R7 north R4 R7
+
+wall west Q10 U10 south Q10-Q13
+
+wall east D2-E2 north E3-E4 east E4-D4 south D5-D7 east D7-E7 north E8-E9 east E9-D9
+wall south C13-C15 east C15-G15 O15-S15 north S15-S18
+
+wall west J19-L19 south P18-P22 east P22-R22
+wall east E20-G20
+
+wall east A20-B20 A25 D25-F25 G23 K23-M23 south G24-G28
+wall north M24-M26 M29-M30
+wall south R25-R28 west R25-S25
+
+# Altar room
+wall south J9 I10 H11-H12 M9 N10 O11-O12
+wall east I9 H10 H12 M9 N10 N12
+
+solid K3-K4 J5 L5 F20 P20
+
+exit B I1-M1
+exit A I30-M30
+victory A O4-R7 J6-L8 D8-E9
+victory B J24-M27 P21-R22 Q20
+start B F2-U3 D1-H1 N1-U1 D2-E2
+start A R25-U30 A26-F30
+statue K5 E26 F27 B30 D30
+difficult O4-O7 P4 J11-L11 J18-L18 A22-A24 F19 E20 G20 P21-R22 Q20
+magic J24-M27
+bloodrock H11-N12 I10-M10 J9-L9

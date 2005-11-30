@@ -1,0 +1,43 @@
+map Drow Outpost
+# from Dragon 337 - November 2005
+
+width 30
+height 21
+
+basecolor 307040
+
+
+solid P1 U1 M3-M6 N6 R7 R8-U8 U9 T13-U13 T27-U30
+solid R17 Q17-Q20 N14-P14 O12-O13 N11 M10-M11
+solid M18-N19 L19-M21 L22 K20-K26 I22-J22
+solid F18 E19 C22-E22 E23-E24 E25-H25 M29-N30 F29 E30 F30
+solid P25-S25 S26
+
+pit L3-L11 K11-K14 J14
+pit I17 H17 H18 G18 G19 F19-F21 E20-E21
+
+
+wall west D1-H1 N1-U1 south A4-A27 east D30 O30-P30
+wall north U2 U10-U14 U17-U21
+
+wall east A3-C3   A6-F6  G10-H10 A14-D14
+wall north H7-H10 D13-D14
+
+
+difficult B8-C9  B13-C13 E13 E12 F12 F11 G11
+difficult N5 P3 R3 T2 U4 U5 S7-U7 
+difficult M7-M9 N8 N10 Q9 S10 
+difficult N12 N13 P12 T12 U12 T14-U15
+difficult A18-A19 A22-B23 A26-A27 D21 D25 F24 E29 G29 G30
+difficult J21 Q21 U20-U21 L23 M22 Q24
+difficult T25-T26 S27-S28 O29 O30 P30
+
+
+start A O26-S30
+exit A H30-K30
+victory A A13-D14 H15-K16
+
+
+start B A1-G3
+exit B I1-M1
+victory B T14-U15  H15-K16
