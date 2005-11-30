@@ -1,4 +1,4 @@
-// $Id: MapExplorer.java,v 1.1 2005/11/30 10:54:58 breitko Exp $
+// $Id: MapExplorer.java,v 1.2 2005/11/30 14:37:59 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
@@ -61,7 +61,7 @@ public class MapExplorer {
 	frame.setVisible(true);
 	
 	if (testAll) {
-	    logger.info("Analyzig map " + map.getName());
+	    logger.info("Analyzing map " + map.getName());
 	    long startTime = System.currentTimeMillis();
 	    for (int row = 0; row < map.getHeight(); row++) {
 		for (int col = 0; col < map.getWidth(); col++) {
