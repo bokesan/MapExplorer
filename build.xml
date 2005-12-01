@@ -7,6 +7,10 @@
   <property name="classes.dir" location="${build.dir}/classes" />
   <property name="build.debug" value="false" />
 
+  <property name="test.dir" location="${build.dir}/test" />
+  <property name="test.data.dir" location="${test.dir}/data" />
+  <property name="test.reports.dir" location="${test.dir}/reports" />
+
   <property name="findbugs.home" value="${env.HOME}/bin/findbugs" />
   <taskdef name="findbugs"
   	       classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
@@ -19,11 +23,25 @@
     </fileset>
   </path>
 
+  <path id="test.classpath">
+    <path refid="compile.classpath" />
+    <pathelement location="${junit.jar}" />
+    <pathelement location="${test.dir}" />
+  </path>
+
   <target name="init">
     <mkdir dir="${classes.dir}" />
     <mkdir dir="dist" />
     <mkdir dir="doc" />
     <mkdir dir="tmp" />
+  </target>
+
+  <target name="test-init">
+    <mkdir dir="${test.dir}" />
+    <delete dir="${test.data.dir}" />
+    <delete dir="${test.reports.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.reports.dir}" />
   </target>
 
   <target name="compile" depends="init" description="Compile">
@@ -37,7 +55,43 @@
     </javac>
   </target>
 
-  <target name="jar" depends="compile, manifest" description="Make jar">
+  <target name="test-compile" depends="compile,test-init">
+    <javac destdir="${test.dir}"
+           debug="${build.debug}"
+           includeAntRuntime="true"
+           source="1.5"
+    	   encoding="utf-8"
+           srcdir="test">
+      <classpath refid="test.classpath" />
+      <compilerarg value="-Xlint:all" />
+    </javac>
+  </target>
+
+  <target name="test" depends="test-compile" description="Tests ausführen">
+    <junit printsummary="false"
+           errorProperty="test.failed"
+           failureProperty="test.failed">
+      <classpath refid="test.classpath" />
+      <formatter type="brief" usefile="false" />
+      <formatter type="xml" />
+      <batchtest todir="${test.data.dir}">
+	<fileset dir="${test.dir}" includes="**/*Test.class" />
+      </batchtest>
+    </junit>
+
+    <junitreport todir="${test.data.dir}">
+      <fileset dir="${test.data.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames"
+              todir="${test.reports.dir}" />
+    </junitreport>
+
+    <fail message="Tests fehlgeschlagen. Protokolle und Berichte ansehen."
+          if="test.failed" />
+  </target>
+
+  <target name="jar" depends="test, manifest" description="Make jar">
     <jar destfile="dist/${ant.project.name}.jar"
          manifest="tmp/MANIFEST.MF"
          basedir="${classes.dir}">
