@@ -15,6 +15,9 @@ package de.bokeh.ddm.mapexplorer;
  */
 public class Location {
     
+    private static final int MAX_ROWS = 26;
+    private static final int MAX_COLUMNS = 99; // Arbitrary limitation
+    
     /** The column. 0-based. */
     private final int column;
     
@@ -27,6 +30,10 @@ public class Location {
      * @param row the row
      */
     public Location(int column, int row) {
+	if (column < 0 || column >= MAX_COLUMNS)
+	    throw new IllegalArgumentException("column out of range: " + column);
+	if (row < 0 || row >= MAX_ROWS)
+	    throw new IllegalArgumentException("row out of range: " + row);
 	this.column = column;
 	this.row = row;
     }
@@ -45,12 +52,14 @@ public class Location {
      * @param s a String donating a map square
      */
     public Location(String s) {
+	if (s.length() <= 1)
+	    throw new IllegalArgumentException(s);
 	row = charToInt(s.charAt(0));
 	column = Integer.parseInt(s.substring(1)) - 1;
-	if (row < 0 || row >= 22)
-	    throw new IllegalArgumentException();
-	if (column < 0 || column >= 34)
-	    throw new IllegalArgumentException();
+	if (row < 0 || row >= MAX_ROWS)
+	    throw new IllegalArgumentException(s);
+	if (column < 0 || column >= MAX_COLUMNS)
+	    throw new IllegalArgumentException(s);
     }
     
     /**

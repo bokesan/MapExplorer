@@ -1,10 +1,9 @@
-// $Id: MapExplorer.java,v 1.2 2005/11/30 14:37:59 breitko Exp $
+// $Id: MapExplorer.java,v 1.3 2005/12/01 11:50:15 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.*;
-import java.awt.Cursor;
 import javax.swing.*;
 import java.io.*;
 import java.util.logging.*;
@@ -15,121 +14,139 @@ import java.util.logging.*;
  * 
  * @author Christoph Breitkopf
  */
-public class MapExplorer {
+public class MapExplorer implements ActionListener {
 
-    public static final String VERSION = "20051130";
+    public static final String VERSION = "20051201";
+    
+    // ActionCommands
+    private static final String ACTION_LOAD_MAP = "loadMap";
+    private static final String ACTION_CLEAR_LOS = "clearLOS";
+    
     
     static Logger logger = Logger.getLogger(MapReader.class.getName());
 
-    private JFrame frame;
+    private JFrame appFrame;
+    private JToolBar toolBar;
     private MapPanel mapPanel;
-    private JPanel statusPanel;
+    private JToolBar statusPanel;
     private Map map;
     private JLabel lblStatus;
+    private JLabel lblResults;
     private int randomTestsPerSquare;
     private boolean testAll;
     private boolean busy;
+    
+    private JProgressBar progress;
 
     public MapExplorer() {
 	randomTestsPerSquare = 100;
 	testAll = false;
 	busy = false;
+	map = new Map(new Dimension(30, 21), "no map loaded");
+    }
+    
+    private void setTitle() {
+	appFrame.setTitle("Map Explorer (version " + VERSION + ") - " + map.getName());
     }
     
     public void setMap(Map m) {
 	map = m;
+	setTitle();
+	mapPanel.setMap(map);
     }
 
-    private void start() {
-	frame = new JFrame("Map Explorer (version " + VERSION + ") - " + map.getName());
+    /**
+     * Create the GUI. 
+     */
+    private void createComponents() {
+	appFrame = new JFrame();
+	setTitle();
+	
+	createToolBar();
+	
 	mapPanel = new MapPanel(map);
 	
-	frame.getContentPane().add(mapPanel, BorderLayout.CENTER);
-	frame.addWindowListener(new WindowAdapter() {
+	createStatusPanel();
+
+	appFrame.getContentPane().add(toolBar, BorderLayout.NORTH);
+	appFrame.getContentPane().add(mapPanel, BorderLayout.CENTER);
+	appFrame.getContentPane().add(statusPanel, BorderLayout.SOUTH);
+	
+	appFrame.pack();
+	appFrame.setVisible(true);
+    }
+    
+    private void createToolBar() {
+	toolBar = new JToolBar();
+	
+	JButton btn = new JButton("load Map");
+	btn.setActionCommand(ACTION_LOAD_MAP);
+	btn.addActionListener(this);
+	toolBar.add(btn);
+	
+	toolBar.addSeparator();
+	
+	btn = new JButton("clear LOS");
+	btn.setActionCommand(ACTION_CLEAR_LOS);
+	btn.addActionListener(this);
+	toolBar.add(btn);
+	
+	toolBar.setFloatable(false);
+    }
+    
+    private void createStatusPanel() {
+	statusPanel = new JToolBar();
+	lblStatus = new JLabel("Click on map to show LOS");
+	lblStatus.setAlignmentY(Component.CENTER_ALIGNMENT);
+	statusPanel.add(lblStatus);
+	statusPanel.addSeparator(new java.awt.Dimension(50, 1));
+	
+	lblResults = new JLabel();
+	statusPanel.add(lblResults);
+	lblResults.setVisible(false);
+
+	progress = new JProgressBar(0, 30 * 21);
+	progress.setStringPainted(true);
+	statusPanel.add(progress);
+	progress.setVisible(false);
+	
+	statusPanel.setFloatable(false);
+    }
+    
+    
+    private void start() {
+	createComponents();
+
+	appFrame.addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e) {
 		System.exit(0);
 	    }
 	});
 	
-	statusPanel = new JPanel();
-	//statusPanel.setPreferredSize(new java.awt.Dimension(800, 300));
-	lblStatus = new JLabel("Status");
-	statusPanel.add(lblStatus);
-	frame.getContentPane().add(statusPanel, BorderLayout.SOUTH);
-	
-	frame.pack();
-	frame.setVisible(true);
-	
-	if (testAll) {
-	    logger.info("Analyzing map " + map.getName());
-	    long startTime = System.currentTimeMillis();
-	    for (int row = 0; row < map.getHeight(); row++) {
-		for (int col = 0; col < map.getWidth(); col++) {
-		    if (!map.get(col, row).isSolid())
-		        losFromLocation(new Location(col, row));
-		}
-	    }
-	    long elapsed = System.currentTimeMillis() - startTime;
-	    logger.info("Total elapsed time: " + (elapsed / 1000.0) + " seconds.");
-	} else {
-	    mapPanel.addMouseListener(new MouseAdapter() {
-		public void mouseClicked(MouseEvent e) {
-		    if (busy) {
-			// beep?
+	final MapExplorer thisApp = this;
+	mapPanel.addMouseListener(new MouseAdapter() {
+	    public void mouseClicked(MouseEvent e) {
+		if (isBusy()) {
+		    Toolkit.getDefaultToolkit().beep();
+		} else {
+		    setBusy(true, "computing LOS...");
+		    Location loc = mapPanel.getLocation(e.getX(), e.getY());
+		    if (loc != null) {
+			LosComputation lc = new LosComputation(thisApp, loc, randomTestsPerSquare, logger);
+			lc.start();
 		    } else {
-			busy = true;
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			Location loc = mapPanel.getLocation(e.getX(), e.getY());
-			if (loc != null)
-			    losFromLocation(loc);
-			frame.setCursor(Cursor.getDefaultCursor());
-			busy = false;
-		    }
-		}
-	    });
-	}
-    }
-
-    private void losFromLocation(Location loc) {
-	map.clearLos();
-	map.clearMarks();
-	map.get(loc).setMarked(true);
-	mapPanel.repaint();
-	LosTester los = new LosTester(loc, map.getDimension(), map.getWalls(), randomTestsPerSquare, logger);
-	int numLos = 0;
-	int numRndLos = 0;
-	int testsLosSquares = 0;
-	int squaresTested = 0;
-	long startTime = System.currentTimeMillis();
-	for (int row = 0; row < map.getHeight(); row++) {
-	    for (int col = 0; col < map.getWidth(); col++) {
-		if (row != loc.getRow() || col != loc.getColumn()) {
-		    MapSquare s = map.get(col, row);
-		    if (!s.isSolid()) {
-			squaresTested++;
-			// int r = los.testLocation(new Location(col, row));
-			int r = los.testLocation(col, row);
-			if (r >= 0) {
-			    if (r > 0) {
-				numRndLos++;
-				testsLosSquares += r;
-			    }
-			    numLos++;
-			    s.setLos(true);
-			    mapPanel.repaint();
-			}
+			setBusy(false, null);
 		    }
 		}
 	    }
-	}
-	long elapsedTime = System.currentTimeMillis() - startTime;
-	if (numRndLos != 0)
-	    logger.warning(loc + ": " + numRndLos + " squares found by sampling (avg. " + ((double) testsLosSquares / numRndLos) + " random tests needed)\n");
-	lblStatus.setText(loc + ": " + numLos + " LOS squares out of " + squaresTested + ", " + elapsedTime + "ms"
-	    + " (" + numRndLos + " rnd[" + randomTestsPerSquare + "]) [" + los + "]");
+	});
     }
     
-    public static void main(String[] args) throws IOException {
+    public void setStatusText(String s) {
+	lblStatus.setText(s);
+    }
+    
+    public static void main(String[] args) {
 	MapExplorer app = new MapExplorer();
 
 	String mapFile = "Fane_of_Lolth.map";
@@ -141,21 +158,10 @@ public class MapExplorer {
 	    mapFile = s;
 	}
 
-	try {
-	    app.setMap(new MapReader().read(mapFile));
-	    //app.setTestAll(true);
-	    app.setRandomTestsPerSquare(100);
-	    app.start();
-	}
-	catch (SyntaxError err) {
-	    String msg = "Syntax error in file '" + err.getFile() + "', line " + err.getLine();
-	    msg += ":\n" + err.getMessage();
-	    JOptionPane.showMessageDialog(null, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
-	}
-	catch (FileNotFoundException ex) {
-	    String msg = "File not found:\n" + mapFile;
-	    JOptionPane.showMessageDialog(null, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
-	}
+	//app.setTestAll(true);
+	app.setRandomTestsPerSquare(100);
+	app.start();
+	app.loadMap(mapFile);
     }
 
     /**
@@ -184,5 +190,97 @@ public class MapExplorer {
      */
     public void setTestAll(boolean testAll) {
         this.testAll = testAll;
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e) {
+	if (isBusy()) {
+	    Toolkit.getDefaultToolkit().beep();
+	} else {
+	    String cmd = e.getActionCommand();
+	    if (cmd.equals(ACTION_LOAD_MAP)) {
+		JFileChooser fc = new JFileChooser();
+		ExtensionFileFilter ff = new ExtensionFileFilter("Map files");
+		ff.addExtension("map");
+		fc.addChoosableFileFilter(ff);
+		int retval = fc.showOpenDialog(appFrame);
+		if (retval == JFileChooser.APPROVE_OPTION) {
+		    File file = fc.getSelectedFile();
+		    loadMap(file.getPath());
+		}
+	    }
+	    else if (cmd.equals(ACTION_CLEAR_LOS)) {
+		map.clearLos();
+		map.clearMarks();
+		mapPanel.repaint();
+	    }
+	}
+    }
+    
+    public void loadMap(String fileName) {
+	try {
+	    setMap(new MapReader().read(fileName));
+	    lblResults.setVisible(false);
+	}
+	catch (SyntaxError err) {
+	    String msg = "Syntax error in file '" + err.getFile() + "', line " + err.getLine();
+	    msg += ":\n" + err.getMessage();
+	    JOptionPane.showMessageDialog(appFrame, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
+	}
+	catch (FileNotFoundException ex) {
+	    String msg = "File not found:\n" + fileName;
+	    JOptionPane.showMessageDialog(appFrame, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
+	}
+	catch (IOException ex) {
+	    String msg = "IO-Error:\n" + ex.toString();
+	    JOptionPane.showMessageDialog(appFrame, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
+	}
+	
+    }
+
+    /**
+     * @return Returns the busy.
+     */
+    public synchronized boolean isBusy() {
+        return busy;
+    }
+
+    /**
+     * @param busy The busy to set.
+     */
+    public synchronized void setBusy(boolean busy, String msg) {
+        this.busy = busy;
+        if (busy) {
+            lblResults.setVisible(false);
+            progress.setVisible(true);
+	    appFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	    lblStatus.setText(msg);
+        } else {
+            progress.setVisible(false);
+            if (msg != null) {
+        	lblResults.setText(msg);
+        	lblResults.setVisible(true);
+            }
+            appFrame.setCursor(Cursor.getDefaultCursor());
+            lblStatus.setText("Click on map to show LOS");
+        }
+    }
+
+    /**
+     * @return Returns the mapPanel.
+     */
+    public MapPanel getMapPanel() {
+        return mapPanel;
+    }
+    
+    public void setProgressMax(int max) {
+	progress.setMaximum(max);
+	progress.setValue(0);
+    }
+    
+    public void setProgress(int n) {
+	progress.setValue(n);
     }
 }
