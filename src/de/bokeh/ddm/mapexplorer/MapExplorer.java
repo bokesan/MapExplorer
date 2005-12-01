@@ -1,4 +1,4 @@
-// $Id: MapExplorer.java,v 1.3 2005/12/01 11:50:15 breitko Exp $
+// $Id: MapExplorer.java,v 1.4 2005/12/01 18:06:43 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
@@ -214,6 +214,7 @@ public class MapExplorer implements ActionListener {
 	    else if (cmd.equals(ACTION_CLEAR_LOS)) {
 		map.clearLos();
 		map.clearMarks();
+		lblResults.setText("");
 		mapPanel.repaint();
 	    }
 	}
