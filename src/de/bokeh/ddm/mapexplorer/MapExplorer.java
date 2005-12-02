@@ -1,4 +1,4 @@
-// $Id: MapExplorer.java,v 1.4 2005/12/01 18:06:43 breitko Exp $
+// $Id: MapExplorer.java,v 1.5 2005/12/02 13:33:35 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
@@ -36,9 +36,12 @@ public class MapExplorer implements ActionListener {
     private boolean testAll;
     private boolean busy;
     
+    private JFileChooser fileChooser;
+    
     private JProgressBar progress;
 
     public MapExplorer() {
+	fileChooser = null;
 	randomTestsPerSquare = 100;
 	testAll = false;
 	busy = false;
@@ -201,13 +204,15 @@ public class MapExplorer implements ActionListener {
 	} else {
 	    String cmd = e.getActionCommand();
 	    if (cmd.equals(ACTION_LOAD_MAP)) {
-		JFileChooser fc = new JFileChooser();
-		ExtensionFileFilter ff = new ExtensionFileFilter("Map files");
-		ff.addExtension("map");
-		fc.addChoosableFileFilter(ff);
-		int retval = fc.showOpenDialog(appFrame);
+		if (fileChooser == null) {
+		    fileChooser = new JFileChooser();
+		    ExtensionFileFilter ff = new ExtensionFileFilter("Map files");
+		    ff.addExtension("map");
+		    fileChooser.addChoosableFileFilter(ff);
+		}
+		int retval = fileChooser.showOpenDialog(appFrame);
 		if (retval == JFileChooser.APPROVE_OPTION) {
-		    File file = fc.getSelectedFile();
+		    File file = fileChooser.getSelectedFile();
 		    loadMap(file.getPath());
 		}
 	    }
