@@ -1,5 +1,5 @@
-Map Explorer Beta README
-========================
+Map Explorer README
+===================
 
 Map Explorer shows Line-of-Sight (LOS) on DDM maps.
 
@@ -28,8 +28,7 @@ open Fane_of_Lolth.map.
 For Windows, a shell script mapexplorer.bat can be used to start
 Map Explorer. (And if you associate mapexplorer.bat with the .map
 extension in Windows Explorer, you should be able to open
-Map Explorer by double-clicking on a map file - haven't tested
-that).
+Map Explorer by double-clicking on a map file).
 
 To show LOS from a map square, just click on the square.
 
@@ -41,6 +40,6 @@ All feedback should be sent my mail to chris@chr-breitkopf.de
 
 
 
-Thanks for Testing!
+Thanks for using Map Explorer!
 
-Christoph Breitkopf, 2005-11-29
+Christoph Breitkopf, 2005-12-02
