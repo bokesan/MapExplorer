@@ -78,8 +78,6 @@ public class MapPanel extends JPanel {
     }
     
     private void drawTile(Graphics g, int col, int row) {
-	computeSizes();
-	
 	MapSquare t = map.get(col, row);
 	java.awt.Point p = locPoint(col, row);
 	int x = p.x;
@@ -101,47 +99,41 @@ public class MapPanel extends JPanel {
 	    g.setColor(c);
 	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
 	}
-	g.setColor(Color.BLACK);
 	if (t.has(MapFeature.BLOOD_ROCK)) {
 	    int h2 = tileHeight / 4;
 	    int w2 = tileWidth / 4;
 	    g.setColor(colors.getColor(MapFeature.BLOOD_ROCK));
 	    g.fillRect(x+w2,y+h2, tileWidth-(2*w2), tileHeight-(2*h2));
-	    g.setColor(Color.BLACK);
+	}
+	if (t.has(MapFeature.LAVA)) {
+	    g.setColor(colors.getColor(MapFeature.LAVA));
+	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
 	}
 	if (t.has(MapFeature.HAUNTED)) {
 	    g.setColor(colors.getColor(MapFeature.HAUNTED));
 	    g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);
-	    g.setColor(Color.BLACK);
 	}
 	if (t.has(MapFeature.DIFFICULT)) {
-	    int h3 = tileHeight / 3;
-	    int w3 = tileWidth / 3;
-	    int w2 = tileWidth / 2;
-	    g.setColor(colors.getColor(MapFeature.DIFFICULT));
-	    g.drawLine(x+w3, y+2*h3, x+2*w3, y+2*h3);
-	    g.drawLine(x+w3, y+2*h3, x+w2, y+h3);
-	    g.drawLine(x+2*w3, y+2*h3, x+w2, y+h3);
-	    g.setColor(Color.BLACK);
+	    paintDifficult(g, x, y);
 	}
 	if (t.has(MapFeature.SPIKE_STONES)) {
-	    int h2 = tileHeight / 2;
-	    int w2 = tileWidth / 2;
-	    g.setColor(colors.getColor(MapFeature.SPIKE_STONES));
-	    g.fillRect(x+w2,y+h2, tileWidth-(1+w2), tileHeight-(1+h2));
-	    g.setColor(Color.BLACK);
+	    paintSpikestones(g, x, y);
+	}
+	if (t.has(MapFeature.RISKY)) {
+	    paintRisky(g, x, y);
 	}
 	if (t.has(MapFeature.SACRED_CIRCLE)) {
 	    g.setColor(colors.getColor(MapFeature.SACRED_CIRCLE));
 	    g.fillRect(x+1,y+1, tileWidth/2, tileHeight/2);
-	    g.setColor(Color.BLACK);
 	}
 	if (t.has(MapFeature.STATUE)) {
+	    g.setColor(colors.getColor(MapFeature.STATUE));
 	    g.drawOval(x+2,y+2, tileWidth-5, tileHeight-5);
 	}
 	
 	if (t.has(MapFeature.EXIT_A) || t.has(MapFeature.EXIT_B)) {
 	    // g.drawString("Exit", x+2, y+2);
+	    g.setColor(colors.getColor(MapFeature.EXIT_A));
 	    g.drawLine(x, y, x+tileWidth-1, y+tileHeight-1);
 	    g.drawLine(x+tileWidth-1, y, x, y+tileHeight-1);
 	}
@@ -149,7 +141,6 @@ public class MapPanel extends JPanel {
 	if (t.has(MapFeature.PIT)) {
 	    g.setColor(colors.getColor(MapFeature.PIT));
 	    g.fillRect(x, y, tileWidth, tileHeight);
-	    g.setColor(Color.BLACK);
 	}
 
 	// Walls
@@ -190,6 +181,42 @@ public class MapPanel extends JPanel {
 	this.repaint();
     }
 
+
+    private void paintDifficult(Graphics g, int x, int y) {
+	// Triangle
+	int h3 = tileHeight / 3;
+	int w3 = tileWidth / 3;
+	int w2 = tileWidth / 2;
+	g.setColor(colors.getColor(MapFeature.DIFFICULT));
+	g.drawLine(x+w3, y+2*h3, x+2*w3, y+2*h3);
+	g.drawLine(x+w3, y+2*h3, x+w2, y+h3);
+	g.drawLine(x+2*w3, y+2*h3, x+w2, y+h3);
+	g.setColor(Color.BLACK);
+    }
+    
+    private void paintRisky(Graphics g, int x, int y) {
+	// Skull
+	g.setColor(colors.getColor(MapFeature.RISKY));
+	int dx = tileWidth / 3;
+	int dy = tileHeight / 3;
+	g.drawLine(x+dx, y+dy, x+tileWidth-dx, y+tileHeight-dy);
+	g.drawLine(x+dx, y+tileHeight-dy, x+tileWidth-dx, y+dy);
+	g.setColor(Color.BLACK);
+    }
+
+    private void paintSpikestones(Graphics g, int x, int y) {
+	// "Caltrop"
+	g.setColor(colors.getColor(MapFeature.SPIKE_STONES));
+	int midx = x + tileWidth / 2;
+	int midy = y + tileHeight / 2;
+	g.drawLine(x+tileWidth/2, y+tileHeight/3, midx, midy);
+	g.drawLine(midx, midy, x+tileWidth/3, y+tileHeight-tileHeight/3);
+	g.drawLine(midx, midy, x+tileWidth-tileWidth/3, y+tileHeight-tileHeight/3);
+	g.setColor(Color.BLACK);
+    }
+    
+    
+    
     /**
      * @return Returns the map.
      */
