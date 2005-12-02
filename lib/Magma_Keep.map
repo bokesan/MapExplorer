@@ -1,0 +1,41 @@
+map Magma Keep
+# from Hellspike Prison
+width 30
+height 21
+basecolor 805848
+
+solid F3 E4 F4 P4
+solid A21-A22
+solid E26 D27 E27 O26-P27
+solid U26 T27 U27
+solid U14
+solid Q17-Q21
+
+wall north U11-U13
+wall east A30-D30 L30-Q30
+
+wall west E6-O6
+wall south E6 E12-E24 H11
+wall south I16 I19-I20 I23-I24
+wall north K12 K15-K19 O20-O23 P12 Q8-Q11
+wall east E11-H11 E15 H15 G20-H20 E24-H24
+wall east Q11 L12-P12 L19-O19 L21-M21 L24
+
+lava D5-O5 D6 G4-I4 O4
+lava D10-D26 C10-C11
+lava E25 F25-H26 F27
+lava J30-L30 K29
+lava L25-P25 M26-N26
+lava P16-P25 Q16
+lava S7-S10 R8-R12 Q12-Q13 P13
+lava U15
+
+difficult E23-E24 F15-G16 L18 L19-O19
+
+exit A H1-K1
+start A G1-I3 J1-M4
+victory A A18-C22 L20-O24
+
+exit B F30-I30
+start B F28-N30
+victory B E6-G11 R13-U15
