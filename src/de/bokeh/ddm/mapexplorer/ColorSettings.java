@@ -11,6 +11,8 @@ public class ColorSettings {
     private EnumMap<MapFeature, Color> featureColor;
     private EnumMap<Special, Color> specialColor;
     
+    private Color defaultColor;
+    
     /**
      * Construct a new ColorSettings object and initialize it
      * to the default colors.
@@ -18,31 +20,34 @@ public class ColorSettings {
     public ColorSettings() {
 	featureColor = new EnumMap<MapFeature,Color>(MapFeature.class);
 	specialColor = new EnumMap<Special, Color>(Special.class);
+	defaultColor = Color.BLACK;
 	setDefault();
     }
     
     /**
      * Return the color for a map feature.
      * <p>
-     * Returns null if no color is set for the specified feature.
+     * Returns defaultColor if no color is set for the specified feature.
      * 
      * @param f a MapFeature
      * @return the Color for the MapFeature f.
      */
     public Color getColor(MapFeature f) {
-	return featureColor.get(f);
+	Color c = featureColor.get(f);
+	return (c == null) ? defaultColor : c;
     }
     
     /**
      * Return the color for a map feature.
      * <p>
-     * Returns null if no color is set for the specified feature.
+     * Returns defaultColor if no color is set for the specified feature.
      * 
      * @param s a Special feature
      * @return the Color for the Special feature s.
      */
     public Color getColor(Special s) {
-	return specialColor.get(s);
+	Color c = specialColor.get(s);
+	return (c == null) ? defaultColor : c;
     }
     
     /**
@@ -70,9 +75,11 @@ public class ColorSettings {
 	featureColor.put(MapFeature.DIFFICULT, Color.YELLOW);
 	featureColor.put(MapFeature.SACRED_CIRCLE, Color.CYAN);
 	featureColor.put(MapFeature.SPIKE_STONES, Color.ORANGE);
+	featureColor.put(MapFeature.RISKY, Color.ORANGE);
 	featureColor.put(MapFeature.BLOOD_ROCK, Color.RED);
 	featureColor.put(MapFeature.HAUNTED, new Color(255, 0, 255));
 	featureColor.put(MapFeature.PIT, Color.GRAY);
+	featureColor.put(MapFeature.LAVA, new Color(255, 128, 0));
 	
 	featureColor.put(MapFeature.START_A, Color.LIGHT_GRAY);
 	featureColor.put(MapFeature.START_B, Color.LIGHT_GRAY);
@@ -83,6 +90,20 @@ public class ColorSettings {
 	specialColor.put(Special.GRID, Color.GRAY);
 	specialColor.put(Special.LOS, Color.GREEN);
 	specialColor.put(Special.MARK, new Color(255,140,32));
+    }
+
+    /**
+     * @return Returns the defaultColor.
+     */
+    public Color getDefaultColor() {
+        return defaultColor;
+    }
+
+    /**
+     * @param defaultColor The defaultColor to set.
+     */
+    public void setDefaultColor(Color defaultColor) {
+        this.defaultColor = defaultColor;
     }
     
 }
