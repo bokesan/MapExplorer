@@ -1,0 +1,46 @@
+map Drow Enclave
+width 30
+height 21
+
+basecolor 9040b0
+
+wall west A1-U1 south A4-A27 north U4-U27 east A30-U30
+solid N1 U10-U11
+
+wall north B1-B3 G1-G3
+wall east C3-D3 G3-H3 L3-M3 S3-U3
+
+solid M6-N7 N8 O8-O9
+wall north O10 P11 east P10 Q11-R11
+
+solid G6-G7 F7-F8 E8-E9 D9-D10
+
+difficult Q6 Q7 R6 M8 P11 P15 N17
+solid Q15-R17 P16-P17 O17
+solid T20-U25
+wall east S19 L21 I21
+wall east N17 north M18 east M18 south M21-M23
+
+wall east H25-M25 P25-Q25 north J26-J27 J30 P26-P27 P30
+
+solid D15-D17 E16-E17 F17 G18 H19-H21 D21 E21-E23 F23-G23
+wall south D18 H22
+difficult E15 E10 G8 G17
+
+difficult A24-A27 A30-D30 F30-I30 L30-O30 Q30-T30
+difficult H26-I26 L26
+
+risky O21-O24 P24 Q24 P21 Q21 Q22
+
+
+summoning G11-M15 H10-L16
+
+
+start A H1-U3
+exit A U1-U3
+victory A D18-G20 F21-G22 O21-Q24
+
+
+start B H26-P30
+exit B A28-A30
+victory B C1-G3 Q6-S8

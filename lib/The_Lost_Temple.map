@@ -1,0 +1,27 @@
+map The Lost Temple
+
+width 34
+height 22
+
+basecolor 708075
+
+solid I1-I4
+solid I8-L8 P8-Q8 U8-V8
+solid A15-C15 G14-L14 R12-S12
+solid A20-C20 G20-L20
+solid D24
+solid K24-M25 Q24-R25
+solid D28-G28 G29-G31
+solid K32-K34
+
+difficult P9-P10 Q9-Q13 R9-R11
+difficult P21-V22 Q23-U23 S24-U24 S25-V25 T26-V26 T27
+difficult A24-C24 B25-E25 D26-F27
+
+magic Q17-T20
+
+start A A1-F6 V1-Q6
+exit A A1-C1 A2-A3 V1-T1 V2-V3
+
+start B A34-F29 V34-Q29
+exit B A34-C34 A32-A33 V34-T34 V32-V33
