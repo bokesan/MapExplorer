@@ -78,6 +78,9 @@ public class MapReader {
 		else if (f[0].equals("magic")) {
 		    handleFeature(m, f, MapFeature.SACRED_CIRCLE);
 		}
+		else if (f[0].equals("summoning")) {
+		    handleFeature(m, f, MapFeature.SUMMONING_CIRCLE);
+		}
 		else if (f[0].equals("statue")) {
 		    handleFeature(m, f, MapFeature.STATUE);
 		}

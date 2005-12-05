@@ -16,6 +16,9 @@ public enum MapFeature {
         damage is considered magic.  */
     SACRED_CIRCLE,
     
+    /** Summoning Circle. */
+    SUMMONING_CIRCLE,
+    
     /** Spike Stones. */
     SPIKE_STONES,
     

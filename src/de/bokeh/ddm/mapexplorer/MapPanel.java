@@ -126,6 +126,10 @@ public class MapPanel extends JPanel {
 	    g.setColor(colors.getColor(MapFeature.SACRED_CIRCLE));
 	    g.fillRect(x+1,y+1, tileWidth/2, tileHeight/2);
 	}
+	if (t.has(MapFeature.SUMMONING_CIRCLE)) {
+	    g.setColor(colors.getColor(MapFeature.SUMMONING_CIRCLE));
+	    g.fillRect(x+3,y+3, tileWidth/2, tileHeight/2);
+	}
 	if (t.has(MapFeature.STATUE)) {
 	    g.setColor(colors.getColor(MapFeature.STATUE));
 	    g.drawOval(x+2,y+2, tileWidth-5, tileHeight-5);

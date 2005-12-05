@@ -74,6 +74,7 @@ public class ColorSettings {
     public void setDefault() {
 	featureColor.put(MapFeature.DIFFICULT, Color.YELLOW);
 	featureColor.put(MapFeature.SACRED_CIRCLE, Color.CYAN);
+	featureColor.put(MapFeature.SUMMONING_CIRCLE, new Color(30,255,160));
 	featureColor.put(MapFeature.SPIKE_STONES, Color.ORANGE);
 	featureColor.put(MapFeature.RISKY, Color.ORANGE);
 	featureColor.put(MapFeature.BLOOD_ROCK, Color.RED);

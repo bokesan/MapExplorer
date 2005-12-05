@@ -1,4 +1,4 @@
-// $Id: MapExplorer.java,v 1.6 2005/12/02 14:24:41 breitko Exp $
+// $Id: MapExplorer.java,v 1.7 2005/12/05 15:26:52 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
@@ -16,14 +16,14 @@ import java.util.logging.*;
  */
 public class MapExplorer implements ActionListener {
 
-    public static final String VERSION = "20051202";
+    public static final String VERSION = "20051205";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
     private static final String ACTION_CLEAR_LOS = "clearLOS";
     
     
-    static Logger logger = Logger.getLogger(MapReader.class.getName());
+    static Logger logger = Logger.getLogger(MapExplorer.class.getName());
 
     private JFrame appFrame;
     private JToolBar toolBar;
