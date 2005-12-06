@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>Map Explorer Map File Format</title>
+ <!-- $Id: mapformat.html,v 1.1 2005/12/06 11:17:12 breitko Exp $ -->
+ <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+ <meta name="author" content="Christoph Breitkopf" />
+ <meta name="copyright" content="&copy; 2005 Christoph Breitkopf" />
+ <meta name="description" content="Line-of-Sight Calculator Software for the DDM Skirmish game" />
+ <meta name="keywords" content="DDM, D&amp;D Miniatures, Line-of-Sight" />
+ <!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+ <!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+</head>
+<body>
+<a href="index.html">Home</a>
+
+<h1>Map Explorer Map File Format</h1>
+
+<p>Map Explorer reads maps from a very simple text file format.
+The suggested file extension for map files is <b>.map</b>.</p>
+
+<p>Map Explorere reads the files in the platform character set.
+That means that only ASCII characters can be portably used
+(except in comments, where anything goes).</p>
+
+<p>A map file is a sequence of lines. Each line may either
+be empty, contain just a comment, or contain a tag followed by the
+necessary attributes. A comment starts with the character <b>#</b>.
+Tags must be written in lower-case.
+The following tags are supported:</p>
+
+<table border cellpadding="3" cellspacing="0">
+<tr valign="top">
+  <td><b>map</b> <a href="#tok_name">name</a></td>
+  <td><b>Required.</b> The map name. It is displayed
+    in the title bar.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>width</b> <a href="#tok_number">number</a></td>
+  <td><b>Required.</b> The width of the map. Must be between 1 and 99.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>height</b> <a href="#tok_number">number</a></td>
+  <td><b>Required.</b> The height of the map. Must be between 1 and 26.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>basecolor</b> <a href="#tok_color">color</a></td>
+  <td>Set a color for all map squares that are not colored by terrain
+    features or special areas. The default is white (ffffff).</td>
+</tr>
+
+<tr valign="top">
+  <td><b>bloodrock</b> <a href="#tok_squares">squares</a></td>
+  <td>Blood rock.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>difficult</b> <a href="#tok_squares">squares</a></td>
+  <td>Difficult terrain.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>exit</b> <a href="#tok_player">player</a> <a href="#tok_squares">squares</a></td>
+  <td>Exit squares.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>haunted</b> <a href="#tok_squares">squares</a></td>
+  <td>Haunted.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>lava</b> <a href="#tok_squares">squares</a></td>
+  <td>Lava.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>magic</b> <a href="#tok_squares">squares</a></td>
+  <td>Magic circle.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>pit</b> <a href="#tok_squares">squares</a></td>
+  <td>Pits.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>risky</b> <a href="#tok_squares">squares</a></td>
+  <td>Risky terrain.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>smoke</b> <a href="#tok_squares">squares</a></td>
+  <td>Smoke.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>solid</b> <a href="#tok_squares">squares</a></td>
+  <td>Solid rock.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>spikestones</b> <a href="#tok_squares">squares</a></td>
+  <td>Spike stones.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>start</b> <a href="#tok_player">player</a> <a href="#tok_squares">squares</a></td>
+  <td>Start areas.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>statue</b> <a href="#tok_squares">squares</a></td>
+  <td>Statues.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>summoning</b> <a href="#tok_squares">squares</a></td>
+  <td>Summoning circle.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>victory</b> <a href="#tok_player">player</a> <a href="#tok_squares">squares</a></td>
+  <td>Victory areas.</td>
+</tr>
+
+<tr valign="top">
+  <td><b>wall</b> ( <a href="#tok_direction">direction</a> <a href="#tok_squares">squares</a> )*</td>
+  <td>Walls.</td>
+</tr>
+
+</table>
+
+<p>The tags <b>width</b> and <b>height</b> must precede any other tags except for
+<b>map</b> and <b>basecolor</b>.</p>
+
+<p>The following tag attributes are used:</p>
+<table border cellpadding="3" cellspacing="0">
+
+<tr valign="top">
+  <td><a name="tok_area">area</a></td>
+  <td>Either a single <a href="#tok_square">square</a>, or a rectangular
+    area defined by two <a href="#tok_square">squares</a> separated by a hyphen
+    (no whitespace allowed).</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_color">color</a></td>
+  <td>An RGB color as a hexadecimal number. The first two digits are
+    the red component, the middle two the green component, and the last two
+    the blue component. <i>Examples:</i> ffffff (white), 0000ff (blue),
+    808080 (medium gray).</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_direction">direction</a></td>
+  <td><b>north</b>, <b>east</b>, <b>south</b>, or <b>west</b>.</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_name">name</a></td>
+  <td>Any string extending to the end of the line. May contain whitespace.
+    Characters are limited to ASCII, at the moment (No accents, etc.)</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_number">number</a></td>
+  <td>A positive integer.</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_player">player</a></td>
+  <td><b>A</b> or <b>B</b>.</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_square">square</a></td>
+  <td>A map square: an upper-case letter for the row, followed by the column number.
+   No whitespace is allowed between row and column. Columns are counted from the left
+   starting with <b>1</b>. Rows are conuted from the bottom, starting with <b>A</b>
+   (this is why the map height is limited to 26 rows). <i>Examples:</i> A1, M13, U30.</td>
+</tr>
+
+<tr valign="top">
+  <td><a name="tok_squares">squares</a></td>
+  <td>One or more <a href="#tok_area">areas</a>, separated by spaces.</td>
+</tr>
+
+</table>
+
+<h2>Examples</h2>
+
+<p>Just look at any of the .map files included with Map Explorer.</p>
+
+
+
+<hr />
+<div id="footer">
+Copyright &copy; 2005 Christoph Breitkopf (chris@chr-breitkopf.de)
+<br />
+<i>Last change: $Date: 2005/12/06 11:17:12 $</i>
+</div>
+
+</body>
+</html>
