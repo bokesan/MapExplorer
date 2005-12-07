@@ -109,6 +109,10 @@ public class MapPanel extends JPanel {
 	    g.setColor(colors.getColor(MapFeature.LAVA));
 	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
 	}
+	if (t.has(MapFeature.SMOKE)) {
+	    g.setColor(colors.getColor(MapFeature.SMOKE));
+	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
+	}
 	if (t.has(MapFeature.HAUNTED)) {
 	    g.setColor(colors.getColor(MapFeature.HAUNTED));
 	    g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);

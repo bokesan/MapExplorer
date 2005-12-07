@@ -81,6 +81,7 @@ public class ColorSettings {
 	featureColor.put(MapFeature.HAUNTED, new Color(255, 0, 255));
 	featureColor.put(MapFeature.PIT, Color.GRAY);
 	featureColor.put(MapFeature.LAVA, new Color(255, 128, 0));
+	featureColor.put(MapFeature.SMOKE, new Color(64,64,80));
 	
 	featureColor.put(MapFeature.START_A, Color.LIGHT_GRAY);
 	featureColor.put(MapFeature.START_B, Color.LIGHT_GRAY);
