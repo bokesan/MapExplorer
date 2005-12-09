@@ -91,7 +91,7 @@ public class ColorSettings {
 	specialColor.put(Special.WALL, Color.BLACK);
 	specialColor.put(Special.GRID, Color.GRAY);
 	specialColor.put(Special.LOS, Color.GREEN);
-	specialColor.put(Special.MARK, new Color(255,140,32));
+	specialColor.put(Special.MARK, new Color(255,80,40));
     }
 
     /**
