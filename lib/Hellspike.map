@@ -1,0 +1,49 @@
+map Hellspike
+width 30
+height 21
+
+basecolor 705058
+
+solid A1-D1 C2-D3
+
+solid A11-A14 B12-D12
+lava B13-B14 A15
+
+solid L1-Q1 Q2 M2-M3 L4-L7 K7
+lava J1-K6 L2-L3 J7 I7-I8
+
+solid Q7-U7 U8
+wall north U5-U6
+
+solid U14 U15-R15
+
+solid J15-L15 K16-L16
+
+solid Q19-R19
+solid J23-J24
+solid A25-A26 B26
+wall south A24
+
+solid I29-J30 J28-K28
+wall east D30-H30
+
+difficult A18-B23 A24 C20-C23 D21
+
+lava Q20-U20 T21-T26 U21-U30 T29 T30-K30 K29-N29 L28-M28
+lava K25-M27 J25-J26 M24 N25-O25 N26
+
+# The Hellspike
+solid Q29
+magic O27-S29
+
+smoke E16-J16 F17-O17 H18 J18-M18 J19-K19 J20 N16-P16
+smoke F15-H15 F14 O15-P15 P12-Q14 O13 Q11-S12 P9-R10 P7-Q8
+
+
+start A A27-H30 T18-U19
+exit A A28-A30 B30-C30
+victory A Q8-U12 A10-B10 B11-D11
+
+start B A2-B3 R1-U6
+exit B E1-I1
+victory B O27-S29 A18-B23 A24 C20-C23 D21
