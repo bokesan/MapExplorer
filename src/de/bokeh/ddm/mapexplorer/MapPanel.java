@@ -12,7 +12,7 @@ import javax.swing.*;
  */
 public class MapPanel extends JPanel {
     
-    //static final long serialVersionUID = 8768687641202390L;
+    static final long serialVersionUID = 8768687641202390L;
     
     private static final int PREFERRED_TILE_WIDTH = 25;
     private static final int PREFERRED_TILE_HEIGHT = 25;

@@ -2,6 +2,8 @@ package de.bokeh.ddm.mapexplorer;
 
 public class SyntaxError extends Exception {
 
+    static final long serialVersionUID = 8728687643252590L;
+    
     private final String file;
     private final int line;
     private final String message;
