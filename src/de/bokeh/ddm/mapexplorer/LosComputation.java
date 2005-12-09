@@ -1,5 +1,6 @@
 package de.bokeh.ddm.mapexplorer;
 
+import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 
@@ -9,6 +10,8 @@ public class LosComputation extends Thread {
     private final MapExplorer app;
     private final int randomTestsPerSquare;
     private final Logger logger;
+    private boolean smokeBlocksLos;
+    private CreatureSize creatureSize;
     
     private Map map;
     private MapPanel mapPanel;
@@ -20,6 +23,8 @@ public class LosComputation extends Thread {
 	this.logger = logger;
 	mapPanel = app.getMapPanel();
 	map = mapPanel.getMap();
+	smokeBlocksLos = false;
+	creatureSize = CreatureSize.MEDIUM;
     }
 
     /* (non-Javadoc)
@@ -33,44 +38,50 @@ public class LosComputation extends Thread {
 	    }
 	};
 	
+	final int sq = creatureSize.sizeSquares();
 	map.clearLos();
-	map.clearMarks();
-	map.get(loc).setMarked(true);
-	LosTester los = new LosTester(loc, map.getDimension(), map.getWalls(), randomTestsPerSquare, logger);
 	int numLos = 0;
 	int numRndLos = 0;
 	int testsLosSquares = 0;
 	int squaresTested = 0;
-
+	
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		mapPanel.repaint();
-		app.setProgressMax(map.getHeight());
+		app.setProgressMax(map.getHeight() * sq * sq);
 	    }
 	});
 	
 	long startTime = System.currentTimeMillis();
-	for (int row = 0; row < map.getHeight(); row++) {
-	    for (int col = 0; col < map.getWidth(); col++) {
-		if (row != loc.getRow() || col != loc.getColumn()) {
-		    MapSquare s = map.get(col, row);
-		    if (!s.isSolid()) {
-			squaresTested++;
-			// int r = los.testLocation(new Location(col, row));
-			int r = los.testLocation(col, row);
-			if (r >= 0) {
-			    if (r > 0) {
-				numRndLos++;
-				testsLosSquares += r;
+	final int height = map.getHeight();
+	final int width = map.getWidth();
+	final Set<Line> walls = map.getWalls(smokeBlocksLos);
+	int progressOffs = 0;
+	for (int y = 0; y < sq; y++) {
+	    for (int x = 0; x < sq; x++) {
+		Location xloc = new Location(loc.getColumn() + x, loc.getRow() + y);
+		LosTester los = new LosTester(xloc, map.getDimension(), walls, randomTestsPerSquare, logger);
+		for (int row = 0; row < height; row++) {
+		    for (int col = 0; col < width; col++) {
+			MapSquare s = map.get(col, row);
+			if (!(s.isSolid() || s.isMarked() || s.isLos())) {
+			    squaresTested++;
+			    int r = los.testLocation(new Location(col, row));
+			    if (r >= 0) {
+				if (r > 0) {
+				    numRndLos++;
+				    testsLosSquares += r;
+				}
+				numLos++;
+				s.setLos(true);
+				SwingUtilities.invokeLater(repaintMap);
 			    }
-			    numLos++;
-			    s.setLos(true);
-			    SwingUtilities.invokeLater(repaintMap);
 			}
 		    }
+		    SwingUtilities.invokeLater(new ProgressSetter(progressOffs + row+1));
 		}
+		progressOffs += height;
 	    }
-	    SwingUtilities.invokeLater(new ProgressSetter(row+1));
 	}
 	long elapsedTime = System.currentTimeMillis() - startTime;
 	if (numRndLos != 0)
@@ -95,6 +106,17 @@ public class LosComputation extends Thread {
 	public void run() {
 	    app.setProgress(value);
 	}
+    }
+
+    public void setCreatureSize(CreatureSize size) {
+	creatureSize = size;
+    }
+    
+    /**
+     * @param smokeBlocksLos The smokeBlocksLos to set.
+     */
+    public void setSmokeBlocksLos(boolean smokeBlocksLos) {
+        this.smokeBlocksLos = smokeBlocksLos;
     }
     
 }

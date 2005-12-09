@@ -117,6 +117,9 @@ public class Rectangle {
     }
     
     
+    /**
+     * @return Resturns all locations this Rectangle contains.
+     */
     public Location[] getLocations() {
 	Location[] locs = new Location[getWidth() * getHeight()];
 	int i = 0;

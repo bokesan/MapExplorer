@@ -54,7 +54,11 @@ public class Map {
 	    s.setMarked(false);
     }
     
-    public Set<Line> getWalls() {
+    /**
+     * Get the set of Walls for the LOS computation.
+     * @return
+     */
+    public Set<Line> getWalls(boolean smokeBlocksLOS) {
 	Set<Line> walls = new HashSet<Line>();
 	for (int x = 0; x < width; x++) {
 	    for (int y = 0; y < height; y++) {
@@ -67,6 +71,12 @@ public class Map {
 		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
 		if (s.getWall(Direction.EAST))
 		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
+		if (smokeBlocksLOS && s.has(MapFeature.SMOKE)) {
+		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
+		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));
+		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
+		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
+		}
 	    }
 	}
 	return walls;
@@ -374,4 +384,51 @@ public class Map {
 	    get(col, row).setWall(dir, true);
     }
 
+    /**
+     * Does any square of this map have feature f?
+     * @param f a MapFeature
+     * @return true if any square of this map has MapFeature f.
+     */
+    public boolean has(MapFeature f) {
+	for (MapSquare s : map) {
+	    if (s.has(f))
+		return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Try to place a creature at loc.
+     * 
+     * @param loc a Location
+     * @param size a CreatureSize
+     * @return true, if the creature can be placed at loc.
+     */
+    public boolean canPlaceCreature(Location loc, CreatureSize size) {
+	return !isBlocked(loc, size.sizeSquares());
+    }
+    
+    private boolean isBlocked(Location loc, int size) {
+	int left = loc.getColumn();
+	int bottom = loc.getRow();
+	int right = left + size - 1;
+	int top = bottom + size - 1;
+	for (int row = bottom; row <= top; row++) {
+	    for (int col = left; col <= right; col++) {
+		MapSquare s = get(col, row);
+		if (s.isBlocked())
+		    return true;
+		if (col > left && s.getWall(Direction.WEST))
+		    return true;
+		if (col < right && s.getWall(Direction.EAST))
+		    return true;
+		if (row > bottom && s.getWall(Direction.SOUTH))
+		    return true;
+		if (row < top && s.getWall(Direction.NORTH))
+		    return true;
+	    }
+	}
+	return false;
+    }
+    
 }

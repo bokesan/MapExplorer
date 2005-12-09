@@ -42,48 +42,6 @@ public class LosTester {
     }
     
     /**
-     * Check if Location col,row has LOS to x,y.
-     * @param col the column
-     * @param row the row
-     * @return 0 if LOS was found with the normal tests. A number greater than
-     * 0 if LOS was found after that many random tests. A negative number
-     * if no LOS was found.
-     */
-    public int testLocation(int col, int row) {
-	//final double[] off = { 0, 1.0/1024, 0.5, 1-1.0/1024, 1 };
-	//final double[] off = { 0, 1/1024, 0.5, 1-1/1024, 1 };
-	final double[] off = { 0, 1.0/1024, 1.0/8, 1.0/4, 0.5, 3.0/4, 1 - 1.0/8, 1 - 1.0/1024, 1 };
-	
-	getRelevantWalls(new Rectangle(location, new Location(col, row)));
-	
-	// normal tests
-	for (double sxoff : off) {
-	    for (double syoff : off) {
-		for (double dxoff : off) {
-		    for (double dyoff : off) {
-			if (los(x + sxoff, y + syoff, col + dxoff, row + dyoff))
-			    return 0;
-		    }
-		}
-	    }
-	}
-	
-	// random tests
-	for (int i = 1; i <= rndTests; i++) {
-	    double sx = x + rng.nextDouble();
-	    double sy = y + rng.nextDouble();
-	    double dx = col + rng.nextDouble();
-	    double dy = row + rng.nextDouble();
-	    if (los(sx, sy, dx, dy)) {
-		logger.warning("Found random " + sx + "," + sy + " - " + dx + "," + dy + " (" + new Location((int)Math.floor(dx), (int)Math.floor(dy)) + ")");
-		return i;
-	    }
-	}
-	return -1;
-    }
-
-    
-    /**
      * Check if Location loc has LOS to location.
      * @param loc a Location
      * @return 0 if LOS was found with the normal tests. A number greater than
@@ -146,69 +104,101 @@ public class LosTester {
 	    if (location.y() < loc.y()) {
 		// lower left quadrant
 		// logger.info("source is in lower left quadrant");
-		r = testEdges(loc, Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH);
+		r = testEdges(loc, 1);
 	    } else {
 		// upper left quadrant
 		// logger.info("source is in upper left quadrant");
-		r = testEdges(loc, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NORTH);
+		r = testEdges(loc, 0);
 	    }
 	} else {
 	    if (location.y() < loc.y()) {
 		// lower right quadrant
 		// logger.info("source is in lower right quadrant");
-		r = testEdges(loc, Direction.NORTH, Direction.WEST, Direction.EAST, Direction.SOUTH);
+		r = testEdges(loc, 0);
 	    } else {
 		// upper right quadrant
 		// logger.info("source is in upper right quadrant");
-		r = testEdges(loc, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.NORTH);
+		r = testEdges(loc, 1);
 	    }
 	}
 	return r;
     }
     
-    private int testEdges(Location loc, Direction locationDir1, Direction locationDir2,
-	    Direction locDir1, Direction locDir2) {
-	int r;
-	r = testEdges(getEdge(location, locationDir1), getEdge(loc, locDir1));
-	if (r >= 0) return r;
-	r = testEdges(getEdge(location, locationDir1), getEdge(loc, locDir2));
-	if (r >= 0) return r;
-	r = testEdges(getEdge(location, locationDir2), getEdge(loc, locDir1));
-	if (r >= 0) return r;
-	r = testEdges(getEdge(location, locationDir2), getEdge(loc, locDir2));
-	return r;
-    }
-    
-    
-    private int testEdges(Line e1, Line e2) {
-	{
-	    Range e1x = new Range(e1.getStart().getX(), e1.getEnd().getX());
-	    Range e2x = new Range(e2.getStart().getX(), e2.getEnd().getX());
-	    Range rx = e1x.extend(e2x);
-	    Range e1y = new Range(e1.getStart().getY(), e1.getEnd().getY());
-	    Range e2y = new Range(e2.getStart().getY(), e2.getEnd().getY());
-	    Range ry = e1y.extend(e2y);
-	    getRelevantWalls(new Rectangle(new Location((int) rx.getLowerBound() - 1, (int) ry.getLowerBound() - 1),
-		    	                   new Location((int) rx.getHigherBound() + 1, (int) ry.getHigherBound() + 1)));
-	}
-
-	final double[] off = { 0, 1.0/1024, 1.0/8, 1.0/4, 0.5, 3.0/4, 1 - 1.0/8, 1 - 1.0/1024, 1 };
-
-	for (double e1off : off) {
-	    for (double e2off : off) {
-		if (los(edgePoint(e1, e1off), edgePoint(e2, e2off))) {
-		    return 0;
+    /**
+     * Test two diagonals
+     * @param loc target Location
+     * @param slope the slope. 0: ascending, 1: descending
+     * @return Something
+     */
+    private int testEdges(Location loc, int slope) {
+	walls = allWalls;
+	
+	final double[] off = {
+		0, 1,
+		1/32.0, 31/32.0,
+		2/32.0, 30/32.0,
+		3/32.0, 29/32.0, //
+		4/32.0, 28/32.0,
+		5/32.0, 27/32.0, //
+		6/32.0, 26/32.0,
+		7/32.0, 25/32.0,
+		8/32.0, 24/32.0,
+		9/32.0, 23/32.0,
+		10/32.0, 22/32.0,
+		11/32.0, 21/32.0, //
+		12/32.0, 20/32.0,
+		13/32.0, 19/32.0, //
+		14/32.0, 18/32.0,
+		15/32.0, 17/32.0,
+		1/512.0, 511/512.0,
+		0.5
+	};
+	
+	final double x1 = location.getColumn();
+	final double x2 = loc.getColumn();
+	if (slope == 0) {
+	    // ascending
+	    final double y1 = location.getRow();
+	    final double y2 = loc.getRow();
+	    for (double e1off : off) {
+		for (double e2off : off) {
+		    if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
+			return 0;
+		    }
 		}
 	    }
-	}
-
-	// random tests
-	for (int i = 1; i <= rndTests; i++) {
-	    Point p1 = edgePoint(e1, rng.nextDouble());
-	    Point p2 = edgePoint(e2, rng.nextDouble());
-	    if (los(p1, p2)) {
-		logger.warning("Found random " + p1 + " - " + p2);
-		return i;
+	    // random tests
+	    for (int i = 1; i <= rndTests; i++) {
+		final double e1off = rng.nextDouble();
+		final double e2off = rng.nextDouble();
+		Point p1 = new Point(x1 + e1off, y1 + e1off);
+		Point p2 = new Point(x2 + e2off, y2 + e2off);
+		if (los(p1, p2)) {
+		    logger.warning("Found random " + p1 + " - " + p2);
+		    return i;
+		}
+	    }
+	} else {
+	    // descending
+	    final double y1 = location.getRow() + 1;
+	    final double y2 = loc.getRow() + 1;
+	    for (double e1off : off) {
+		for (double e2off : off) {
+		    if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
+			return 0;
+		    }
+		}
+	    }
+	    // random tests
+	    for (int i = 1; i <= rndTests; i++) {
+		double e1off = rng.nextDouble();
+		double e2off = rng.nextDouble();
+		Point p1 = new Point(x1 + e1off, y1 - e1off);
+		Point p2 = new Point(x2 + e2off, y2 - e2off);
+		if (los(p1, p2)) {
+		    logger.warning("Found random " + p1 + " - " + p2);
+		    return i;
+		}
 	    }
 	}
 	
@@ -258,29 +248,5 @@ public class LosTester {
 		continue;
 	    walls.add(w);
 	}
-    }
-    
-    private static Line getEdge(Location loc, Direction dir) {
-	switch (dir) {
-	case SOUTH:
-	    return new Line(new Point(loc), new Point(loc.x() + 1, loc.y()));
-	case WEST:
-	    return new Line(new Point(loc), new Point(loc.x(), loc.y() + 1));
-	case NORTH:
-	    return new Line(new Point(loc.x(), loc.y() + 1), new Point(loc.x() + 1, loc.y() + 1));
-	case EAST:
-	    return new Line(new Point(loc.x() + 1, loc.y()), new Point(loc.x() + 1, loc.y() + 1));
-	default:
-	    throw new IllegalArgumentException();
-	}
-    }
-    
-    private static Point edgePoint(Line edge, double offset) {
-	Point start = edge.getStart();
-	if (edge.isHorizontal())
-	    return new Point(start.getX() + offset, start.getY());
-	if (edge.isVertical())
-	    return new Point(start.getX(), start.getY() + offset);
-	throw new IllegalArgumentException();
     }
 }

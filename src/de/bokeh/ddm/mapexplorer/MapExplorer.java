@@ -1,9 +1,10 @@
-// $Id: MapExplorer.java,v 1.7 2005/12/05 15:26:52 breitko Exp $
+// $Id: MapExplorer.java,v 1.8 2005/12/09 16:33:15 breitko Exp $
 
 package de.bokeh.ddm.mapexplorer;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.logging.*;
@@ -14,9 +15,9 @@ import java.util.logging.*;
  * 
  * @author Christoph Breitkopf
  */
-public class MapExplorer implements ActionListener {
+public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20051205";
+    public static final String VERSION = "20051209";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
@@ -32,9 +33,12 @@ public class MapExplorer implements ActionListener {
     private Map map;
     private JLabel lblStatus;
     private JLabel lblResults;
+    private JCheckBox chkSmoke;
+    private JComboBox cmbSize;
     private int randomTestsPerSquare;
     private boolean testAll;
     private boolean busy;
+    private Location creaturePos;
     
     private JFileChooser fileChooser;
     
@@ -46,6 +50,7 @@ public class MapExplorer implements ActionListener {
 	testAll = false;
 	busy = false;
 	map = new Map(new Dimension(30, 21), "no map loaded");
+	creaturePos = null;
     }
     
     private void setTitle() {
@@ -56,6 +61,8 @@ public class MapExplorer implements ActionListener {
 	map = m;
 	setTitle();
 	mapPanel.setMap(map);
+	chkSmoke.setEnabled(map.has(MapFeature.SMOKE));
+	creaturePos = null;
     }
 
     /**
@@ -94,6 +101,23 @@ public class MapExplorer implements ActionListener {
 	btn.addActionListener(this);
 	toolBar.add(btn);
 	
+	toolBar.addSeparator();
+	JLabel lblSize = new JLabel("Size: ");
+	lblSize.setAlignmentY(Component.CENTER_ALIGNMENT);
+	toolBar.add(lblSize);
+	cmbSize = new JComboBox(CreatureSize.values());
+	cmbSize.setSelectedItem(CreatureSize.MEDIUM);
+	cmbSize.setEditable(false);
+	cmbSize.setToolTipText("The creature size");
+	cmbSize.addActionListener(this);
+	// cmbSize.setPreferredSize(new java.awt.Dimension(100, cmbSize.getHeight()));
+	toolBar.add(cmbSize);
+	
+	chkSmoke = new JCheckBox("Smoke blocks LOS");
+	chkSmoke.addItemListener(this);
+	chkSmoke.setEnabled(false);
+	toolBar.add(chkSmoke);
+	
 	toolBar.setFloatable(false);
     }
     
@@ -126,23 +150,45 @@ public class MapExplorer implements ActionListener {
 	    }
 	});
 	
-	final MapExplorer thisApp = this;
 	mapPanel.addMouseListener(new MouseAdapter() {
 	    public void mouseClicked(MouseEvent e) {
 		if (isBusy()) {
 		    Toolkit.getDefaultToolkit().beep();
 		} else {
-		    setBusy(true, "computing LOS...");
 		    Location loc = mapPanel.getLocation(e.getX(), e.getY());
 		    if (loc != null) {
-			LosComputation lc = new LosComputation(thisApp, loc, randomTestsPerSquare, logger);
-			lc.start();
-		    } else {
-			setBusy(false, null);
+			if (placeCreature(loc))
+			    computeLos();
+			else
+			    Toolkit.getDefaultToolkit().beep();
 		    }
 		}
 	    }
 	});
+    }
+
+    private boolean placeCreature(Location loc) {
+	CreatureSize size = (CreatureSize) cmbSize.getModel().getSelectedItem();
+	if (map.canPlaceCreature(loc, size)) {
+	    creaturePos = loc;
+	    map.clearMarks();
+	    int sq = size.sizeSquares();
+	    for (int x = 0; x < sq; x++) {
+		for (int y = 0; y < sq; y++) {
+		    map.get(loc.getColumn() + x, loc.getRow() + y).setMarked(true);
+		}
+	    }
+	    return true;
+	}
+	return false;
+    }
+    
+    private void computeLos() {
+	setBusy(true, "computing LOS...");
+	LosComputation lc = new LosComputation(this, creaturePos, randomTestsPerSquare, logger);
+	lc.setSmokeBlocksLos(chkSmoke.getModel().isSelected());
+	lc.setCreatureSize((CreatureSize) cmbSize.getModel().getSelectedItem());
+	lc.start();
     }
     
     public void setStatusText(String s) {
@@ -150,21 +196,40 @@ public class MapExplorer implements ActionListener {
     }
     
     public static void main(String[] args) {
-	MapExplorer app = new MapExplorer();
-
+	boolean benchmark = false;
 	String mapFile = "Fane_of_Lolth.map";
-	for (String s : args) {
-	    if (s.equals("-version")) {
+
+	for (int i = 0; i < args.length; i++) {
+	    if (args[i].equals("-version")) {
 		System.out.println("Map Explorer version " + VERSION);
 		return;
 	    }
-	    mapFile = s;
+	    if (args[i].equals("-benchmark")) {
+		benchmark = true;
+	    }
+	    else {
+		mapFile = args[i];
+	    }
 	}
-
-	//app.setTestAll(true);
-	app.setRandomTestsPerSquare(100);
-	app.start();
-	app.loadMap(mapFile);
+	
+	if (benchmark) {
+	    try {
+		Map map = new MapReader().read(mapFile);
+		LosBenchmark b = new LosBenchmark(map, 100);
+		b.run();
+	    }
+	    catch (SyntaxError err) {
+		err.printStackTrace();
+	    }
+	    catch (IOException ex) {
+		ex.printStackTrace();
+	    }
+	} else {
+	    MapExplorer app = new MapExplorer();
+	    app.setRandomTestsPerSquare(100);
+	    app.start();
+	    app.loadMap(mapFile);
+	}
     }
 
     /**
@@ -202,6 +267,10 @@ public class MapExplorer implements ActionListener {
 	if (isBusy()) {
 	    Toolkit.getDefaultToolkit().beep();
 	} else {
+	    if (e.getSource() == cmbSize) {
+		clearLos();
+		return;
+	    }
 	    String cmd = e.getActionCommand();
 	    if (cmd.equals(ACTION_LOAD_MAP)) {
 		if (fileChooser == null) {
@@ -217,14 +286,35 @@ public class MapExplorer implements ActionListener {
 		}
 	    }
 	    else if (cmd.equals(ACTION_CLEAR_LOS)) {
-		map.clearLos();
-		map.clearMarks();
-		lblResults.setText("");
-		mapPanel.repaint();
+		clearLos();
 	    }
 	}
     }
+
+    private void clearLos() {
+	creaturePos = null;
+	map.clearLos();
+	map.clearMarks();
+	lblResults.setText("");
+	mapPanel.repaint();
+    }
     
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+     */
+    public void itemStateChanged(ItemEvent e) {
+	if (isBusy()) {
+	    Toolkit.getDefaultToolkit().beep();
+	    return;
+	}
+	Object source = e.getItemSelectable();
+	if (source == chkSmoke) {
+	    if (creaturePos != null)
+		computeLos();
+	}
+    }
+
     public void loadMap(String fileName) {
 	try {
 	    setMap(new MapReader().read(fileName));
@@ -263,6 +353,7 @@ public class MapExplorer implements ActionListener {
             progress.setVisible(true);
 	    appFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	    lblStatus.setText(msg);
+	    cmbSize.setEnabled(false);
         } else {
             progress.setVisible(false);
             if (msg != null) {
@@ -271,6 +362,7 @@ public class MapExplorer implements ActionListener {
             }
             appFrame.setCursor(Cursor.getDefaultCursor());
             lblStatus.setText("Click on map to show LOS");
+            cmbSize.setEnabled(true);
         }
     }
 
