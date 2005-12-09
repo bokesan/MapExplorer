@@ -1,6 +1,12 @@
 package de.bokeh.ddm.mapexplorer;
 
 
+
+/**
+ * Result of a line intersection test.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class IntersectionResult {
     
     public static IntersectionResult coincident() {
