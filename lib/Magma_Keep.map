@@ -15,7 +15,7 @@ wall north U11-U13
 wall east A30-D30 L30-Q30
 
 wall west E6-O6
-wall south E6 E12-E24 H11
+wall south E6 E12-E24 H8 H11
 wall south I16 I19-I20 I23-I24
 wall north K12 K15-K19 O20-O23 P12 Q8-Q11
 wall east E11-H11 E15 H15 G20-H20 E24-H24
