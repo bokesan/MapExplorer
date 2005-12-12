@@ -124,14 +124,6 @@ public class MapSquare {
     }
 
     /**
-     * Can a creature be placed on this square?
-     * @return true if a creature can be placed on this square.
-     */
-    public boolean isBlocked() {
-	return isSolid() || has(MapFeature.LAVA) || has(MapFeature.PIT) || has(MapFeature.STATUE);
-    }
-    
-    /**
      * Return the color of this square.
      * @return the Color of this MapSquare.
      */

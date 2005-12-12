@@ -416,7 +416,7 @@ public class Map {
 	for (int row = bottom; row <= top; row++) {
 	    for (int col = left; col <= right; col++) {
 		MapSquare s = get(col, row);
-		if (s.isBlocked())
+		if (s.isSolid())
 		    return true;
 		if (col > left && s.getWall(Direction.WEST))
 		    return true;
