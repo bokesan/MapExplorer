@@ -45,6 +45,6 @@ exit A U1-U3
 victory A H17-I18 I16
 victory A R26-U30 P28-Q29
 
-start B A28-M30
+start B A28-M30 A26-D27
 exit B A28-A30
 victory B A4-C6 G5-J8 P12-S13
