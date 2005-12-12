@@ -3,6 +3,10 @@ Map Explorer README
 
 Map Explorer shows Line-of-Sight (LOS) on DDM maps.
 
+This is free software, use as you wish for any purpose
+whatsoever. Source code will be released at a future date
+(likely 2005-12-24).
+
 
 INSTALLATION
 ============
@@ -31,6 +35,18 @@ extension in Windows Explorer, you should be able to open
 Map Explorer by double-clicking on a map file).
 
 To show LOS from a map square, just click on the square.
+
+
+LIMITATIONS
+===========
+
+Map Explorer will not always find all LOS squares. If you find case
+where Map Explorer misses a LOT on one of the offical maps, please
+send me an email with the name of the map and the squares.
+
+The support for smoke is preliminary, and does not work
+in the way the current rule version states. This will be fixed
+when the rules have settled.
 
 
 FEEDBACK
