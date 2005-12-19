@@ -22,9 +22,7 @@ spikestones I16-M16 J17-L17 J18-I18 I19
 
 wall east I30-K30
 wall east C30-D30
-wall south A6-A7 A22-A25
-wall north U14-U15
-
+wall south A6-A7 A22
 
 start A Q23-T29 U23-U28
 victory A B11-B13 C11-C13 D11-D12
