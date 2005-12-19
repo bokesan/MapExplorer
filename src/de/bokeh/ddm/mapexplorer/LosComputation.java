@@ -1,3 +1,29 @@
+/*
+ * $Id: LosComputation.java,v 1.3 2005/12/19 11:36:31 breitko Exp $
+ * 
+ * This file is part of Map Explorer.
+ * 
+ * Copyright © 2005 Christoph Breitkopf
+ *
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from the
+ * use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose, including
+ * commercial applications, and to alter it and redistribute it freely, subject to
+ * the following restrictions:
+ *
+ *   1. The origin of this software must not be misrepresented; you must not claim
+ *      that you wrote the original software. If you use this software in a product,
+ *      an acknowledgment in the product documentation would be appreciated but is
+ *      not required.
+ *
+ *   2. Altered source versions must be plainly marked as such, and must not be
+ *      misrepresented as being the original software.
+ *
+ *   3. This notice may not be removed or altered from any source distribution.
+ */
+
 package de.bokeh.ddm.mapexplorer;
 
 import java.util.*;
@@ -14,6 +40,7 @@ public class LosComputation extends Thread {
     private CreatureSize creatureSize;
     
     private Map map;
+    private LosMap losMap;
     private MapPanel mapPanel;
     
     public LosComputation(MapExplorer app, Location loc, int rndTests, Logger logger) {
@@ -23,6 +50,7 @@ public class LosComputation extends Thread {
 	this.logger = logger;
 	mapPanel = app.getMapPanel();
 	map = mapPanel.getMap();
+	losMap = mapPanel.getLosMap();
 	smokeBlocksLos = false;
 	creatureSize = CreatureSize.MEDIUM;
     }
@@ -39,7 +67,7 @@ public class LosComputation extends Thread {
 	};
 	
 	final int sq = creatureSize.sizeSquares();
-	map.clearLos();
+	losMap.clear();
 	int numLos = 0;
 	int numRndLos = 0;
 	int testsLosSquares = 0;
@@ -64,7 +92,7 @@ public class LosComputation extends Thread {
 		for (int row = 0; row < height; row++) {
 		    for (int col = 0; col < width; col++) {
 			MapSquare s = map.get(col, row);
-			if (!(s.isSolid() || s.isMarked() || s.isLos())) {
+			if (!(s.isSolid() || s.isMarked() || losMap.get(col, row))) {
 			    squaresTested++;
 			    int r = los.testLocation(new Location(col, row));
 			    if (r >= 0) {
@@ -73,7 +101,7 @@ public class LosComputation extends Thread {
 				    testsLosSquares += r;
 				}
 				numLos++;
-				s.setLos(true);
+				losMap.set(col, row);
 				SwingUtilities.invokeLater(repaintMap);
 			    }
 			}

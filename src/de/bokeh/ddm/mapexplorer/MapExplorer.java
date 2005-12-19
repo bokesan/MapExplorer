@@ -1,4 +1,28 @@
-// $Id: MapExplorer.java,v 1.9 2005/12/12 16:18:18 breitko Exp $
+/*
+ * $Id: MapExplorer.java,v 1.10 2005/12/19 11:36:31 breitko Exp $
+ * 
+ * This file is part of Map Explorer.
+ * 
+ * Copyright © 2005 Christoph Breitkopf
+ *
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from the
+ * use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose, including
+ * commercial applications, and to alter it and redistribute it freely, subject to
+ * the following restrictions:
+ *
+ *   1. The origin of this software must not be misrepresented; you must not claim
+ *      that you wrote the original software. If you use this software in a product,
+ *      an acknowledgment in the product documentation would be appreciated but is
+ *      not required.
+ *
+ *   2. Altered source versions must be plainly marked as such, and must not be
+ *      misrepresented as being the original software.
+ *
+ *   3. This notice may not be removed or altered from any source distribution.
+ */
 
 package de.bokeh.ddm.mapexplorer;
 
@@ -31,6 +55,7 @@ public class MapExplorer implements ActionListener, ItemListener {
     private MapPanel mapPanel;
     private JToolBar statusPanel;
     private Map map;
+    private LosMap losMap;
     private JLabel lblStatus;
     private JLabel lblResults;
     private JCheckBox chkSmoke;
@@ -50,6 +75,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	testAll = false;
 	busy = false;
 	map = new Map(new Dimension(30, 21), "no map loaded");
+	losMap = new LosMap(new Dimension(30, 21));
 	creaturePos = null;
     }
     
@@ -59,8 +85,10 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     public void setMap(Map m) {
 	map = m;
+	losMap = new LosMap(m.getDimension());
 	setTitle();
 	mapPanel.setMap(map);
+	mapPanel.setLosMap(losMap);
 	chkSmoke.setEnabled(map.has(MapFeature.SMOKE));
 	creaturePos = null;
     }
@@ -198,6 +226,7 @@ public class MapExplorer implements ActionListener, ItemListener {
     public static void main(String[] args) {
 	boolean benchmark = false;
 	String mapFile = "Fane_of_Lolth.map";
+	int numCPUs = Runtime.getRuntime().availableProcessors();
 
 	for (int i = 0; i < args.length; i++) {
 	    if (args[i].equals("-version")) {
@@ -206,6 +235,11 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	    if (args[i].equals("-benchmark")) {
 		benchmark = true;
+	    }
+	    else if (args[i].equals("-j")) {
+		numCPUs = Integer.parseInt(args[++i]);
+		if (numCPUs <= 0)
+		    numCPUs = 1;
 	    }
 	    else {
 		mapFile = args[i];
@@ -293,7 +327,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 
     private void clearLos() {
 	creaturePos = null;
-	map.clearLos();
+	losMap.clear();
 	map.clearMarks();
 	lblResults.setText("");
 	mapPanel.repaint();
