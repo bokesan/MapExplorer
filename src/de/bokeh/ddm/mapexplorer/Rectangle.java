@@ -1,5 +1,5 @@
 /*
- * $Id: Rectangle.java,v 1.3 2005/12/19 11:34:02 breitko Exp $
+ * $Id: Rectangle.java,v 1.4 2005/12/23 16:16:28 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -26,6 +26,11 @@
 
 package de.bokeh.ddm.mapexplorer;
 
+/**
+ * A rectangle.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class Rectangle {
 
     private final int bottom;
