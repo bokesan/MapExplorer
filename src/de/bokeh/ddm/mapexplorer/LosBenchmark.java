@@ -1,5 +1,5 @@
 /*
- * $Id: LosBenchmark.java,v 1.2 2005/12/19 11:35:39 breitko Exp $
+ * $Id: LosBenchmark.java,v 1.3 2005/12/23 16:20:57 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -34,17 +34,17 @@ public class LosBenchmark {
     private final Map map;
     private Logger logger;
     private final int randomTestsPerSquare;
-    private boolean smokeBlocksLOS;
+    private boolean smokeBlocksLos;
     private int totalLos;
     
     public LosBenchmark(Map map, int randomTestsPerSquare) {
 	this.map = map;
 	this.randomTestsPerSquare = randomTestsPerSquare;
-	smokeBlocksLOS = false;
+	smokeBlocksLos = false;
+	logger = Logger.getLogger(this.getClass().getPackage().getName());
     }
     
     public void run() {
-	logger = Logger.getLogger(this.getClass().getName());
 	logger.info("Starting LOS benchmark for map " + map.getName());
 	long startTime = System.currentTimeMillis();
 	
@@ -60,7 +60,7 @@ public class LosBenchmark {
 		if (s.isSolid()) {
 		    logger.info(loc + ": solid rock");
 		} else {
-		    LosTester lt = new LosTester(loc, map.getDimension(), map.getWalls(smokeBlocksLOS), randomTestsPerSquare, logger);
+		    LosTester lt = new LosTester(loc, map.getDimension(), map.getWalls(smokeBlocksLos), randomTestsPerSquare, logger);
 		    numRnd += testLos(loc, lt);
 		    numSquaresTested++;
 		}
@@ -106,15 +106,15 @@ public class LosBenchmark {
     /**
      * @param smokeBlocksLOS The smokeBlocksLOS to set.
      */
-    public void setSmokeBlocksLOS(boolean smokeBlocksLOS) {
-        this.smokeBlocksLOS = smokeBlocksLOS;
+    public void setSmokeBlocksLos(boolean smokeBlocksLOS) {
+        this.smokeBlocksLos = smokeBlocksLOS;
     }
 
     /**
      * @return Returns the smokeBlocksLOS.
      */
-    public boolean isSmokeBlocksLOS() {
-        return smokeBlocksLOS;
+    public boolean isSmokeBlocksLos() {
+        return smokeBlocksLos;
     }
     
 }
