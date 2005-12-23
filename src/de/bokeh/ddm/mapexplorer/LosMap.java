@@ -1,5 +1,5 @@
 /*
- * $Id: LosMap.java,v 1.1 2005/12/19 11:37:08 breitko Exp $
+ * $Id: LosMap.java,v 1.2 2005/12/23 16:17:25 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -83,6 +83,16 @@ public class LosMap {
     }
     
     /**
+     * Get the LOS state of a map square.
+     * 
+     * @param loc a Location
+     * @return the LOS state of the map square at loc
+     */
+    synchronized public boolean get(Location loc) {
+	return los.get(loc.getRow() * width + loc.getColumn());
+    }
+    
+    /**
      * Set the LOS state of a map square.
      * 
      * @param col the column
@@ -101,6 +111,15 @@ public class LosMap {
      */
     synchronized public void set(int col, int row) {
 	los.set(row * width + col);
+    }
+    
+    /**
+     * Set the LOS state of a map square to true.
+     * 
+     * @param loc a Location
+     */
+    synchronized public void set(Location loc) {
+	los.set(loc.getRow() * width + loc.getColumn());
     }
     
 }
