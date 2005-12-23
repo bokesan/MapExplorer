@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.6 2005/12/19 11:36:31 breitko Exp $
+ * $Id: MapPanel.java,v 1.7 2005/12/23 16:31:39 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -28,6 +28,7 @@ package de.bokeh.ddm.mapexplorer;
 
 import java.awt.*;
 import javax.swing.*;
+import java.util.Set;
 
 
 /**
@@ -48,6 +49,8 @@ public class MapPanel extends JPanel {
     private int tileWidth;
     private int tileHeight;
     private int wallWidth;
+    
+    private Set<Creature> creatures;
     
     public MapPanel(Map map) {
 	super();
@@ -93,6 +96,10 @@ public class MapPanel extends JPanel {
 	    for (int col = 0; col < map.getWidth(); col++) {
 		drawTile(g, col, row);
 	    }
+	}
+	if (creatures != null) {
+	    for (Creature c : creatures)
+		drawCreature(g, c);
 	}
 	for (int col = 0; col < map.getWidth(); col++) {
 	    drawCenteredString(g, locPoint(col, -1), Location.columnToString(col));
@@ -198,9 +205,21 @@ public class MapPanel extends JPanel {
 	    g.drawArc(x, y-2*tileHeight/5, tileWidth, tileHeight, 225, 90);
 	    g.fillOval(x+tileWidth/2-1, y+tileHeight/2-1, 3, 3);
 	}
-	if (t.isMarked()) {
-	    g.setColor(colors.getColor(ColorSettings.Special.MARK));
-	    g.fillOval(x+2, y+2, tileWidth-4, tileHeight-4);
+	g.setColor(Color.BLACK);
+    }
+    
+    private void drawCreature(Graphics g, Creature c) {
+	g.setColor(colors.getColor(ColorSettings.Special.MARK));
+	int col = c.getLocation().getColumn();
+	int row = c.getLocation().getRow();
+	int sz = c.getSize().sizeSquares();
+	for (int xoff = 0; xoff < sz; xoff++) {
+	    for (int yoff = 0; yoff < sz; yoff++) {
+		java.awt.Point p = locPoint(col+xoff, row+yoff);
+		int x = p.x;
+		int y = p.y;
+		g.fillOval(x+2, y+2, tileWidth-4, tileHeight-4);
+	    }
 	}
 	g.setColor(Color.BLACK);
     }
@@ -210,7 +229,6 @@ public class MapPanel extends JPanel {
 	this.map = map;
 	setPreferredSize(new java.awt.Dimension(PREFERRED_TILE_WIDTH * (map.getWidth() + 1),
 		PREFERRED_TILE_HEIGHT * (map.getHeight() + 1)));
-	this.repaint();
     }
 
 
@@ -275,6 +293,10 @@ public class MapPanel extends JPanel {
      */
     public void setLosMap(LosMap los) {
         this.losMap = los;
+    }
+    
+    public void setCreatures(Set<Creature> cs) {
+	creatures = cs;
     }
     
 }

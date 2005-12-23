@@ -1,5 +1,5 @@
 /*
- * $Id: LosComputation.java,v 1.3 2005/12/19 11:36:31 breitko Exp $
+ * $Id: LosComputation.java,v 1.4 2005/12/23 16:31:39 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -26,33 +26,24 @@
 
 package de.bokeh.ddm.mapexplorer;
 
-import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 
 public class LosComputation extends Thread {
 
-    private final Location loc;
     private final MapExplorer app;
-    private final int randomTestsPerSquare;
+    private final MapExplorerModel model;
+    private final LosCalculator losCalculator;
     private final Logger logger;
-    private boolean smokeBlocksLos;
-    private CreatureSize creatureSize;
     
-    private Map map;
-    private LosMap losMap;
-    private MapPanel mapPanel;
+    private final MapPanel mapPanel;
     
-    public LosComputation(MapExplorer app, Location loc, int rndTests, Logger logger) {
-	this.loc = loc;
+    public LosComputation(MapExplorer app) {
 	this.app = app;
-	this.randomTestsPerSquare = rndTests;
-	this.logger = logger;
+	model = app.getModel();
+	this.logger = Logger.getLogger(this.getClass().getPackage().getName());
 	mapPanel = app.getMapPanel();
-	map = mapPanel.getMap();
-	losMap = mapPanel.getLosMap();
-	smokeBlocksLos = false;
-	creatureSize = CreatureSize.MEDIUM;
+	losCalculator = model.getLosCalculator();
     }
 
     /* (non-Javadoc)
@@ -60,65 +51,35 @@ public class LosComputation extends Thread {
      */
     @Override
     public void run() {
-	Runnable repaintMap = new Runnable() {
-	    public void run() {
-		mapPanel.repaint();
-	    }
-	};
-	
-	final int sq = creatureSize.sizeSquares();
-	losMap.clear();
-	int numLos = 0;
-	int numRndLos = 0;
-	int testsLosSquares = 0;
-	int squaresTested = 0;
-	
+	model.clearLos();
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		mapPanel.repaint();
-		app.setProgressMax(map.getHeight() * sq * sq);
+		app.setProgressMax(100);
 	    }
 	});
 	
 	long startTime = System.currentTimeMillis();
-	final int height = map.getHeight();
-	final int width = map.getWidth();
-	final Set<Line> walls = map.getWalls(smokeBlocksLos);
-	int progressOffs = 0;
-	for (int y = 0; y < sq; y++) {
-	    for (int x = 0; x < sq; x++) {
-		Location xloc = new Location(loc.getColumn() + x, loc.getRow() + y);
-		LosTester los = new LosTester(xloc, map.getDimension(), walls, randomTestsPerSquare, logger);
-		for (int row = 0; row < height; row++) {
-		    for (int col = 0; col < width; col++) {
-			MapSquare s = map.get(col, row);
-			if (!(s.isSolid() || s.isMarked() || losMap.get(col, row))) {
-			    squaresTested++;
-			    int r = los.testLocation(new Location(col, row));
-			    if (r >= 0) {
-				if (r > 0) {
-				    numRndLos++;
-				    testsLosSquares += r;
-				}
-				numLos++;
-				losMap.set(col, row);
-				SwingUtilities.invokeLater(repaintMap);
-			    }
-			}
-		    }
-		    SwingUtilities.invokeLater(new ProgressSetter(progressOffs + row+1));
-		}
-		progressOffs += height;
+	Thread bgCalc = new Thread() {
+	    public void run() {
+		model.computeLos();
 	    }
+	};
+	bgCalc.start();
+	for (;;) {
+	    try {
+		bgCalc.join(100);
+		if (!bgCalc.isAlive())
+		    break;
+	    }
+	    catch (InterruptedException ex) {
+		logger.warning("join() interrupted");
+	    }
+	    SwingUtilities.invokeLater(new ProgressSetter(losCalculator.getPercentCompleted()));
 	}
 	long elapsedTime = System.currentTimeMillis() - startTime;
-	if (numRndLos != 0)
-	    logger.warning(loc + ": " + numRndLos + " squares found by sampling (avg. " + ((double) testsLosSquares / numRndLos) + " random tests needed)\n");
-	final String resultMsg;
-	if (numRndLos == 0)
-	    resultMsg = loc + ": LOS to " + numLos + " squares (" + elapsedTime + "ms)";
-	else
-	    resultMsg = loc + ": LOS to " + numLos + " squares [" + numRndLos + " rnd] (" + elapsedTime + "ms)";
+	final String resultMsg = "LOS elapsed time: " + elapsedTime + "ms";
+	
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		app.setBusy(false, resultMsg);
@@ -133,18 +94,8 @@ public class LosComputation extends Thread {
 	}
 	public void run() {
 	    app.setProgress(value);
+	    // This can make the program rather slow:
+	    // app.getMapPanel().repaint();
 	}
     }
-
-    public void setCreatureSize(CreatureSize size) {
-	creatureSize = size;
-    }
-    
-    /**
-     * @param smokeBlocksLos The smokeBlocksLos to set.
-     */
-    public void setSmokeBlocksLos(boolean smokeBlocksLos) {
-        this.smokeBlocksLos = smokeBlocksLos;
-    }
-    
 }

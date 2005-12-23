@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.10 2005/12/19 11:36:31 breitko Exp $
+ * $Id: MapExplorer.java,v 1.11 2005/12/23 16:31:39 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -28,11 +28,9 @@ package de.bokeh.ddm.mapexplorer;
 
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 import java.io.*;
-import java.util.logging.*;
-
+import java.util.*;
 
 /**
  * Map Explorer application.
@@ -45,52 +43,40 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
-    private static final String ACTION_CLEAR_LOS = "clearLOS";
+    private static final String ACTION_CLEAR_LOS = "clearLos";
     
-    
-    static Logger logger = Logger.getLogger(MapExplorer.class.getName());
-
     private JFrame appFrame;
     private JToolBar toolBar;
     private MapPanel mapPanel;
     private JToolBar statusPanel;
-    private Map map;
-    private LosMap losMap;
     private JLabel lblStatus;
     private JLabel lblResults;
     private JCheckBox chkSmoke;
     private JComboBox cmbSize;
-    private int randomTestsPerSquare;
-    private boolean testAll;
     private boolean busy;
-    private Location creaturePos;
-    
     private JFileChooser fileChooser;
-    
     private JProgressBar progress;
+    
+    private final MapExplorerModel model;
 
-    public MapExplorer() {
+    public MapExplorer(MapExplorerModel model) {
+	this.model = model;
 	fileChooser = null;
-	randomTestsPerSquare = 100;
-	testAll = false;
 	busy = false;
-	map = new Map(new Dimension(30, 21), "no map loaded");
-	losMap = new LosMap(new Dimension(30, 21));
-	creaturePos = null;
     }
     
     private void setTitle() {
-	appFrame.setTitle("Map Explorer (version " + VERSION + ") - " + map.getName());
+	appFrame.setTitle("Map Explorer (version " + VERSION + ") - " + model.getMap().getName());
     }
     
-    public void setMap(Map m) {
-	map = m;
-	losMap = new LosMap(m.getDimension());
+    public void setMap(Map map) {
+	model.setMap(map);
 	setTitle();
 	mapPanel.setMap(map);
-	mapPanel.setLosMap(losMap);
+	mapPanel.setLosMap(model.getLosMap());
+	mapPanel.setCreatures(model.getCreatures());
+	mapPanel.repaint();
 	chkSmoke.setEnabled(map.has(MapFeature.SMOKE));
-	creaturePos = null;
     }
 
     /**
@@ -102,7 +88,9 @@ public class MapExplorer implements ActionListener, ItemListener {
 	
 	createToolBar();
 	
-	mapPanel = new MapPanel(map);
+	mapPanel = new MapPanel(model.getMap());
+	mapPanel.setLosMap(model.getLosMap());
+	mapPanel.setCreatures(model.getCreatures());
 	
 	createStatusPanel();
 
@@ -185,9 +173,10 @@ public class MapExplorer implements ActionListener, ItemListener {
 		} else {
 		    Location loc = mapPanel.getLocation(e.getX(), e.getY());
 		    if (loc != null) {
-			if (placeCreature(loc))
+			if (placeCreature(loc)) {
 			    computeLos();
-			else
+			    mapPanel.repaint();
+			} else
 			    Toolkit.getDefaultToolkit().beep();
 		    }
 		}
@@ -196,27 +185,27 @@ public class MapExplorer implements ActionListener, ItemListener {
     }
 
     private boolean placeCreature(Location loc) {
-	CreatureSize size = (CreatureSize) cmbSize.getModel().getSelectedItem();
-	if (map.canPlaceCreature(loc, size)) {
-	    creaturePos = loc;
-	    map.clearMarks();
-	    int sq = size.sizeSquares();
-	    for (int x = 0; x < sq; x++) {
-		for (int y = 0; y < sq; y++) {
-		    map.get(loc.getColumn() + x, loc.getRow() + y).setMarked(true);
-		}
-	    }
+	Set<Creature> oldState = model.getCreatures();
+	model.removeAllCreatures();
+	Creature c = new Creature((CreatureSize) cmbSize.getModel().getSelectedItem());
+	c.setLocation(loc);
+	if (model.addCreature(c)) {
+	    mapPanel.setCreatures(model.getCreatures());
+	    mapPanel.repaint();
 	    return true;
 	}
+	for (Creature cr : oldState)
+	    model.addCreature(cr);
 	return false;
     }
     
     private void computeLos() {
-	setBusy(true, "computing LOS...");
-	LosComputation lc = new LosComputation(this, creaturePos, randomTestsPerSquare, logger);
-	lc.setSmokeBlocksLos(chkSmoke.getModel().isSelected());
-	lc.setCreatureSize((CreatureSize) cmbSize.getModel().getSelectedItem());
-	lc.start();
+	if (!model.getCreatures().isEmpty()) {
+	    setBusy(true, "computing LOS...");
+	    model.setSmokeBlocksLos(chkSmoke.getModel().isSelected());
+	    LosComputation c = new LosComputation(this);
+	    c.start();
+	}
     }
     
     public void setStatusText(String s) {
@@ -259,39 +248,12 @@ public class MapExplorer implements ActionListener, ItemListener {
 		ex.printStackTrace();
 	    }
 	} else {
-	    MapExplorer app = new MapExplorer();
-	    app.setRandomTestsPerSquare(100);
+	    MapExplorerModel model = new MapExplorerModel(numCPUs);
+	    MapExplorer app = new MapExplorer(model);
+	    model.setRandomTestsPerSquare(100);
 	    app.start();
 	    app.loadMap(mapFile);
 	}
-    }
-
-    /**
-     * @return Returns the randomTestsPerSquare.
-     */
-    public int getRandomTestsPerSquare() {
-        return randomTestsPerSquare;
-    }
-
-    /**
-     * @param randomTestsPerSquare The randomTestsPerSquare to set.
-     */
-    public void setRandomTestsPerSquare(int randomTestsPerSquare) {
-        this.randomTestsPerSquare = randomTestsPerSquare;
-    }
-
-    /**
-     * @return Returns the testAll.
-     */
-    public boolean isTestAll() {
-        return testAll;
-    }
-
-    /**
-     * @param testAll The testAll to set.
-     */
-    public void setTestAll(boolean testAll) {
-        this.testAll = testAll;
     }
 
     /* (non-Javadoc)
@@ -326,9 +288,8 @@ public class MapExplorer implements ActionListener, ItemListener {
     }
 
     private void clearLos() {
-	creaturePos = null;
-	losMap.clear();
-	map.clearMarks();
+	model.clearLos();
+	model.removeAllCreatures();
 	lblResults.setText("");
 	mapPanel.repaint();
     }
@@ -344,8 +305,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	}
 	Object source = e.getItemSelectable();
 	if (source == chkSmoke) {
-	    if (creaturePos != null)
-		computeLos();
+	    computeLos();
 	}
     }
 
@@ -414,5 +374,12 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     public void setProgress(int n) {
 	progress.setValue(n);
+    }
+
+    /**
+     * @return Returns the model.
+     */
+    public MapExplorerModel getModel() {
+        return model;
     }
 }

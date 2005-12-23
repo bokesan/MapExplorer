@@ -1,5 +1,5 @@
 /*
- * $Id: Map.java,v 1.4 2005/12/19 11:36:31 breitko Exp $
+ * $Id: Map.java,v 1.5 2005/12/23 16:31:39 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -59,14 +59,6 @@ public class Map {
 	for (int i = 0; i < size; i++)
 	    map[i] = new MapSquare();
 	this.name = name;
-    }
-    
-    /**
-     * Remove all marks.
-     */
-    public void clearMarks() {
-	for (MapSquare s : map)
-	    s.setMarked(false);
     }
     
     /**
@@ -415,12 +407,11 @@ public class Map {
     /**
      * Try to place a creature at loc.
      * 
-     * @param loc a Location
-     * @param size a CreatureSize
+     * @param c a Creature
      * @return true, if the creature can be placed at loc.
      */
-    public boolean canPlaceCreature(Location loc, CreatureSize size) {
-	return !isBlocked(loc, size.sizeSquares());
+    public boolean canPlaceCreature(Creature c) {
+	return !isBlocked(c.getLocation(), c.getSize().sizeSquares());
     }
     
     private boolean isBlocked(Location loc, int size) {
