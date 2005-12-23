@@ -1,5 +1,5 @@
 /*
- * $Id: MapSquare.java,v 1.4 2005/12/19 11:36:31 breitko Exp $
+ * $Id: MapSquare.java,v 1.5 2005/12/23 16:19:24 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -52,8 +52,6 @@ public class MapSquare {
     }
     
     private Color color;
-    
-    private boolean marked;
     
     /**
      * Constructs and initializes an empty map square.
@@ -158,20 +156,6 @@ public class MapSquare {
      */
     public void setColor(Color color) {
 	this.color = color;
-    }
-    
-    /**
-     * @return Returns the mark.
-     */
-    public boolean isMarked() {
-        return marked;
-    }
-
-    /**
-     * @param mark The mark to set.
-     */
-    public void setMarked(boolean mark) {
-        this.marked = mark;
     }
 
 }
