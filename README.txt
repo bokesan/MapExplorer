@@ -4,8 +4,7 @@ Map Explorer README
 Map Explorer shows Line-of-Sight (LOS) on DDM maps.
 
 This is free software, use as you wish for any purpose
-whatsoever. Source code will be released at a future date
-(likely 2005-12-24).
+whatsoever. For details, see the file License.txt.
 
 
 INSTALLATION
