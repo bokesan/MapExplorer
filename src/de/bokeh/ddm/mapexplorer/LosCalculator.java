@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.1 2005/12/23 16:31:39 breitko Exp $
+ * $Id: LosCalculator.java,v 1.2 2005/12/24 12:22:37 chris Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -61,7 +61,7 @@ public class LosCalculator {
     
     public void computeLos() {
 	walls = map.getWalls(smokeBlocksLos);
-	List<LosTask> ts = new ArrayList<LosTask>();
+	List<Callable<Object>> ts = new ArrayList<Callable<Object>>();
 	
 	los.clear();
 	for (Creature c : creatures) {
@@ -96,7 +96,7 @@ public class LosCalculator {
 	return 100 * done / totalTasks;
     }
     
-    private void addTasksFor(Location source, List<LosTask> ts) {
+    private void addTasksFor(Location source, List<Callable<Object>> ts) {
 	final int height = map.getHeight();
 	final int width = map.getWidth();
 	for (int row = 0; row < height; row++) {
@@ -108,7 +108,7 @@ public class LosCalculator {
 	}
     }
     
-    private void addTasksFor(Creature c, List<LosTask> ts) {
+    private void addTasksFor(Creature c, List<Callable<Object>> ts) {
 	Location loc = c.getLocation();
 	int col = loc.getColumn();
 	int row = loc.getRow();
@@ -193,7 +193,7 @@ public class LosCalculator {
 }
 
 
-class LosTask implements Callable {
+class LosTask implements Callable<Object> {
     
     private final Location source;
     private final Location target;
@@ -205,7 +205,7 @@ class LosTask implements Callable {
 	this.context = context;
     }
     
-    public Boolean call() {
+    public Object call() {
 	Map map = context.getMap();
 	LosMap losMap = context.getLos();
 	LosTester t = new LosTester(source, map.getDimension(), context.getWalls(), context.getRandomTestsPerSquare(), context.getLogger());
@@ -217,6 +217,6 @@ class LosTask implements Callable {
 	    }
 	}
 	context.bumpTasksDone();
-	return Boolean.FALSE;
+	return null;
     }
 }
