@@ -1,5 +1,5 @@
 /*
- * $Id: ExtensionFileFilter.java,v 1.2 2005/12/19 11:35:18 breitko Exp $
+ * $Id: ExtensionFileFilter.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -31,22 +31,53 @@ import java.util.*;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * A FileFilter to filter by file extension.
+ * <p>
+ * Used by the file open dialog to show only files with a given
+ * extension.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class ExtensionFileFilter extends FileFilter {
 
     private final String description;
     private final Set<String> allowedExtensions;
     private boolean emptyExtensionAllowed;
     
+    /**
+     * Constructs and initialized a new ExtensionFileFilter.
+     * <p>
+     * The new filter will not allow any extensions. Before it can be used
+     * addExtension or setEmptyExtensionAllowed must be called at least once.
+     * 
+     * @param description textual description of this filter
+     */
     public ExtensionFileFilter(String description) {
 	allowedExtensions = new HashSet<String>();
 	emptyExtensionAllowed = false;
 	this.description = description;
     }
     
+    /**
+     * Add a file extension to the list of allowed extensions.
+     * <p>
+     * The parameter should not include the dot. That is, if
+     * you want to allow files the match '*.txt' the ext parameter
+     * must be "txt", not ".txt".
+     * 
+     * @param ext the file extension to add
+     */
     public void addExtension(String ext) {
 	allowedExtensions.add(ext);
     }
     
+    
+    /**
+     * Enable or disable files without extension.
+     * 
+     * @param val if true, files without extension are allowed
+     */
     public void setEmptyExtensionAllowed(boolean val) {
 	emptyExtensionAllowed = val;
     }
@@ -67,6 +98,12 @@ public class ExtensionFileFilter extends FileFilter {
 	return description;
     }
 
+    /**
+     * Return the file extension of a file.
+     * @param f a File
+     * @return The extension of File f, without the leading dot ('.'). If f has
+     * no extension, this method returns null.
+     */
     private static String getExtension(File f) {
         String ext = null;
         String s = f.getName();

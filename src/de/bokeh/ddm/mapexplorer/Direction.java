@@ -1,5 +1,5 @@
 /*
- * $Id: Direction.java,v 1.2 2005/12/19 11:33:46 breitko Exp $
+ * $Id: Direction.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -26,6 +26,11 @@
 
 package de.bokeh.ddm.mapexplorer;
 
+/**
+ * A direction.
+ * 
+ * @author Christoph Breitkopf
+ */
 public enum Direction {
 	NORTH,
 	//NORTH_EAST,

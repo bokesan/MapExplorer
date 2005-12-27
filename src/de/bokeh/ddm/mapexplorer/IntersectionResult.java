@@ -1,5 +1,5 @@
 /*
- * $Id: IntersectionResult.java,v 1.3 2005/12/19 11:35:18 breitko Exp $
+ * $Id: IntersectionResult.java,v 1.4 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -35,18 +35,47 @@ package de.bokeh.ddm.mapexplorer;
  */
 public class IntersectionResult {
     
+    /**
+     * Factory method returning a new IntersectionResult for conincident lines.
+     * @return Returns a new IntersectionResult for which isCoincident() will return true.
+     * @see #isCoincident()
+     */
     public static IntersectionResult coincident() {
 	return new IntersectionResult(COINCIDENT);
     }
     
+    /**
+     * Factory method returning a new IntersectionResult for parallel lines.
+     * @return Returns a new IntersectionResult for which isParallel() will return true.
+     * @see #isParallel()
+     */
     public static IntersectionResult parallel() {
 	return new IntersectionResult(PARALLEL);
     }
     
+    /**
+     * Factory method returning a new IntersectionResult for a normal line intersection.
+     * 
+     * @param p a Point
+     * @return Returns a new IntersectionResult for which isIntersection() will return true
+     * and getIntersection() will return p.
+     * @see #isIntersection()
+     * @see #getIntersection()
+     */
     public static IntersectionResult at(Point p) {
 	return new IntersectionResult(INTERSECTION, p);
     }
     
+    /**
+     * Factory method returning a new IntersectionResult where the intersection 
+     * point lies outside the line segments.
+     * 
+     * @param p a Point
+     * @return Returns a new IntersectionResult for which isOutsideIntersection() will return true
+     * and getIntersection() will return p.
+     * @see #isOutsideIntersection()
+     * @see #getIntersection()
+     */
     public static IntersectionResult outside(Point p) {
 	return new IntersectionResult(OUTSIDE, p);
     }
@@ -70,24 +99,51 @@ public class IntersectionResult {
 	this.intersection = null;
     }
 
+    /**
+     * Determine whether the lines were parallel.
+     * @return true if the lines were parallel.
+     */
     public boolean isParallel() {
 	return type == PARALLEL;
     }
     
+    /**
+     * Determine whether the lines were conincident.
+     * @return true if the lines were coincident.
+     */
     public boolean isCoincident() {
 	return type == COINCIDENT;
     }
     
+    /**
+     * Determine whether the lines intersected normally.
+     * <p>
+     * The intersection point can be retrieved with getIntersection().
+     * 
+     * @return true if the lines intersected normally.
+     * @see #getIntersection()
+     */
     public boolean isIntersection() {
 	return type == INTERSECTION;
     }
     
+    /**
+     * Determine whether the intersection point was outside of the line segments.
+     * <p>
+     * The intersection point can be retrieved with getIntersection().
+     * 
+     * @return true if the lines intersected at a point outside of the line segments. 
+     * @see #getIntersection()
+     */
     public boolean isOutsideIntersection() {
 	return type == OUTSIDE;
     }
     
     /**
      * The intersection point.
+     * <p>
+     * For parallel or coincident lines, this method returns null.
+     * 
      * @return The intersection point.
      */
     public Point getIntersection() {

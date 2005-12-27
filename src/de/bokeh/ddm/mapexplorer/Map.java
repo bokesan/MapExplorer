@@ -1,5 +1,5 @@
 /*
- * $Id: Map.java,v 1.5 2005/12/23 16:31:39 breitko Exp $
+ * $Id: Map.java,v 1.6 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -34,7 +34,7 @@ import java.util.*;
  * A map is organized into rows and columns, starting from the bottom left with
  * column and row 0.
  * 
- * @author breitko
+ * @author Christoph Breitkopf
  */
 public class Map {
     
@@ -63,7 +63,7 @@ public class Map {
     
     /**
      * Get the set of Walls for the LOS computation.
-     * @return
+     * @return A set of Lines.
      */
     public Set<Line> getWalls(boolean smokeBlocksLOS) {
 	Set<Line> walls = new HashSet<Line>();

@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.2 2005/12/24 12:22:37 chris Exp $
+ * $Id: LosCalculator.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -31,6 +31,10 @@ import java.util.logging.*;
 import java.util.concurrent.*;
 
 /**
+ * Line-of-sight calculator.
+ * <p>
+ * Provides a method to calculate line-of-sight for a complete map.
+ * 
  * @author Christoph Breitkopf
  */
 public class LosCalculator {
@@ -48,6 +52,11 @@ public class LosCalculator {
     private Set<Line> walls;
 
     
+    /**
+     * Constructs and initializes a new LosCalculator.
+     * 
+     * @param numThreads number of threads to use for LOS calculation
+     */
     public LosCalculator(int numThreads) {
 	tpe = Executors.newFixedThreadPool(numThreads);
 	randomTestsPerSquare = 100;
@@ -59,6 +68,9 @@ public class LosCalculator {
 	    logger.info("using " + numThreads + " threads to compute LoS");
     }
     
+    /**
+     * Compute line-of-sight for the complete map.
+     */
     public void computeLos() {
 	walls = map.getWalls(smokeBlocksLos);
 	List<Callable<Object>> ts = new ArrayList<Callable<Object>>();

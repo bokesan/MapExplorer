@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.3 2005/12/19 11:34:53 breitko Exp $
+ * $Id: LosTester.java,v 1.4 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -30,6 +30,11 @@ import java.util.*;
 import java.util.logging.*;
 
 
+/**
+ * Compute line-of-sight between map squares.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class LosTester {
 
     private final Logger logger;

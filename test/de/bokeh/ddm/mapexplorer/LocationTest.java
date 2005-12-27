@@ -8,9 +8,6 @@ public class LocationTest extends TestCase {
 	super(name);
     }
 
-    /*
-     * Test method for 'de.bokeh.ddm.mapexplorer.Location.Location(String)'
-     */
     public void testLocationString() {
 	final String[] sx = { "A1", "A2", "B1", "A10", "A21", "C21", "Z34" };
 	final int[] cx    = {    0,    1,    0,     9,    20,    20,    33  };
@@ -24,7 +21,9 @@ public class LocationTest extends TestCase {
 	    assertEquals(cx[i], loc.getColumn());
 	    assertEquals(rx[i], loc.getRow());
 	}
-	
+    }
+    
+    public void testLocationInvalid() {
 	try {
 	    new Location((String)null);
 	    fail("should have thrown NullPointerException()");

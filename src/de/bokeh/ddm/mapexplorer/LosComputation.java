@@ -1,5 +1,5 @@
 /*
- * $Id: LosComputation.java,v 1.4 2005/12/23 16:31:39 breitko Exp $
+ * $Id: LosComputation.java,v 1.5 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -29,8 +29,18 @@ package de.bokeh.ddm.mapexplorer;
 import java.util.logging.*;
 import javax.swing.*;
 
+/**
+ * Run LOS computation in the background.
+ * <p>
+ * An instance of this class is used by the Map Explorer GUI to
+ * run the LOS computation.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class LosComputation extends Thread {
 
+    private static final int PROGRESS_REPORT_INTERVAL = 100; // in milliseconds
+    
     private final MapExplorer app;
     private final MapExplorerModel model;
     private final LosCalculator losCalculator;
@@ -38,6 +48,10 @@ public class LosComputation extends Thread {
     
     private final MapPanel mapPanel;
     
+    /**
+     * Constructs and initializes a new LosComputation object.
+     * @param app the application context
+     */
     public LosComputation(MapExplorer app) {
 	this.app = app;
 	model = app.getModel();
@@ -68,7 +82,7 @@ public class LosComputation extends Thread {
 	bgCalc.start();
 	for (;;) {
 	    try {
-		bgCalc.join(100);
+		bgCalc.join(PROGRESS_REPORT_INTERVAL);
 		if (!bgCalc.isAlive())
 		    break;
 	    }
@@ -87,6 +101,10 @@ public class LosComputation extends Thread {
 	});
     }
 
+    /**
+     * A Runnable to call the setProgress method of the application context
+     * with a specific value.
+     */
     class ProgressSetter implements Runnable {
 	private final int value;
 	public ProgressSetter(int n) {

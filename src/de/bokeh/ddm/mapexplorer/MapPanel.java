@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.7 2005/12/23 16:31:39 breitko Exp $
+ * $Id: MapPanel.java,v 1.8 2005/12/27 17:03:27 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -32,7 +32,10 @@ import java.util.Set;
 
 
 /**
- * @author breitko
+ * GUI component to display a Map with LOS and Creatures.
+ * 
+ * @see Map
+ * @author Christoph Breitkopf
  */
 public class MapPanel extends JPanel {
     
@@ -52,6 +55,10 @@ public class MapPanel extends JPanel {
     
     private Set<Creature> creatures;
     
+    /**
+     * Constructs and initializes a new MapPanel for a given map.
+     * @param map a Map
+     */
     public MapPanel(Map map) {
 	super();
 	colors = new ColorSettings();
@@ -72,6 +79,12 @@ public class MapPanel extends JPanel {
 	return new java.awt.Point(x, y);
     }
 
+    /**
+     * Return map square Location of a pixel.
+     * @param x the x coordinate of the pixel
+     * @param y the y coordinate of the pixel.
+     * @return The map location containing the pixel at x,y.
+     */
     public Location getLocation(int x, int y) {
 	computeSizes();
 	int col = x / tileWidth - 1;
@@ -83,7 +96,7 @@ public class MapPanel extends JPanel {
 	return new Location(col, row);
     }
 
-    
+    @Override
     public void paintComponent(Graphics g) {
 	computeSizes();
 	super.paintComponent(g);
@@ -282,14 +295,14 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * @return Returns the los.
+     * @return Returns the LosMap.
      */
     public LosMap getLosMap() {
         return losMap;
     }
 
     /**
-     * @param los The los to set.
+     * @param los The LosMap to set
      */
     public void setLosMap(LosMap los) {
         this.losMap = los;
