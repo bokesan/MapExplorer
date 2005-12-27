@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>Map Explorer TO-DO</title>
+ <!-- $Id: todo.html,v 1.1 2005/12/27 13:48:55 breitko Exp $ -->
+ <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+ <meta name="author" content="Christoph Breitkopf" />
+ <meta name="copyright" content="&copy; 2005 Christoph Breitkopf" />
+ <meta name="description" content="Line-of-Sight Calculator Software for the DDM Skirmish game" />
+ <meta name="keywords" content="DDM, D&amp;D Miniatures, Line-of-Sight" />
+ <!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+ <!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+</head>
+<body>
+<a href="index.html">Home</a>
+
+<h1>Map Explorer TO-DO list</h1>
+
+<hr />
+<h2>Better Line-of-Sight algorithm</h2>
+
+<p>Line-of-sight is defined in the DDM rules as follows:</p>
+<blockquote>
+Two creatures can see each other if they can trace at least one
+unblocked straight line between any part of one creature's space
+to any part of the other creature's space. This line is unblocked
+if it does not intersect or even touch squares that block line of sight.
+</blockquote>
+<p>While <em>point-to-point</em> line of sight is easy to solve, <em>area-to-area</em>
+line of sight, as used in DDM, is harder. I'm only aware of probabilistic
+solutions. These work by randomly or systematically testing lines between the spaces
+(using a point-to-point algorithm) until either an unblocked line is found or a
+maximum number of tests has been done, in which case there is a certain
+(high) probability that no line of sight exists. This is implemented in Map Explorer.</p>
+
+<p>This works and does not seem to miss any lines on the official maps,
+I still find it somewhat unsatisfactory. While general area-to-area line of sight seems
+to be hard, the two-dimensional square grid of finite (and usually small) size
+used in DDM might allow a better solution.</p>
+
+<hr />
+<h2>Improved GUI</h2>
+
+<ul>
+  <li>Better map rendering. Should use transparency for some map features
+      and generally look better.</li>
+  <li>Colors should be user-definable.</li>
+</ul>
+
+<hr />
+<h2>Features</h2>
+
+<ul>
+  <li>Show ranged cover in addition to LOS.</li>
+</ul>
+
+
+<hr />
+<h2>Big Features</h2>
+
+<p>Currently, Map Explorer should really be called LOS Explorer, since that's all it
+does. Here is a list of bigger features that might be useful:</p>
+
+<ul>
+ <li><em>Movement ranges.</em> Depending on creature size and movement type. To be really useful,
+ need to be ably to place friendly and opposing creatues on the map, as they affect movement.
+ Should show normal and double movement with different colors or icons.</li>
+ <li><em>Line targeting.</em> Yes, the dreaded line.</li>
+
+</ul>
+
+
+
+
+<hr />
+<div id="footer">
+Copyright &copy; 2005 Christoph Breitkopf (chris@chr-breitkopf.de)
+<br />
+<i>Last change: $Date: 2005/12/27 13:48:55 $</i>
+</div>
+
+</body>
+</html>
