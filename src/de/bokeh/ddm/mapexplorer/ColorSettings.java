@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.6 2005/12/19 11:33:46 breitko Exp $
+ * $Id: ColorSettings.java,v 1.7 2005/12/27 17:02:07 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -29,10 +29,25 @@ package de.bokeh.ddm.mapexplorer;
 import java.awt.Color;
 import java.util.EnumMap;
 
+/**
+ * Color settings for Map rendering.
+ * 
+ * @see MapPanel
+ * @author Christoph Breitkopf
+ */
 public class ColorSettings {
 
     /** Special features. */
-    public enum Special { GRID, WALL, LOS, MARK };
+    public enum Special {
+	/** Grid lines. */
+	GRID,
+	/** Walls and solid rock. */
+	WALL,
+	/** Line-of-Sight markers. */
+	LOS,
+	/** Creature markers. */
+	MARK
+    };
     
     private EnumMap<MapFeature, Color> featureColor;
     private EnumMap<Special, Color> specialColor;
@@ -87,7 +102,7 @@ public class ColorSettings {
     
     /**
      * Set the Color for Special feature s.
-     * @param f a Special feature
+     * @param s a Special feature
      * @param c a Color
      */
     public void setColor(Special s, Color c) {
@@ -104,10 +119,10 @@ public class ColorSettings {
 	featureColor.put(MapFeature.SPIKE_STONES, Color.ORANGE);
 	featureColor.put(MapFeature.RISKY, Color.ORANGE);
 	featureColor.put(MapFeature.BLOOD_ROCK, Color.RED);
-	featureColor.put(MapFeature.HAUNTED, new Color(255, 0, 255));
+	featureColor.put(MapFeature.HAUNTED, new Color(255, 0, 255, 208));
 	featureColor.put(MapFeature.PIT, Color.GRAY);
 	featureColor.put(MapFeature.LAVA, new Color(255, 128, 0));
-	featureColor.put(MapFeature.SMOKE, new Color(64,64,80));
+	featureColor.put(MapFeature.SMOKE, new Color(48, 48, 64, 208));
 	
 	featureColor.put(MapFeature.START_A, Color.LIGHT_GRAY);
 	featureColor.put(MapFeature.START_B, Color.LIGHT_GRAY);
