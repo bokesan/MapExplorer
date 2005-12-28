@@ -1,5 +1,5 @@
 /*
- * $Id: ExtensionFileFilter.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
+ * $Id: ExtensionFileFilter.java,v 1.4 2005/12/28 09:58:54 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -109,7 +109,7 @@ public class ExtensionFileFilter extends FileFilter {
         String s = f.getName();
         int i = s.lastIndexOf('.');
 
-        if (i > 0 &&  i < s.length() - 1) {
+        if (i >= 0 && i < s.length() - 1) {
             ext = s.substring(i+1).toLowerCase();
         }
         return ext;
