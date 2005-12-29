@@ -1,5 +1,5 @@
 /*
- * $Id: IntersectionResult.java,v 1.4 2005/12/27 17:03:27 breitko Exp $
+ * $Id: IntersectionResult.java,v 1.5 2005/12/29 16:01:55 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -30,6 +30,10 @@ package de.bokeh.ddm.mapexplorer;
 
 /**
  * Result of a line intersection test.
+ * <p>
+ * This class has no public constructor. Instead the factory methods
+ * at(), outside(), coincident(), and parallel() are used to create
+ * instances.
  * 
  * @author Christoph Breitkopf
  */
@@ -41,7 +45,7 @@ public class IntersectionResult {
      * @see #isCoincident()
      */
     public static IntersectionResult coincident() {
-	return new IntersectionResult(COINCIDENT);
+	return S_COINCIDENT;
     }
     
     /**
@@ -50,7 +54,7 @@ public class IntersectionResult {
      * @see #isParallel()
      */
     public static IntersectionResult parallel() {
-	return new IntersectionResult(PARALLEL);
+	return S_PARALLEL;
     }
     
     /**
@@ -84,6 +88,9 @@ public class IntersectionResult {
     private static final int COINCIDENT = 1;
     private static final int PARALLEL = 2;
     private static final int OUTSIDE = 3;
+
+    private static final IntersectionResult S_COINCIDENT = new IntersectionResult(COINCIDENT);
+    private static final IntersectionResult S_PARALLEL = new IntersectionResult(PARALLEL);
     
     private final int type;
     private final Point intersection;
