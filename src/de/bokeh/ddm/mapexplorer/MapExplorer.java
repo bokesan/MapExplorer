@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.12 2005/12/24 12:23:18 chris Exp $
+ * $Id: MapExplorer.java,v 1.13 2005/12/29 16:08:26 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -39,7 +39,7 @@ import java.util.*;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20051224";
+    public static final String VERSION = "20051229";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
@@ -216,6 +216,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	boolean benchmark = false;
 	String mapFile = "Fane_of_Lolth.map";
 	int numCPUs = Runtime.getRuntime().availableProcessors();
+	int rndTests = 100;
 
 	for (int i = 0; i < args.length; i++) {
 	    if (args[i].equals("-version")) {
@@ -230,6 +231,9 @@ public class MapExplorer implements ActionListener, ItemListener {
 		if (numCPUs <= 0)
 		    numCPUs = 1;
 	    }
+	    else if (args[i].equals("-rnd")) {
+		rndTests = Integer.parseInt(args[++i]);
+	    }
 	    else {
 		mapFile = args[i];
 	    }
@@ -238,7 +242,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	if (benchmark) {
 	    try {
 		Map map = new MapReader().read(mapFile);
-		LosBenchmark b = new LosBenchmark(map, 100);
+		LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
 		b.run();
 	    }
 	    catch (SyntaxError err) {
@@ -250,7 +254,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	} else {
 	    MapExplorerModel model = new MapExplorerModel(numCPUs);
 	    MapExplorer app = new MapExplorer(model);
-	    model.setRandomTestsPerSquare(100);
+	    model.getLosCalculator().setRandomTestsPerSquare(rndTests);
 	    app.start();
 	    app.loadMap(mapFile);
 	}
