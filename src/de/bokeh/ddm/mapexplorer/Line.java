@@ -1,5 +1,5 @@
 /*
- * $Id: Line.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
+ * $Id: Line.java,v 1.4 2005/12/29 16:03:13 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -50,7 +50,7 @@ public class Line {
     }
 
     /**
-     * Compute line intersection
+     * Compute line intersection.
      * @param ln a line
      * @return A new IntersectionResult for this line and line ln.
      */
@@ -114,6 +114,91 @@ public class Line {
 	}
     }
     
+
+    /**
+     * Compute line intersection.
+     * <p>
+     * This could be defined as:
+     * <pre>
+     *    IntersectionResult r = intersects(ln);
+     *    return r.isIntersection() || r.isCoincident();
+     * </pre>
+     * <p>
+     * However, it is completely inlined to avoid creating a new objects
+     * for the intersection points.
+     * 
+     * @param ln a line
+     * @return true if ln intersects or coincides with this line.
+     */
+    public boolean intersectsOrCoincides(Line ln) {
+	return intersectsOrCoincides(ln.start.getX(), ln.start.getY(), ln.end.getX(), ln.end.getY());
+    }
+    
+    /**
+     * Compute line intersection.
+     * <p>
+     * This could be defined as:
+     * <pre>
+     *    IntersectionResult r = intersects(ln);
+     *    return r.isIntersection() || r.isCoincident();
+     * </pre>
+     * <p>
+     * However, it is completely inlined to avoid creating a new objects
+     * for the intersection points.
+     * 
+     * @param x3 x coordinate of start point
+     * @param y3 y coordinate fo start point
+     * @param x4 x coordinate of end point
+     * @param y4 y coordinate fo end point
+     * @return true if ln intersects or coincides with this line.
+     */
+    public boolean intersectsOrCoincides(double x3, double y3, double x4, double y4) {
+	final double x1 = start.getX();
+	final double y1 = start.getY();
+	final double x2 = end.getX();
+	final double y2 = end.getY();
+	
+	final double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+	final double d1 = y1 - y3;
+	final double d2 = x1 - x3;
+	final double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
+	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
+	
+	if (denom == 0 && num_Ua == 0 && num_Ub == 0) {
+	    return true;
+	} else if (denom == 0) {
+	    return false;
+	} else {
+	    /*
+	     * Substituting either of these into the corresponding equation for the line gives the intersection point. For example the intersection point (x,y) is
+	    x = x1 + ua (x2 - x1)
+
+	    y = y1 + ua (y2 - y1)
+
+	    Notes:
+
+	        * The denominators for the equations for ua and ub are the same.
+
+	        * If the denominator for the equations for ua and ub is 0 then the
+	        * two lines are parallel.
+
+	        * If the denominator and numerator for the equations for ua and ub are 0
+	        * then the two lines are coincident.
+
+	        * The equations apply to lines, if the intersection of line segments is
+	        * required then it is only necessary to test if ua and ub lie
+	        * between 0 and 1. Whichever one lies within that range then the
+	        * corresponding line segment contains the intersection point.
+	        * If both lie within the range of 0 to 1 then the intersection
+	        * point is within both line segments. 
+	     */
+	    double ua = num_Ua / denom;
+	    double ub = num_Ub / denom;
+	    if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
+		return true;
+	    return false;
+	}
+    }
     
     /**
      * Extend line by another.
