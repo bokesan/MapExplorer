@@ -1,5 +1,5 @@
 /*
- * $Id: LosBenchmark.java,v 1.3 2005/12/23 16:20:57 breitko Exp $
+ * $Id: LosBenchmark.java,v 1.4 2005/12/29 16:03:51 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -26,27 +26,45 @@
 
 package de.bokeh.ddm.mapexplorer;
 
+import java.util.*;
 import java.util.logging.*;
 
 
+/**
+ * Run a benchmark by computing LOS for all map squares that are not
+ * solid rock.
+ * 
+ * @author Christoph Breitkopf
+ */
 public class LosBenchmark {
 
     private final Map map;
+    private final LosMap losMap;
+    private final LosCalculator losCalculator;
     private Logger logger;
-    private final int randomTestsPerSquare;
-    private boolean smokeBlocksLos;
     private int totalLos;
     
-    public LosBenchmark(Map map, int randomTestsPerSquare) {
+    public LosBenchmark(Map map, int numThreads, int randomTestsPerSquare) {
 	this.map = map;
-	this.randomTestsPerSquare = randomTestsPerSquare;
-	smokeBlocksLos = false;
+	this.losMap = new LosMap(map.getDimension());
+	losCalculator = new LosCalculator(numThreads);
+	losCalculator.setRandomTestsPerSquare(randomTestsPerSquare);
+	losCalculator.setSmokeBlocksLos(false);
+	losCalculator.setMap(map, losMap);
 	logger = Logger.getLogger(this.getClass().getPackage().getName());
     }
     
+    /**
+     * Run benchmark. 
+     */
     public void run() {
 	logger.info("Starting LOS benchmark for map " + map.getName());
 	long startTime = System.currentTimeMillis();
+
+	Creature creature = new Creature(CreatureSize.MEDIUM);
+	Set<Creature> creatures = new HashSet<Creature>();
+	creatures.add(creature);
+	losCalculator.setCreatures(creatures);
 	
 	final int height = map.getHeight();
 	final int width = map.getWidth();
@@ -60,9 +78,21 @@ public class LosBenchmark {
 		if (s.isSolid()) {
 		    logger.info(loc + ": solid rock");
 		} else {
-		    LosTester lt = new LosTester(loc, map.getDimension(), map.getWalls(smokeBlocksLos), randomTestsPerSquare, logger);
-		    numRnd += testLos(loc, lt);
+		    creature.setLocation(loc);
+		    long start = System.currentTimeMillis();
+		    losCalculator.computeLos();
+		    long elapsed = System.currentTimeMillis() - start;
+		    int numLos = losCalculator.getNumLos();
+		    int numRndLos = losCalculator.getNumRndLos();
+		    String msg = loc + ": " + numLos + " LOS squares, " + elapsed + " ms.";
+		    if (numRndLos > 0)
+			msg += " [" + numRndLos + " rnd]";
+		    logger.info(msg);
+		    // LosTester lt = new LosTester(loc, map.getDimension(), map.getWalls(smokeBlocksLos), randomTestsPerSquare, logger);
+		    // numRnd += testLos(loc, lt);
 		    numSquaresTested++;
+		    totalLos += numLos;
+		    numRnd += numRndLos;
 		}
 	    }
 	}
@@ -75,46 +105,21 @@ public class LosBenchmark {
 	    logger.info("Avg. " + (elapsedTime / numSquaresTested) + " ms. per tested square.");
 	}
 	logger.info(numRnd + " found by random testing.");
+	losCalculator.shutdown();
     }
     
-    private int testLos(Location loc, LosTester t) {
-	final int height = map.getHeight();
-	final int width = map.getWidth();
-	int numLos = 0;
-	int numRndLos = 0;
-	long start = System.currentTimeMillis();
-	for (int row = 0; row < height; row++) {
-	    for (int col = 0; col < width; col++) {
-		int r = t.testLocation(new Location(col, row));
-		if (r >= 0) {
-		    if (r > 0) {
-			numRndLos++;
-		    }
-		    numLos++;
-		}
-	    }
-	}
-	long elapsed = System.currentTimeMillis() - start;
-	totalLos += numLos;
-	String msg = loc + ": " + numLos + " LOS squares, " + elapsed + " ms.";
-	if (numRndLos > 0)
-	    msg += " [" + numRndLos + " rnd]";
-	logger.info(msg);
-	return numRndLos;
-    }
-
     /**
      * @param smokeBlocksLOS The smokeBlocksLOS to set.
      */
     public void setSmokeBlocksLos(boolean smokeBlocksLOS) {
-        this.smokeBlocksLos = smokeBlocksLOS;
+	losCalculator.setSmokeBlocksLos(smokeBlocksLOS);
     }
 
     /**
      * @return Returns the smokeBlocksLOS.
      */
     public boolean isSmokeBlocksLos() {
-        return smokeBlocksLos;
+        return losCalculator.isSmokeBlocksLos();
     }
     
 }
