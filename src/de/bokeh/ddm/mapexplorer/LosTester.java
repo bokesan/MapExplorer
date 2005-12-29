@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.4 2005/12/27 17:03:27 breitko Exp $
+ * $Id: LosTester.java,v 1.5 2005/12/29 16:07:21 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -162,7 +162,7 @@ public class LosTester {
      * @return Something
      */
     private int testEdges(Location loc, int slope) {
-	walls = allWalls;
+	getRelevantWalls(new Rectangle(location, loc));
 	
 	final double[] off = {
 		0, 1,
@@ -202,9 +202,9 @@ public class LosTester {
 	    for (int i = 1; i <= rndTests; i++) {
 		final double e1off = rng.nextDouble();
 		final double e2off = rng.nextDouble();
-		Point p1 = new Point(x1 + e1off, y1 + e1off);
-		Point p2 = new Point(x2 + e2off, y2 + e2off);
-		if (los(p1, p2)) {
+		if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
+		    Point p1 = new Point(x1 + e1off, y1 + e1off);
+		    Point p2 = new Point(x2 + e2off, y2 + e2off);
 		    logger.warning("Found random " + p1 + " - " + p2);
 		    return i;
 		}
@@ -224,9 +224,9 @@ public class LosTester {
 	    for (int i = 1; i <= rndTests; i++) {
 		double e1off = rng.nextDouble();
 		double e2off = rng.nextDouble();
-		Point p1 = new Point(x1 + e1off, y1 - e1off);
-		Point p2 = new Point(x2 + e2off, y2 - e2off);
-		if (los(p1, p2)) {
+		if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
+		    Point p1 = new Point(x1 + e1off, y1 - e1off);
+		    Point p2 = new Point(x2 + e2off, y2 - e2off);
 		    logger.warning("Found random " + p1 + " - " + p2);
 		    return i;
 		}
@@ -238,16 +238,9 @@ public class LosTester {
     
     
     private boolean los(double x1, double y1, double x2, double y2) {
-	return los(new Point(x1, y1), new Point(x2, y2));
-    }
-    
-    private boolean los(Point p1, Point p2) {
-	Line ln = new Line(p1, p2);
 	for (Line wall : walls) {
-	    IntersectionResult r = wall.intersects(ln);
-	    if (r.isIntersection() || r.isCoincident()) {
+	    if (wall.intersectsOrCoincides(x1, y1, x2, y2))
 		return false;
-	    }
 	}
 	return true;
     }
@@ -269,15 +262,19 @@ public class LosTester {
 	double y1 = bounds.getBottom();
 	double y2 = bounds.getTop() + 1;
 	for (Line w : allWalls) {
-	    if (w.getStart().getX() <= x1 && w.getEnd().getX() <= x1)
-		continue;
-	    if (w.getStart().getX() >= x2 && w.getEnd().getX() >= x2)
-		continue;
-	    if (w.getStart().getY() <= y1 && w.getEnd().getY() <= y1)
-		continue;
-	    if (w.getStart().getY() >= y2 && w.getEnd().getY() >= y2)
-		continue;
-	    walls.add(w);
+	    if (w.isHorizontal()) {
+		double wy = w.getStart().getY();
+		if (wy > y1 && wy < y2
+			&& w.getStart().getX() < x2
+			&& w.getEnd().getX() > x1)
+		    walls.add(w);
+	    } else {
+		double wx = w.getStart().getX();
+		if (wx > x1 && wx < x2
+			&& w.getStart().getY() < y2
+			&& w.getEnd().getY() > y1)
+		    walls.add(w);
+	    }
 	}
     }
 }
