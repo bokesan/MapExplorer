@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.3 2005/12/27 17:03:27 breitko Exp $
+ * $Id: LosCalculator.java,v 1.4 2005/12/29 16:05:52 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -43,6 +43,8 @@ public class LosCalculator {
 
     private Map map;
     private LosMap los;
+    private int numRndLos;
+    
     private Set<Creature> creatures;
     private boolean smokeBlocksLos;
     private int totalTasks;
@@ -61,11 +63,18 @@ public class LosCalculator {
 	tpe = Executors.newFixedThreadPool(numThreads);
 	randomTestsPerSquare = 100;
 	logger = Logger.getLogger(this.getClass().getPackage().getName());
-	logger.setLevel(Level.WARNING);
+	// logger.setLevel(Level.WARNING);
 	if (numThreads == 1)
 	    logger.info("using 1 thread to compute LoS");
 	else
 	    logger.info("using " + numThreads + " threads to compute LoS");
+    }
+    
+    /**
+     * Shut down worker threads.
+     */
+    public void shutdown() {
+	tpe.shutdown();
     }
     
     /**
@@ -76,6 +85,9 @@ public class LosCalculator {
 	List<Callable<Object>> ts = new ArrayList<Callable<Object>>();
 	
 	los.clear();
+	synchronized (this) {
+	    numRndLos = 0;
+	}
 	for (Creature c : creatures) {
 	    addTasksFor(c, ts);
 	}
@@ -202,6 +214,24 @@ public class LosCalculator {
     public void setRandomTestsPerSquare(int randomTestsPerSquare) {
         this.randomTestsPerSquare = randomTestsPerSquare;
     }
+
+    /**
+     * @return Returns the numLos.
+     */
+    public int getNumLos() {
+	return los.getLosCount();
+    }
+
+    /**
+     * @return Returns the numRndLos.
+     */
+    synchronized public int getNumRndLos() {
+	return numRndLos;
+    }
+
+    public synchronized void bumpNumRndLos() {
+	numRndLos++;
+    }
 }
 
 
@@ -222,10 +252,12 @@ class LosTask implements Callable<Object> {
 	LosMap losMap = context.getLos();
 	LosTester t = new LosTester(source, map.getDimension(), context.getWalls(), context.getRandomTestsPerSquare(), context.getLogger());
 	MapSquare s = map.get(target);
-	if (!(s.isSolid() || losMap.get(target))) {
+	if (!s.isSolid()) {
 	    int r = t.testLocation(target);
 	    if (r >= 0) {
 		losMap.set(target);
+		if (r > 0)
+		    context.bumpNumRndLos();
 	    }
 	}
 	context.bumpTasksDone();
