@@ -1,5 +1,5 @@
 /*
- * $Id: LosMap.java,v 1.2 2005/12/23 16:17:25 breitko Exp $
+ * $Id: LosMap.java,v 1.3 2005/12/29 16:06:26 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -65,7 +65,7 @@ public class LosMap {
     /**
      * Clear all LOS information.
      * <p>
-     * All squares a reset to false.
+     * All squares are reset to false.
      */
     synchronized public void clear() {
 	los.clear();
@@ -120,6 +120,14 @@ public class LosMap {
      */
     synchronized public void set(Location loc) {
 	los.set(loc.getRow() * width + loc.getColumn());
+    }
+    
+    /**
+     * Return the numer of LOS squares.
+     * @return The number of LOS squares. 
+     */
+    synchronized public int getLosCount() {
+	return los.cardinality();
     }
     
 }
