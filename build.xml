@@ -67,7 +67,7 @@
     </javac>
   </target>
 
-  <target name="test" depends="test-compile" description="Tests ausführen">
+  <target name="test" depends="test-compile" description="Run unit tests">
     <junit printsummary="false"
            errorProperty="test.failed"
            failureProperty="test.failed">
@@ -87,7 +87,7 @@
               todir="${test.reports.dir}" />
     </junitreport>
 
-    <fail message="Tests fehlgeschlagen. Protokolle und Berichte ansehen."
+    <fail message="Tests failed. Check protocols and reports."
           if="test.failed" />
   </target>
 
@@ -120,7 +120,7 @@
     </manifest>
   </target>
 
-  <target name="findbugs" depends="dist">
+  <target name="findbugs" depends="dist" description="Run findbugs">
     <findbugs home="${findbugs.home}"
               output="xml"
               outputFile="${ant.project.name}-fb.xml"
@@ -131,7 +131,7 @@
     </findbugs>
   </target>
 
-  <target name="javadocs" depends="compile" description="Generate Javadoc documentation">
+  <target name="doc" depends="compile" description="Generate Javadoc documentation">
     <javadoc destdir="doc"
              packagenames="de.bokeh.ddm.*"
              sourcepath="src"
