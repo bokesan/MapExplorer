@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorerModel.java,v 1.1 2005/12/23 16:31:39 breitko Exp $
+ * $Id: MapExplorerModel.java,v 1.2 2005/12/29 16:09:07 breitko Exp $
  *
  * This file is part of Map Explorer.
  * 
@@ -40,16 +40,15 @@ public class MapExplorerModel {
     
     private Set<Creature> creatures; // LOS sources
     
-    private int randomTestsPerSquare;
     private boolean smokeBlocksLos;
     
     private final LosCalculator losCalculator;
     
     public MapExplorerModel(int numThreads) {
-	randomTestsPerSquare = 100;
 	smokeBlocksLos = false;
 	creatures = new HashSet<Creature>();
 	losCalculator = new LosCalculator(numThreads);
+	losCalculator.setRandomTestsPerSquare(100);
 	setMap(new Map(new Dimension(30,21), "empty"));
     }
     
@@ -93,20 +92,6 @@ public class MapExplorerModel {
         removeAllCreatures();
     }
     
-    /**
-     * @return Returns the randomTestsPerSquare.
-     */
-    public int getRandomTestsPerSquare() {
-        return randomTestsPerSquare;
-    }
-    
-    /**
-     * @param randomTestsPerSquare The randomTestsPerSquare to set.
-     */
-    public void setRandomTestsPerSquare(int randomTestsPerSquare) {
-        this.randomTestsPerSquare = randomTestsPerSquare;
-    }
-
     public boolean addCreature(Creature c) {
 	for (Creature f : creatures) {
 	    if (c.overlaps(f))
