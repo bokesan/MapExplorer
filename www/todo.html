@@ -3,7 +3,7 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
  <title>Map Explorer TO-DO</title>
- <!-- $Id: todo.html,v 1.1 2005/12/27 13:48:55 breitko Exp $ -->
+ <!-- $Id: todo.html,v 1.2 2005/12/30 10:05:25 breitko Exp $ -->
  <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
  <meta name="author" content="Christoph Breitkopf" />
  <meta name="copyright" content="&copy; 2005 Christoph Breitkopf" />
@@ -38,6 +38,21 @@ maximum number of tests has been done, in which case there is a certain
 I still find it somewhat unsatisfactory. While general area-to-area line of sight seems
 to be hard, the two-dimensional square grid of finite (and usually small) size
 used in DDM might allow a better solution.</p>
+
+<p>The LOS computation is currently done on floating-point. It should be converted to use
+integer arithmetic. There are two reasons for this:</p>
+
+<ul>
+  <li>Accuracy: While FP has potentially high accuracy (53 bits), it is quite hard
+  (at least for me) to prove that no precision-related bugs can occur. Much easier
+  with integer, where I only have to care about overflow.</li>
+
+  <li>Performance: Desktop CPUs usually have very fast FP units, so converting
+     to integer might actually make things slower. However, CPUs for smaller devices
+     like PDAs often have no or very slow FP hardware. Since desktop and notebook systems
+     are fast enough anyway, converting to integer would be good for a PDA version.</li>
+</ul>
+
 
 <hr />
 <h2>Improved GUI</h2>
@@ -77,7 +92,7 @@ does. Here is a list of bigger features that might be useful:</p>
 <div id="footer">
 Copyright &copy; 2005 Christoph Breitkopf (chris@chr-breitkopf.de)
 <br />
-<i>Last change: $Date: 2005/12/27 13:48:55 $</i>
+<i>Last change: $Date: 2005/12/30 10:05:25 $</i>
 </div>
 
 </body>
