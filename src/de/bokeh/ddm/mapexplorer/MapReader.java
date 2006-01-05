@@ -1,5 +1,5 @@
 /*
- * $Id: MapReader.java,v 1.3 2005/12/19 11:34:30 breitko Exp $
+ * $Id: MapReader.java,v 1.4 2006/01/05 12:43:56 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -117,8 +117,7 @@ public class MapReader {
 		    handleFeature(m, f, MapFeature.HAUNTED);
 		}
 		else if (f[0].equals("basecolor")) {
-		    int color = Integer.parseInt(f[1], 16);
-		    m.setColor(new Color(color));
+		    m.setColor(parseColor(f[1]));
 		}
 		else {
 		    throw new SyntaxError(file, lineNumber, line);
@@ -188,5 +187,15 @@ public class MapReader {
 	    for (Location loc : r.getLocations())
 		m.setSolid(loc);
 	}
+    }
+    
+    public static Color parseColor(String s) {
+	long c = Long.parseLong(s, 16);
+	if (s.length() <= 6)
+	    return new Color((int)c);
+	return new Color((int) ((c & 0xff000000) >> 24),
+			 (int) ((c & 0x00ff0000) >> 16),
+			 (int) ((c & 0x0000ff00) >> 8),
+			 (int) c & 0xff);
     }
 }

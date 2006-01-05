@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.13 2005/12/29 16:08:26 breitko Exp $
+ * $Id: MapExplorer.java,v 1.14 2006/01/05 12:43:56 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -39,7 +39,7 @@ import java.util.*;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20051229";
+    public static final String VERSION = "20060105";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
@@ -218,6 +218,14 @@ public class MapExplorer implements ActionListener, ItemListener {
 	int numCPUs = Runtime.getRuntime().availableProcessors();
 	int rndTests = 100;
 
+	Properties properties = loadProperties();
+	String p = properties.getProperty("mapexplorer.rndtests");
+	if (p != null)
+	    rndTests = Integer.parseInt(p);
+	p = properties.getProperty("mapexplorer.threads");
+	if (p != null)
+	    numCPUs = Integer.parseInt(p);
+	
 	for (int i = 0; i < args.length; i++) {
 	    if (args[i].equals("-version")) {
 		System.out.println("Map Explorer version " + VERSION);
@@ -228,8 +236,6 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	    else if (args[i].equals("-j")) {
 		numCPUs = Integer.parseInt(args[++i]);
-		if (numCPUs <= 0)
-		    numCPUs = 1;
 	    }
 	    else if (args[i].equals("-rnd")) {
 		rndTests = Integer.parseInt(args[++i]);
@@ -238,6 +244,11 @@ public class MapExplorer implements ActionListener, ItemListener {
 		mapFile = args[i];
 	    }
 	}
+
+	if (rndTests < 0)
+	    rndTests = 0;
+	if (numCPUs <= 0)
+	    numCPUs = 1;
 	
 	if (benchmark) {
 	    try {
@@ -253,9 +264,10 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	} else {
 	    MapExplorerModel model = new MapExplorerModel(numCPUs);
-	    MapExplorer app = new MapExplorer(model);
 	    model.getLosCalculator().setRandomTestsPerSquare(rndTests);
+	    MapExplorer app = new MapExplorer(model);
 	    app.start();
+	    app.getMapPanel().setColors(new ColorSettings(properties));
 	    app.loadMap(mapFile);
 	}
     }
@@ -385,5 +397,27 @@ public class MapExplorer implements ActionListener, ItemListener {
      */
     public MapExplorerModel getModel() {
         return model;
+    }
+    
+
+    private static Properties loadProperties() {
+	Properties result = new Properties();
+	String[] keys = { "mapexplorer.home", "user.home", "user.dir" };
+	String fs = System.getProperty("file.separator");
+	if (fs == null)
+	    fs = "/";
+	for (String key : keys) {
+	    String dir = System.getProperty(key);
+	    if (dir != null) {
+		File f = new File(dir + fs + "mapexplorer.properties");
+		try {
+		    result.load(new FileInputStream(f));
+		}
+		catch (IOException e) {
+		    // just ignore this.
+		}
+	    }
+	}
+	return result;
     }
 }

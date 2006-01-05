@@ -1,2 +1,8 @@
 #!/bin/sh
-java -jar MapExplorer.jar $1 $2 $3 $4 $5
+
+# get home directory
+me_home=`dirname "$0"`
+# make absolute
+me_home=`cd $me_home && pwd`
+
+java -Dmapexplorer.home="$me_home" -jar MapExplorer.jar $1 $2 $3 $4 $5

@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.8 2005/12/27 17:03:27 breitko Exp $
+ * $Id: MapPanel.java,v 1.9 2006/01/05 12:43:56 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -222,7 +222,7 @@ public class MapPanel extends JPanel {
     }
     
     private void drawCreature(Graphics g, Creature c) {
-	g.setColor(colors.getColor(ColorSettings.Special.MARK));
+	g.setColor(colors.getColor(ColorSettings.Special.CREATURE));
 	int col = c.getLocation().getColumn();
 	int row = c.getLocation().getRow();
 	int sz = c.getSize().sizeSquares();
@@ -310,6 +310,20 @@ public class MapPanel extends JPanel {
     
     public void setCreatures(Set<Creature> cs) {
 	creatures = cs;
+    }
+
+    /**
+     * @return Returns the colors.
+     */
+    public ColorSettings getColors() {
+        return colors;
+    }
+
+    /**
+     * @param colors The colors to set.
+     */
+    public void setColors(ColorSettings colors) {
+        this.colors = colors;
     }
     
 }

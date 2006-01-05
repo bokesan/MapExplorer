@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.7 2005/12/27 17:02:07 breitko Exp $
+ * $Id: ColorSettings.java,v 1.8 2006/01/05 12:43:56 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -27,7 +27,7 @@
 package de.bokeh.ddm.mapexplorer;
 
 import java.awt.Color;
-import java.util.EnumMap;
+import java.util.*;
 
 /**
  * Color settings for Map rendering.
@@ -46,7 +46,7 @@ public class ColorSettings {
 	/** Line-of-Sight markers. */
 	LOS,
 	/** Creature markers. */
-	MARK
+	CREATURE
     };
     
     private EnumMap<MapFeature, Color> featureColor;
@@ -63,6 +63,36 @@ public class ColorSettings {
 	specialColor = new EnumMap<Special, Color>(Special.class);
 	defaultColor = Color.BLACK;
 	setDefault();
+    }
+    
+    /**
+     * Construct a new ColorSettings object and initialize it
+     * from property settings.
+     */
+    public ColorSettings(java.util.Properties p) {
+	featureColor = new EnumMap<MapFeature,Color>(MapFeature.class);
+	specialColor = new EnumMap<Special, Color>(Special.class);
+	defaultColor = Color.BLACK;
+	setDefault();
+	String prefix = "mapexplorer.color.";
+	int prefixLength = prefix.length();
+	for (java.util.Map.Entry<Object,Object> e : p.entrySet()) {
+	    String key = (String) e.getKey();
+	    if (key.startsWith(prefix)) {
+		key = key.substring(prefixLength);
+		Color value = MapReader.parseColor((String) e.getValue());
+		try {
+		    Special s = Special.valueOf(key);
+		    setColor(s, value);
+		}
+		catch (IllegalArgumentException ex) {
+		    MapFeature f = MapFeature.valueOf(key);
+		    setColor(f, value);
+		}
+		
+	    }
+	    
+	}
     }
     
     /**
@@ -132,7 +162,7 @@ public class ColorSettings {
 	specialColor.put(Special.WALL, Color.BLACK);
 	specialColor.put(Special.GRID, Color.GRAY);
 	specialColor.put(Special.LOS, Color.GREEN);
-	specialColor.put(Special.MARK, new Color(255,80,40));
+	specialColor.put(Special.CREATURE, new Color(255,80,40));
     }
 
     /**
