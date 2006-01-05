@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.9 2006/01/05 12:55:51 breitko Exp $
+ * $Id: ColorSettings.java,v 1.10 2006/01/05 13:09:04 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -162,7 +162,7 @@ public class ColorSettings {
 	specialColor.put(Special.WALL, Color.BLACK);
 	specialColor.put(Special.GRID, Color.GRAY);
 	specialColor.put(Special.LOS, Color.GREEN);
-	specialColor.put(Special.CREATURE, new Color(255,80,40));
+	specialColor.put(Special.CREATURE, new Color(255,80,40,208));
     }
 
     /**
