@@ -1,5 +1,5 @@
 /*
- * $Id: LosComputation.java,v 1.6 2006/01/05 12:55:51 breitko Exp $
+ * $Id: LosComputation.java,v 1.7 2006/01/05 13:10:08 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -46,8 +46,6 @@ public class LosComputation extends Thread {
     private final LosCalculator losCalculator;
     private final Logger logger;
     
-    private final MapPanel mapPanel;
-    
     /**
      * Constructs and initializes a new LosComputation object.
      * @param app the application context
@@ -56,7 +54,6 @@ public class LosComputation extends Thread {
 	this.app = app;
 	model = app.getModel();
 	this.logger = Logger.getLogger(this.getClass().getPackage().getName());
-	mapPanel = app.getMapPanel();
 	losCalculator = model.getLosCalculator();
     }
 
@@ -68,7 +65,6 @@ public class LosComputation extends Thread {
 	model.clearLos();
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-		mapPanel.repaint();
 		app.setProgressMax(100);
 	    }
 	});
@@ -105,7 +101,7 @@ public class LosComputation extends Thread {
      * A Runnable to call the setProgress method of the application context
      * with a specific value.
      */
-    class ProgressSetter implements Runnable {
+    private class ProgressSetter implements Runnable {
 	private final int value;
 	public ProgressSetter(int n) {
 	    this.value = n;
