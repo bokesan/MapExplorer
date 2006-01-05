@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.5 2006/01/05 12:55:51 breitko Exp $
+ * $Id: LosCalculator.java,v 1.6 2006/01/05 13:09:37 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -63,11 +63,6 @@ public class LosCalculator {
 	tpe = Executors.newFixedThreadPool(numThreads);
 	randomTestsPerSquare = 100;
 	logger = Logger.getLogger(this.getClass().getPackage().getName());
-	// logger.setLevel(Level.WARNING);
-	if (numThreads == 1)
-	    logger.info("using 1 thread to compute LoS");
-	else
-	    logger.info("using " + numThreads + " threads to compute LoS");
     }
     
     /**
