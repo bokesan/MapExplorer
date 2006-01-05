@@ -1,9 +1,9 @@
 /*
- * $Id: ColorSettings.java,v 1.8 2006/01/05 12:43:56 breitko Exp $
+ * $Id: ColorSettings.java,v 1.9 2006/01/05 12:55:51 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
- * Copyright © 2005 Christoph Breitkopf
+ * Copyright © 2005-2006 Christoph Breitkopf
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
