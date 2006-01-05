@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.15 2006/01/05 12:55:51 breitko Exp $
+ * $Id: MapExplorer.java,v 1.16 2006/01/05 13:33:37 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -214,12 +214,19 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     public static void main(String[] args) {
 	boolean benchmark = false;
+	String fileSep = System.getProperty("file.separator");
+	if (fileSep == null)
+	    fileSep = "/";
 	String mapFile = "Fane_of_Lolth.map";
+	String p = System.getProperty("mapexplorer.home");
+	if (p != null)
+	    mapFile = p + fileSep + mapFile;
+	
 	int numCPUs = Runtime.getRuntime().availableProcessors();
 	int rndTests = 100;
 
 	Properties properties = loadProperties();
-	String p = properties.getProperty("mapexplorer.rndtests");
+	p = properties.getProperty("mapexplorer.rndtests");
 	if (p != null)
 	    rndTests = Integer.parseInt(p);
 	p = properties.getProperty("mapexplorer.threads");
@@ -290,6 +297,9 @@ public class MapExplorer implements ActionListener, ItemListener {
 		    ExtensionFileFilter ff = new ExtensionFileFilter("Map files");
 		    ff.addExtension("map");
 		    fileChooser.addChoosableFileFilter(ff);
+		    String homeDir = System.getProperty("mapexplorer.home");
+		    if (homeDir != null)
+			fileChooser.setCurrentDirectory(new File(homeDir));
 		}
 		int retval = fileChooser.showOpenDialog(appFrame);
 		if (retval == JFileChooser.APPROVE_OPTION) {
