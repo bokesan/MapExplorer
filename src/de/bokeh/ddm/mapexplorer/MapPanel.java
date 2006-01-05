@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.10 2006/01/05 12:55:51 breitko Exp $
+ * $Id: MapPanel.java,v 1.11 2006/01/05 13:10:36 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -226,14 +226,8 @@ public class MapPanel extends JPanel {
 	int col = c.getLocation().getColumn();
 	int row = c.getLocation().getRow();
 	int sz = c.getSize().sizeSquares();
-	for (int xoff = 0; xoff < sz; xoff++) {
-	    for (int yoff = 0; yoff < sz; yoff++) {
-		java.awt.Point p = locPoint(col+xoff, row+yoff);
-		int x = p.x;
-		int y = p.y;
-		g.fillOval(x+2, y+2, tileWidth-4, tileHeight-4);
-	    }
-	}
+	java.awt.Point p = locPoint(col, row+sz-1);
+	g.fillOval(p.x+2, p.y+2, sz*tileWidth-4, sz*tileHeight-4);
 	g.setColor(Color.BLACK);
     }
     
