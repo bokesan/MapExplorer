@@ -34,12 +34,12 @@ wall west C25 north C25-C27
 
 wall west S25-U25 south S25-S27
 difficult N22-O24 A22-C24 G22 S25
-
+wall east O21
 
 # magic circles on side A
 wall west M28-O28 south M28-M30
 magic M28-O30
-wall west G28-I28
+wall west G28-H28
 magic G28-I30
 
 
