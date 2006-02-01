@@ -3,7 +3,7 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
  <title>Map Explorer TO-DO</title>
- <!-- $Id: todo.html,v 1.4 2006/01/05 12:55:51 breitko Exp $ -->
+ <!-- $Id: todo.html,v 1.5 2006/02/01 11:40:43 breitko Exp $ -->
  <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
  <meta name="author" content="Christoph Breitkopf" />
  <meta name="copyright" content="&copy; 2006 Christoph Breitkopf" />
@@ -67,6 +67,8 @@ integer arithmetic. There are two reasons for this:</p>
 
 <ul>
   <li>Show ranged cover in addition to LOS.</li>
+  <li>When starting map can not be found, open a file
+      dialog instead of showing an error message.</li>
 </ul>
 
 
@@ -79,7 +81,10 @@ does. Here is a list of bigger features that might be useful:</p>
 <ul>
  <li><em>Movement ranges.</em> Depending on creature size and movement type. To be really useful,
  need to be ably to place friendly and opposing creatues on the map, as they affect movement.
- Should show normal and double movement with different colors or icons.</li>
+ Might show normal and double movement with different colors or icons.
+ Movement is not symmetric (because of difficult terrain), so there is a difference
+ between moving <em>from</em> a square and moving <em>to</em> a square.
+ </li>
  <li><em>Line targeting.</em> Yes, the dreaded line.</li>
 
 </ul>
@@ -91,7 +96,7 @@ does. Here is a list of bigger features that might be useful:</p>
 <div id="footer">
 Copyright &copy; 2006 Christoph Breitkopf (chris@chr-breitkopf.de)
 <br />
-<i>Last change: $Date: 2006/01/05 12:55:51 $</i>
+<i>Last change: $Date: 2006/02/01 11:40:43 $</i>
 </div>
 
 </body>
