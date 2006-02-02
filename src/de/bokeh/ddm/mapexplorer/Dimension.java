@@ -1,5 +1,5 @@
 /*
- * $Id: Dimension.java,v 1.3 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Dimension.java,v 1.4 2006/02/02 16:20:59 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -62,6 +62,33 @@ public class Dimension {
 	 */
 	public int getWidth() {
 		return width;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+	    if (!(obj instanceof Dimension))
+		return false;
+	    Dimension d = (Dimension) obj;
+	    return d.height == height && d.width == width;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+	    return 17 * height + width;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+	    return "Dimension{width=" + width + ";height=" + height + "}";
 	}
 
 }
