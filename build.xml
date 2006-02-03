@@ -93,8 +93,9 @@
 
   <target name="jar" depends="test, manifest" description="Make jar">
     <jar destfile="dist/${ant.project.name}.jar"
-         manifest="tmp/MANIFEST.MF"
-         basedir="${classes.dir}">
+         manifest="tmp/MANIFEST.MF">
+      <fileset dir="${classes.dir}" />
+      <fileset dir="." includes="icons/*.png" />
     </jar>
   </target>
 
@@ -149,6 +150,35 @@
     <delete dir="dist" />
     <delete dir="doc" />
     <delete dir="tmp" />
+  </target>
+
+
+  <path id="pmd.classpath">
+    <pathelement location="${build}"/>
+    <fileset dir="/home/breitko/bin/pmd-3.4/lib/">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
+
+  <target name="pmd" depends="compile">
+    <pmd shortFilenames="true"
+         encoding="UTF-8"
+	 targetjdk="1.5">
+      <ruleset>unusedcode</ruleset>
+      <ruleset>basic</ruleset>
+      <ruleset>design</ruleset>
+      <!-- <ruleset>controversial</ruleset> -->
+      
+      <formatter type="html" toFile="pmd_report.html" />
+      <fileset dir="src/">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="test/">
+        <include name="**/*.java"/>
+      </fileset>
+    </pmd>
   </target>
 
 </project>
