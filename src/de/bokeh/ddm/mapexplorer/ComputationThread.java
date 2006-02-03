@@ -1,5 +1,5 @@
 /*
- * $Id: LosComputation.java,v 1.7 2006/01/05 13:10:08 breitko Exp $
+ * $Id: ComputationThread.java,v 1.1 2006/02/03 15:43:58 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -30,14 +30,14 @@ import java.util.logging.*;
 import javax.swing.*;
 
 /**
- * Run LOS computation in the background.
+ * Run map computations in the background.
  * <p>
  * An instance of this class is used by the Map Explorer GUI to
- * run the LOS computation.
+ * run the LOS and movement computation.
  * 
  * @author Christoph Breitkopf
  */
-public class LosComputation extends Thread {
+public class ComputationThread extends Thread {
 
     private static final int PROGRESS_REPORT_INTERVAL = 100; // in milliseconds
     
@@ -45,13 +45,17 @@ public class LosComputation extends Thread {
     private final MapExplorerModel model;
     private final LosCalculator losCalculator;
     private final Logger logger;
+    private final boolean computeLos;
+    private final boolean computeMovement;
     
     /**
      * Constructs and initializes a new LosComputation object.
      * @param app the application context
      */
-    public LosComputation(MapExplorer app) {
+    public ComputationThread(MapExplorer app, boolean computeLos, boolean computeMovement) {
 	this.app = app;
+	this.computeLos = computeLos;
+	this.computeMovement = computeMovement;
 	model = app.getModel();
 	this.logger = Logger.getLogger(this.getClass().getPackage().getName());
 	losCalculator = model.getLosCalculator();
@@ -63,6 +67,7 @@ public class LosComputation extends Thread {
     @Override
     public void run() {
 	model.clearLos();
+	model.clearMovement();
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		app.setProgressMax(100);
@@ -70,22 +75,44 @@ public class LosComputation extends Thread {
 	});
 	
 	long startTime = System.currentTimeMillis();
-	Thread bgCalc = new Thread() {
-	    public void run() {
-		model.computeLos();
-	    }
-	};
-	bgCalc.start();
-	for (;;) {
+	Thread bgCalcLos = null;
+	Thread bgCalcMovement = null;
+	
+	if (computeLos) {
+	    bgCalcLos = new Thread() {
+		public void run() {
+		    model.computeLos();
+		}
+	    };
+	    bgCalcLos.start();
+	}
+	if (computeMovement) {
+	    bgCalcMovement = new Thread() {
+		public void run() {
+		    model.computeMovement();
+		}
+	    };
+	    bgCalcMovement.start();
+	}
+	while (computeLos) {
 	    try {
-		bgCalc.join(PROGRESS_REPORT_INTERVAL);
-		if (!bgCalc.isAlive())
+		bgCalcLos.join(PROGRESS_REPORT_INTERVAL);
+		if (!bgCalcLos.isAlive())
 		    break;
 	    }
 	    catch (InterruptedException ex) {
 		logger.warning("join() interrupted");
 	    }
 	    SwingUtilities.invokeLater(new ProgressSetter(losCalculator.getPercentCompleted()));
+	}
+	while (computeMovement) {
+	    try {
+		bgCalcMovement.join();
+		break;
+	    }
+	    catch (InterruptedException ex) {
+		logger.warning("join() interrupted");
+	    }
 	}
 	long elapsedTime = System.currentTimeMillis() - startTime;
 	final String resultMsg = "LOS elapsed time: " + elapsedTime + "ms";

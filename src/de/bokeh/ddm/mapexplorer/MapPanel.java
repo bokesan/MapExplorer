@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.11 2006/01/05 13:10:36 breitko Exp $
+ * $Id: MapPanel.java,v 1.12 2006/02/03 15:43:58 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -46,6 +46,7 @@ public class MapPanel extends JPanel {
     
     private Map map;
     private LosMap losMap;
+    private MovementMap movementMap;
 
     private ColorSettings colors;
     
@@ -219,6 +220,9 @@ public class MapPanel extends JPanel {
 	    g.fillOval(x+tileWidth/2-1, y+tileHeight/2-1, 3, 3);
 	}
 	g.setColor(Color.BLACK);
+	int move = movementMap.getMove(new Location(col,row));
+	if (move != MovementMap.UNREACHABLE)
+	    drawCenteredString(g, p, "" + move);
     }
     
     private void drawCreature(Graphics g, Creature c) {
@@ -300,6 +304,10 @@ public class MapPanel extends JPanel {
      */
     public void setLosMap(LosMap los) {
         this.losMap = los;
+    }
+    
+    public void setMovementMap(MovementMap m) {
+	movementMap = m;
     }
     
     public void setCreatures(Set<Creature> cs) {
