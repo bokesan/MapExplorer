@@ -1,5 +1,5 @@
 /*
- * $Id: MapSquare.java,v 1.6 2006/01/05 12:55:51 breitko Exp $
+ * $Id: MapSquare.java,v 1.7 2006/02/03 15:43:29 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -38,18 +38,7 @@ public class MapSquare {
     
     private EnumSet<MapFeature> features;
     
-    private boolean[] wall; // 0: north, 1: east, 2: south, 3: west
-    
-    private int directionToIndex(Direction dir) {
-	switch (dir) {
-	case NORTH: return 0;
-	case EAST: return 1;
-	case SOUTH: return 2;
-	case WEST: return 3;
-	default:
-	    throw new IllegalArgumentException();
-	}
-    }
+    private EnumSet<Direction> wall;
     
     private Color color;
     
@@ -58,9 +47,7 @@ public class MapSquare {
      */
     public MapSquare() {
 	features = EnumSet.noneOf(MapFeature.class);
-	wall = new boolean[4];
-	for (int i = 0; i < 4; i++)
-	    wall[i] = false;
+	wall = EnumSet.noneOf(Direction.class);
 	color = java.awt.Color.WHITE;
     }
     
@@ -108,7 +95,7 @@ public class MapSquare {
      * @return true if the square has a wall in the Direction dir.
      */
     public boolean getWall(Direction dir) {
-	return wall[directionToIndex(dir)];
+	return wall.contains(dir);
     }
     
     /**
@@ -117,18 +104,18 @@ public class MapSquare {
      * @param value wether to add or to remove the wall
      */
     public void setWall(Direction dir, boolean value) {
-	wall[directionToIndex(dir)] = value;
+	if (value)
+	    wall.add(dir);
+	else
+	    wall.remove(dir);
     }
     
     /**
-     * Does thios square have at least one wall?
+     * Does this square have at least one wall?
      * @return True if this square has at least one wall.
      */
     public boolean hasWall() {
-	for (int i = 0; i < 4; i++)
-	    if (wall[i])
-		return true;
-	return false;
+	return !wall.isEmpty();
     }
     
     /**
@@ -136,10 +123,10 @@ public class MapSquare {
      * @return true if this square is solid rock.
      */
     public boolean isSolid() {
-	for (int i = 0; i < 4; i++)
-	    if (!wall[i])
-		return false;
-	return true;
+	return wall.contains(Direction.NORTH)
+	    && wall.contains(Direction.EAST)
+	    && wall.contains(Direction.SOUTH)
+	    && wall.contains(Direction.WEST);
     }
 
     /**
@@ -158,4 +145,8 @@ public class MapSquare {
 	this.color = color;
     }
 
+    public boolean isDifficult() {
+	return (features.contains(MapFeature.DIFFICULT)
+		|| features.contains(MapFeature.SPIKE_STONES));
+    }
 }
