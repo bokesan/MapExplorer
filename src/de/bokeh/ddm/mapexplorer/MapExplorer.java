@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.16 2006/01/05 13:33:37 breitko Exp $
+ * $Id: MapExplorer.java,v 1.17 2006/02/03 15:42:42 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -31,6 +31,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.net.URL;
+
 
 /**
  * Map Explorer application.
@@ -43,7 +45,7 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
-    private static final String ACTION_CLEAR_LOS = "clearLos";
+    private static final String ACTION_CLEAR = "clear";
     
     private JFrame appFrame;
     private JToolBar toolBar;
@@ -51,7 +53,9 @@ public class MapExplorer implements ActionListener, ItemListener {
     private JToolBar statusPanel;
     private JLabel lblStatus;
     private JLabel lblResults;
+    private JCheckBox chkLOS;
     private JCheckBox chkSmoke;
+    private JCheckBox chkMovement;
     private JComboBox cmbSize;
     private boolean busy;
     private JFileChooser fileChooser;
@@ -75,6 +79,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	mapPanel.setMap(map);
 	mapPanel.setLosMap(model.getLosMap());
 	mapPanel.setCreatures(model.getCreatures());
+	mapPanel.setMovementMap(model.getMovementMap());
 	mapPanel.repaint();
 	chkSmoke.setEnabled(map.has(MapFeature.SMOKE));
     }
@@ -90,6 +95,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	
 	mapPanel = new MapPanel(model.getMap());
 	mapPanel.setLosMap(model.getLosMap());
+	mapPanel.setMovementMap(model.getMovementMap());
 	mapPanel.setCreatures(model.getCreatures());
 	
 	createStatusPanel();
@@ -105,34 +111,47 @@ public class MapExplorer implements ActionListener, ItemListener {
     private void createToolBar() {
 	toolBar = new JToolBar();
 	
-	JButton btn = new JButton("load Map");
+	JButton btn = makeIconButton("Open", "Open map", "load a new map");
 	btn.setActionCommand(ACTION_LOAD_MAP);
 	btn.addActionListener(this);
 	toolBar.add(btn);
 	
-	toolBar.addSeparator();
-	
-	btn = new JButton("clear LOS");
-	btn.setActionCommand(ACTION_CLEAR_LOS);
+	btn = makeIconButton("Clear", "Clear", "remove creature, clear LOS and movement info");
+	btn.setActionCommand(ACTION_CLEAR);
 	btn.addActionListener(this);
 	toolBar.add(btn);
 	
 	toolBar.addSeparator();
-	JLabel lblSize = new JLabel("Size: ");
-	lblSize.setAlignmentY(Component.CENTER_ALIGNMENT);
-	toolBar.add(lblSize);
+	
+	chkLOS = new JCheckBox(loadIcon("LOS.png", "LOS"), true);
+	chkLOS.addItemListener(this);
+	chkLOS.setToolTipText("compute line-of-sight");
+	chkLOS.setSelectedIcon(loadIcon("LOS-enabled.png", "LOS"));
+	chkLOS.setContentAreaFilled(false);
+	toolBar.add(chkLOS);
+	
+	chkSmoke = new JCheckBox(loadIcon("Smoke.png", "Smoke"), true);
+	chkSmoke.setSelectedIcon(loadIcon("Smoke-enabled.png", "Smoke"));
+	chkSmoke.addItemListener(this);
+	chkSmoke.setEnabled(false);
+	chkSmoke.setToolTipText("toggle fog/smoke");
+	chkSmoke.setContentAreaFilled(false);
+	toolBar.add(chkSmoke);
+	
+	chkMovement = new JCheckBox(loadIcon("Movement.png", "Movement"));
+	chkMovement.setSelectedIcon(loadIcon("Movement-enabled.png", "Movement"));
+	chkMovement.addItemListener(this);
+	chkMovement.setToolTipText("compute movement range");
+	chkMovement.setContentAreaFilled(false);
+	toolBar.add(chkMovement);
+
 	cmbSize = new JComboBox(CreatureSize.values());
 	cmbSize.setSelectedItem(CreatureSize.MEDIUM);
 	cmbSize.setEditable(false);
-	cmbSize.setToolTipText("The creature size");
+	cmbSize.setToolTipText("choose creature size");
 	cmbSize.addActionListener(this);
 	// cmbSize.setPreferredSize(new java.awt.Dimension(100, cmbSize.getHeight()));
 	toolBar.add(cmbSize);
-	
-	chkSmoke = new JCheckBox("Smoke blocks LOS");
-	chkSmoke.addItemListener(this);
-	chkSmoke.setEnabled(false);
-	toolBar.add(chkSmoke);
 	
 	toolBar.setFloatable(false);
     }
@@ -174,7 +193,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 		    Location loc = mapPanel.getLocation(e.getX(), e.getY());
 		    if (loc != null) {
 			if (placeCreature(loc)) {
-			    computeLos();
+			    compute();
 			    mapPanel.repaint();
 			} else
 			    Toolkit.getDefaultToolkit().beep();
@@ -199,11 +218,16 @@ public class MapExplorer implements ActionListener, ItemListener {
 	return false;
     }
     
-    private void computeLos() {
+    /**
+     * Compute LOS, Movement, etc.
+     */
+    private void compute() {
 	if (!model.getCreatures().isEmpty()) {
-	    setBusy(true, "computing LOS...");
+	    setBusy(true, "computing...");
 	    model.setSmokeBlocksLos(chkSmoke.getModel().isSelected());
-	    LosComputation c = new LosComputation(this);
+	    boolean los = chkLOS.getModel().isSelected();
+	    boolean movement = chkMovement.getModel().isSelected();
+	    ComputationThread c = new ComputationThread(this, los, movement);
 	    c.start();
 	}
     }
@@ -287,7 +311,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    Toolkit.getDefaultToolkit().beep();
 	} else {
 	    if (e.getSource() == cmbSize) {
-		clearLos();
+		clear();
 		return;
 	    }
 	    String cmd = e.getActionCommand();
@@ -307,14 +331,15 @@ public class MapExplorer implements ActionListener, ItemListener {
 		    loadMap(file.getPath());
 		}
 	    }
-	    else if (cmd.equals(ACTION_CLEAR_LOS)) {
-		clearLos();
+	    else if (cmd.equals(ACTION_CLEAR)) {
+		clear();
 	    }
 	}
     }
 
-    private void clearLos() {
+    private void clear() {
 	model.clearLos();
+	model.clearMovement();
 	model.removeAllCreatures();
 	lblResults.setText("");
 	mapPanel.repaint();
@@ -330,8 +355,8 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    return;
 	}
 	Object source = e.getItemSelectable();
-	if (source == chkSmoke) {
-	    computeLos();
+	if (source == chkSmoke || source == chkLOS || source == chkMovement) {
+	    compute();
 	}
     }
 
@@ -407,6 +432,27 @@ public class MapExplorer implements ActionListener, ItemListener {
      */
     public MapExplorerModel getModel() {
         return model;
+    }
+
+    private ImageIcon loadIcon(String name, String description) {
+        URL iconURL = ClassLoader.getSystemResource("icons/" + name);
+        if (iconURL != null)
+	    return new ImageIcon(iconURL, description);
+	return null;
+    }
+
+    private JButton makeIconButton(String icon, String text, String tooltip) {
+	String iconSuffix = ".png";
+	ImageIcon icn = loadIcon(icon + iconSuffix, text);
+	JButton btn;
+	if (icn != null)
+	    btn = new JButton(icn);
+	else
+	    btn = new JButton(text);
+	btn.setToolTipText(tooltip);
+	btn.setBorderPainted(false);
+	btn.setContentAreaFilled(false);
+	return btn;
     }
     
 
