@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorerModel.java,v 1.4 2006/02/03 15:43:58 breitko Exp $
+ * $Id: MapExplorerModel.java,v 1.5 2006/02/10 16:58:55 breitko Exp $
  *
  * This file is part of Map Explorer.
  * 
@@ -78,12 +78,12 @@ public class MapExplorerModel {
     }
     
     public void computeMovement() {
-	long start = System.currentTimeMillis();
+	// long start = System.currentTimeMillis();
 	movementMap.clear();
 	for (Creature c : creatures)
 	    movementMap.computeMovement(map, c);
-	long elapsed = System.currentTimeMillis() - start;
-	System.out.println("Movement: " + elapsed + " ms.");
+	// long elapsed = System.currentTimeMillis() - start;
+	// System.out.println("Movement: " + elapsed + " ms.");
     }
 
     /**
