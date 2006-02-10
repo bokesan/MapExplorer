@@ -36,11 +36,32 @@ public class MovementMap {
      * @param c a Creature
      */
     public void computeMovement(Map m, Creature c) {
-	if (c.getSize().compareTo(CreatureSize.MEDIUM) > 0)
-	    throw new IllegalArgumentException("Large or larger not implemented");
 	if (!m.getDimension().equals(size))
 	    throw new IllegalArgumentException("Wrong map size");
+	if (c.getSize().compareTo(CreatureSize.HUGE) > 0)
+	    throw new IllegalArgumentException("can't compute movement for gargantuan or larger");
 	move(m, c, c.getLocation(), 0, false);
+	if (c.getSize().compareTo(CreatureSize.MEDIUM) > 0)
+	    postProcessSize(c.getSize());
+    }
+    
+    private void postProcessSize(CreatureSize size) {
+	int sq = size.sizeSquares();
+	if (sq <= 1)
+	    throw new IllegalArgumentException();
+	int lastCol = this.width - sq;
+	for (int row = this.size.getHeight() - sq; row >= 0; row--) {
+	    for (int col = lastCol; col >= 0; col--) {
+		byte val = move[row * width + col];
+		for (int xoff = 0; xoff < sq; xoff++) {
+		    for (int yoff = 0; yoff < sq; yoff++) {
+			int idx = (row + yoff) * width + col + xoff;
+			if (move[idx] > val)
+			    move[idx] = val;
+		    }
+		}
+	    }
+	}
     }
 
     private void move(Map m, Creature c, Location loc, int current,
@@ -48,13 +69,14 @@ public class MovementMap {
 	if (moveImproved(loc, current, movedDiagonal)) {
 	    setMove(loc, (byte) current, movedDiagonal);
 	    for (int dir = 0; dir < 8; dir++) {
-		Location dest = canMove(m, c, loc, dir);
-		if (dest != null) {
+		TryMoveResult tmove = tryMove(m, c, loc, dir);
+		if (tmove != null) {
+		    Location dest = tmove.loc;
 		    boolean diag = movedDiagonal;
 		    int cost = 1;
 		    if ((dir & 1) != 0) {
 			// diagonal
-			if (m.get(dest).isDifficult()) {
+			if (tmove.difficult) {
 			    cost = 3;
 			} else {
 			    if (movedDiagonal) {
@@ -64,9 +86,8 @@ public class MovementMap {
 				diag = true;
 			    }
 			}
-			
 		    } else {
-			if (m.get(dest).isDifficult())
+			if (tmove.difficult)
 			    cost = 2;
 		    }
 		    move(m, c, dest, current + cost, diag);
@@ -86,15 +107,36 @@ public class MovementMap {
      * @return The next location in that direction, or null if off map.
      */
     private final Location moveLoc(Location loc, int dir) {
-	int col = loc.getColumn() + coff[dir];
+	return moveLoc(loc, coff[dir], roff[dir]);
+    }
+    
+    /**
+     * Return Location offset by xoff, yoff, or null if off map.
+     * @param loc a Location
+     * @param xoff column offset
+     * @param yoff row offset
+     * @return The location offset by xoff, yoff, or null if off map.
+     */
+    private final Location moveLoc(Location loc, int xoff, int yoff) {
+	int col = loc.getColumn() + xoff;
 	if (col < 0 || col >= size.getWidth())
 	    return null;
-	int row = loc.getRow() + roff[dir];
+	int row = loc.getRow() + yoff;
 	if (row < 0 || row >= size.getHeight())
 	    return null;
 	return new Location(col, row);
     }
 
+    private static final class TryMoveResult {
+	public final Location loc;
+	public final boolean difficult;
+	public TryMoveResult(Location loc, boolean difficult) {
+	    this.loc = loc;
+	    this.difficult = difficult;
+	}
+    }
+    
+    
     /**
      * Check if creature can move in a given direction.
      * @param m a Map
@@ -104,75 +146,220 @@ public class MovementMap {
      * @return The new Location, if the move is possible,
      *   or null if the move is not possible.
      */
-    private Location canMove(Map m, Creature c, Location loc, int dir) {
-	switch (c.getSize()) {
-	case TINY: case SMALL: case MEDIUM:
-	    return canMoveMedium(m, loc, dir);
-	default:
-	    throw new IllegalArgumentException();
+    private TryMoveResult tryMove(Map m, Creature c, Location loc, int dir) {
+	boolean difficult = false;
+	for (MoveCheck mc : moveCheck[c.getSize().sizeSquares()][dir]) {
+	    Location destLoc = moveLoc(loc, mc.xoff, mc.yoff);
+	    if (destLoc == null)
+		return null;
+	    MapSquare dest = m.get(destLoc);
+	    if (mc.checkTerrain) {
+		if (dest.has(MapFeature.PIT) || dest.has(MapFeature.LAVA))
+		    return null;
+		if (dest.isDifficult())
+		    difficult = true;
+	    }
+	    for (Direction d : mc.wallsToCheck) {
+		if (dest.getWall(d))
+		    return null;
+	    }
+	}
+	return new TryMoveResult(moveLoc(loc, dir), difficult);
+    }
+    
+    private static class MoveCheck {
+	public static final int NO_TERRAIN = 1;
+	public final int xoff;
+	public final int yoff;
+	public final Direction[] wallsToCheck;
+	public final boolean checkTerrain;
+	public MoveCheck(int xoff, int yoff) {
+	    this.xoff = xoff;
+	    this.yoff = yoff;
+	    this.wallsToCheck = new Direction[0];
+	    checkTerrain = true;
+	}
+	public MoveCheck(int xoff, int yoff, Direction d) {
+	    this.xoff = xoff;
+	    this.yoff = yoff;
+	    this.wallsToCheck = new Direction[]{d};
+	    if (xoff == 0 && yoff == 0)
+		checkTerrain = false;
+	    else
+		checkTerrain = true;
+	}
+	public MoveCheck(int xoff, int yoff, Direction d1, Direction d2) {
+	    this.xoff = xoff;
+	    this.yoff = yoff;
+	    this.wallsToCheck = new Direction[]{d1,d2};
+	    if (xoff == 0 && yoff == 0)
+		checkTerrain = false;
+	    else
+		checkTerrain = true;
+	}
+	public MoveCheck(int xoff, int yoff, Direction d, int flags) {
+	    this.xoff = xoff;
+	    this.yoff = yoff;
+	    this.wallsToCheck = new Direction[]{d};
+	    if ((flags & NO_TERRAIN) != 0)
+		checkTerrain = false;
+	    else
+		checkTerrain = true;
 	}
     }
     
-    private Location canMoveMedium(Map m, Location loc, int dir) {
-	Location destLoc = moveLoc(loc, dir);
-	if (destLoc == null)
-	    return null;
-	MapSquare dest = m.get(destLoc);
-	if (dest.has(MapFeature.PIT) || dest.has(MapFeature.LAVA))
-	    return null;
-	MapSquare here = m.get(loc);
-	switch (dir) {
-	case 0: // North
-	    if (here.getWall(Direction.NORTH))
-		return null;
-	    if (dest.getWall(Direction.SOUTH))
-		return null;
-	    break;
-	case 1:
-	    if (here.getWall(Direction.NORTH) || here.getWall(Direction.EAST))
-		return null;
-	    if (dest.getWall(Direction.SOUTH) || dest.getWall(Direction.WEST))
-		return null;
-	    break;
-	case 2:
-	    if (here.getWall(Direction.EAST))
-		return null;
-	    if (dest.getWall(Direction.WEST))
-		return null;
-	    break;
-	case 3:
-	    if (here.getWall(Direction.EAST) || here.getWall(Direction.SOUTH))
-		return null;
-	    if (dest.getWall(Direction.WEST) || dest.getWall(Direction.NORTH))
-		return null;
-	    break;
-	case 4:
-	    if (here.getWall(Direction.SOUTH))
-		return null;
-	    if (dest.getWall(Direction.NORTH))
-		return null;
-	    break;
-	case 5:
-	    if (here.getWall(Direction.SOUTH) || here.getWall(Direction.WEST))
-		return null;
-	    if (dest.getWall(Direction.NORTH) || dest.getWall(Direction.EAST))
-		return null;
-	    break;
-	case 6:
-	    if (here.getWall(Direction.WEST))
-		return null;
-	    if (dest.getWall(Direction.EAST))
-		return null;
-	    break;
-	case 7:
-	    if (here.getWall(Direction.WEST) || here.getWall(Direction.NORTH))
-		return null;
-	    if (dest.getWall(Direction.EAST) || dest.getWall(Direction.SOUTH))
-		return null;
-	    break;
+    private static final MoveCheck[][][] moveCheck = {
+	{ },
+	// Size 1
+	{
+	    
+	    { /* N  */ new MoveCheck(0, 1, Direction.SOUTH) },
+	    { /* NE */ new MoveCheck(0, 0, Direction.NORTH, Direction.EAST),
+		       new MoveCheck(1, 1, Direction.SOUTH, Direction.WEST)
+	    },
+	    { /* E  */ new MoveCheck(1, 0, Direction.WEST) },
+	    { /* SE */ new MoveCheck(0, 0, Direction.SOUTH, Direction.EAST),
+		new MoveCheck(1, -1, Direction.NORTH, Direction.WEST)
+	    },
+	    { /* S  */ new MoveCheck(0, -1, Direction.NORTH) },
+	    { /* SW */ new MoveCheck(0, 0, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(-1, -1, Direction.NORTH, Direction.EAST)
+	    },
+	    { /* W  */ new MoveCheck(-1, 0, Direction.EAST) },
+	    { /* NW */ new MoveCheck(0, 0, Direction.NORTH, Direction.WEST),
+		new MoveCheck(-1, 1, Direction.SOUTH, Direction.EAST)
+	    }
+	},
+	// Size 2
+	{
+	    { /* N  */
+		new MoveCheck(0, 2, Direction.SOUTH, Direction.EAST),
+		new MoveCheck(1, 2, Direction.SOUTH),
+		new MoveCheck(0, 1), new MoveCheck(1, 1)
+	    },
+	    { /* NE */
+		new MoveCheck(0, 2, Direction.SOUTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 2, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(2, 2, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(2, 1, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(2, 0, Direction.WEST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 1)
+	    },
+	    { /* E  */
+		new MoveCheck(2, 1, Direction.WEST),
+		new MoveCheck(2, 0, Direction.WEST, Direction.NORTH),
+		new MoveCheck(1, 0), new MoveCheck(1, 1)
+	    },
+	    { /* SE */
+		new MoveCheck(2, 1, Direction.WEST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(2, 0, Direction.WEST, Direction.NORTH),
+		new MoveCheck(2, -1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(1, -1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(0, -1, Direction.NORTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 0)
+	    },
+	    { /* S */
+		new MoveCheck(0, -1, Direction.NORTH, Direction.EAST),
+		new MoveCheck(1, -1, Direction.NORTH),
+		new MoveCheck(0, 0), new MoveCheck(1, 0)
+	    },
+	    { /* SW */
+		new MoveCheck(-1, 1, Direction.EAST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(-1, 0, Direction.EAST, Direction.NORTH),
+		new MoveCheck(-1, -1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(0, -1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(1, -1, Direction.NORTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(0, 0)
+	    },
+	    { /* W  */
+		new MoveCheck(-1, 1, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 0, Direction.EAST),
+		new MoveCheck(0, 0), new MoveCheck(0, 1)
+	    },
+	    { /* NW */
+		new MoveCheck(-1, 0, Direction.EAST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(-1, 1, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 2, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(0, 2, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(1, 2, Direction.SOUTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(0, 1)
+	    }
+	},
+	// Size 3
+	{
+	    { // N
+		new MoveCheck(0, 3, Direction.SOUTH, Direction.EAST),
+		new MoveCheck(1, 3, Direction.SOUTH, Direction.EAST),
+		new MoveCheck(2, 3, Direction.SOUTH),
+		new MoveCheck(0, 1), new MoveCheck(1, 1), new MoveCheck(2, 1),
+		new MoveCheck(0, 2), new MoveCheck(1, 2), new MoveCheck(2, 2)
+	    },
+	    { // NE
+		new MoveCheck(0, 3, Direction.SOUTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 3, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(2, 3, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(3, 3, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(3, 2, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(3, 1, Direction.SOUTH, Direction.WEST),
+		new MoveCheck(3, 0, Direction.WEST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 1), new MoveCheck(2, 1),
+		new MoveCheck(1, 2), new MoveCheck(2, 2)
+	    },
+	    { // E
+		new MoveCheck(3, 2, Direction.WEST, Direction.SOUTH),
+		new MoveCheck(3, 1, Direction.WEST, Direction.SOUTH),
+		new MoveCheck(3, 0, Direction.WEST),
+		new MoveCheck(1, 2), new MoveCheck(1, 1), new MoveCheck(1, 0),
+		new MoveCheck(2, 2), new MoveCheck(2, 1), new MoveCheck(2, 0)
+	    },
+	    { // SE
+		new MoveCheck(3, 2, Direction.WEST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(3, 1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(3, 0, Direction.WEST, Direction.NORTH),
+		new MoveCheck(3, -1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(2, -1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(1, -1, Direction.WEST, Direction.NORTH),
+		new MoveCheck(0, -1, Direction.NORTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(1, 1), new MoveCheck(2, 1),
+		new MoveCheck(1, 0), new MoveCheck(2, 0)
+	    },
+	    { // S
+		new MoveCheck(0, -1, Direction.NORTH, Direction.EAST),
+		new MoveCheck(1, -1, Direction.NORTH, Direction.EAST),
+		new MoveCheck(2, -1, Direction.NORTH),
+		new MoveCheck(0, 1), new MoveCheck(1, 1), new MoveCheck(2, 1),
+		new MoveCheck(0, 0), new MoveCheck(1, 0), new MoveCheck(2, 0)
+	    },
+	    { // SW
+		new MoveCheck(-1, 2, Direction.EAST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(-1, 1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(-1, 0, Direction.EAST, Direction.NORTH),
+		new MoveCheck(-1, -1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(0, -1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(1, -1, Direction.EAST, Direction.NORTH),
+		new MoveCheck(2, -1, Direction.NORTH, MoveCheck.NO_TERRAIN),
+		new MoveCheck(0, 0), new MoveCheck(1, 0),
+		new MoveCheck(0, 1), new MoveCheck(1, 1)
+	    },
+	    { // W
+		new MoveCheck(-1, 2, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 1, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 0, Direction.EAST),
+		new MoveCheck(0, 0), new MoveCheck(0, 1), new MoveCheck(0, 2),
+		new MoveCheck(1, 0), new MoveCheck(1, 1), new MoveCheck(1, 2)
+	    },
+	    { // NW
+		new MoveCheck(-1, 0, Direction.EAST, MoveCheck.NO_TERRAIN),
+		new MoveCheck(-1, 1, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 2, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(-1, 3, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(0, 3, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(1, 3, Direction.EAST, Direction.SOUTH),
+		new MoveCheck(2, 3, Direction.SOUTH, MoveCheck.NO_TERRAIN)
+	    }
 	}
-	return destLoc;
-    }
+    };
+    
     
     /**
      * @return Returns the size of the map.
