@@ -1,5 +1,5 @@
 /*
- * $Id: MapSquare.java,v 1.7 2006/02/03 15:43:29 breitko Exp $
+ * $Id: MapSquare.java,v 1.8 2006/02/10 16:59:44 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -145,8 +145,17 @@ public class MapSquare {
 	this.color = color;
     }
 
+    /**
+     * Is this square considered difficult terrain for movement?
+     * <p>
+     * Apart from difficult terrain, spike stones and statues
+     * are difficult for movement.
+     * 
+     * @return true if this square is difficult terrain for movement.
+     */
     public boolean isDifficult() {
 	return (features.contains(MapFeature.DIFFICULT)
-		|| features.contains(MapFeature.SPIKE_STONES));
+		|| features.contains(MapFeature.SPIKE_STONES)
+		|| features.contains(MapFeature.STATUE));
     }
 }
