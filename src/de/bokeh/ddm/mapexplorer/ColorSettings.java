@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.10 2006/01/05 13:09:04 breitko Exp $
+ * $Id: ColorSettings.java,v 1.11 2006/02/10 16:58:29 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -49,8 +49,8 @@ public class ColorSettings {
 	CREATURE
     };
     
-    private EnumMap<MapFeature, Color> featureColor;
-    private EnumMap<Special, Color> specialColor;
+    private final EnumMap<MapFeature, Color> featureColor;
+    private final EnumMap<Special, Color> specialColor;
     
     private Color defaultColor;
     
