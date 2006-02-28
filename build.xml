@@ -5,7 +5,7 @@
   <property environment="env" />
   <property name="build.dir" location="build" />
   <property name="classes.dir" location="${build.dir}/classes" />
-  <property name="build.debug" value="false" />
+  <property name="build.debug" value="true" />
 
   <property name="test.dir" location="${build.dir}/test" />
   <property name="test.data.dir" location="${test.dir}/data" />
