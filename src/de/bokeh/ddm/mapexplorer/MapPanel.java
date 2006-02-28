@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.12 2006/02/03 15:43:58 breitko Exp $
+ * $Id: MapPanel.java,v 1.13 2006/02/28 09:19:40 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -73,6 +73,25 @@ public class MapPanel extends JPanel {
 	wallWidth = (tileWidth + tileHeight) / 20;
 	if (wallWidth == 0) wallWidth = 1;
     }
+    
+    static private enum FontUse {
+	NORMAL, MOVEMENT
+    };
+    
+    private void setFont(Graphics g, FontUse use) {
+	Font f = g.getFont();
+	String name = f.getName();
+	int style = f.getStyle();
+	int size;
+	switch (use) {
+	default:
+	    size = (tileWidth + tileHeight) / 4;
+	    break;
+	case MOVEMENT:
+	    size = (tileWidth + tileHeight) / 6;
+	}
+	g.setFont(new Font(name, style, size));
+    }
 
     private java.awt.Point locPoint(int sx, int sy) {
 	int x = tileWidth * (sx + 1);
@@ -99,6 +118,8 @@ public class MapPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+	setFont(g, FontUse.NORMAL);
+	setAntiAliasing(g);
 	computeSizes();
 	super.paintComponent(g);
 
@@ -215,14 +236,15 @@ public class MapPanel extends JPanel {
 	
 	if (losMap.get(col, row)) {
 	    g.setColor(colors.getColor(ColorSettings.Special.LOS));
-	    g.drawArc(x, y+2*tileHeight/5, tileWidth, tileHeight, 45, 90);
-	    g.drawArc(x, y-2*tileHeight/5, tileWidth, tileHeight, 225, 90);
-	    g.fillOval(x+tileWidth/2-1, y+tileHeight/2-1, 3, 3);
+	    drawLosIcon(g, p);
 	}
 	g.setColor(Color.BLACK);
 	int move = movementMap.getMove(new Location(col,row));
-	if (move != MovementMap.UNREACHABLE)
-	    drawCenteredString(g, p, "" + move);
+	if (move != MovementMap.UNREACHABLE) {
+	    setFont(g, FontUse.MOVEMENT);
+	    drawBLString(g, p, "" + move);
+	    setFont(g, FontUse.NORMAL);
+	}
     }
     
     private void drawCreature(Graphics g, Creature c) {
@@ -286,9 +308,15 @@ public class MapPanel extends JPanel {
     }
     
     private void drawCenteredString(Graphics g, java.awt.Point p, String s) {
-	FontMetrics fm = getFontMetrics(getFont());
+	FontMetrics fm = getFontMetrics(g.getFont());
 	int x = p.x + tileWidth / 2 - fm.stringWidth(s) / 2;
 	int y = p.y + tileHeight / 2 + fm.getAscent() / 2;
+	g.drawString(s, x, y);
+    }
+    
+    private void drawBLString(Graphics g, java.awt.Point p, String s) {
+	int x = p.x + 2;
+	int y = p.y + tileHeight - 3;
 	g.drawString(s, x, y);
     }
 
@@ -327,5 +355,28 @@ public class MapPanel extends JPanel {
     public void setColors(ColorSettings colors) {
         this.colors = colors;
     }
-    
+
+    private void setAntiAliasing(Graphics g) {
+	try {
+	    Graphics2D g2 = (Graphics2D) g;
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	} catch (ClassCastException ex) {
+	    // Ignore
+	}
+    }
+
+    /**
+     * Draw Line-of-sight icon in upper right corner of map square.
+     * @param g a Graphics
+     * @param p the upper left corner of the map square
+     */
+    private void drawLosIcon(Graphics g, java.awt.Point p) {
+	int y = p.y + 2;
+	int height = tileHeight / 6;
+	int width = tileWidth / 3;
+	int x = p.x + tileWidth - (width + 3);
+	
+	g.drawOval(x, y, width, height);
+	g.fillOval(x+width/2-1, y+height/2-1, 3, 3);
+    }
 }
