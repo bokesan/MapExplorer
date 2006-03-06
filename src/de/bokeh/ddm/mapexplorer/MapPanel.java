@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.13 2006/02/28 09:19:40 breitko Exp $
+ * $Id: MapPanel.java,v 1.14 2006/03/06 10:43:26 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -372,8 +372,8 @@ public class MapPanel extends JPanel {
      */
     private void drawLosIcon(Graphics g, java.awt.Point p) {
 	int y = p.y + 2;
-	int height = tileHeight / 6;
-	int width = tileWidth / 3;
+	int height = 2 * tileHeight / 10;
+	int width = 4 * tileWidth / 10;
 	int x = p.x + tileWidth - (width + 3);
 	
 	g.drawOval(x, y, width, height);
