@@ -1,5 +1,5 @@
 /*
- * $Id: MapFeature.java,v 1.4 2006/01/05 12:55:51 breitko Exp $
+ * $Id: MapFeature.java,v 1.5 2006/03/06 11:13:52 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -57,17 +57,27 @@ public enum MapFeature {
     /** Risky terrain. */
     RISKY,
     
+    /** A pit or chasm. */
     PIT,
+    
+    /** Lava. */
     LAVA,
     
     /** Smoke.<p>Blocks LOS. */
     SMOKE,
     
+    /** Teleporter. */
+    TELEPORTER,
+    
+    /** Start area A. */
     START_A,
+    
+    /** Start Area B. */
     START_B,
     
     /** Exit A. */
     EXIT_A,
+    
     /** Exit B. */
     EXIT_B,
     
@@ -76,5 +86,8 @@ public enum MapFeature {
     
     /** Victory Area B. */
     VICTORY_B,
+    
+    /** Temporary wall terrain created using an Elemental Wall or other means. */
+    ELEMENTAL_WALL
     
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MapReader.java,v 1.5 2006/01/05 12:55:51 breitko Exp $
+ * $Id: MapReader.java,v 1.6 2006/03/06 11:13:52 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -115,6 +115,12 @@ public class MapReader {
 		}
 		else if (f[0].equals("haunted")) {
 		    handleFeature(m, f, MapFeature.HAUNTED);
+		}
+		else if (f[0].equals("teleporter")) {
+		    handleFeature(m, f, MapFeature.TELEPORTER);
+		}
+		else if (f[0].equals("elemental_wall")) {
+		    handleFeature(m, f, MapFeature.ELEMENTAL_WALL);
 		}
 		else if (f[0].equals("basecolor")) {
 		    m.setColor(parseColor(f[1]));

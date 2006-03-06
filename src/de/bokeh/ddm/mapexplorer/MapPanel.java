@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.14 2006/03/06 10:43:26 breitko Exp $
+ * $Id: MapPanel.java,v 1.15 2006/03/06 11:13:52 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -183,6 +183,10 @@ public class MapPanel extends JPanel {
 	    g.setColor(colors.getColor(MapFeature.HAUNTED));
 	    g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);
 	}
+	if (t.has(MapFeature.TELEPORTER)) {
+	    g.setColor(colors.getColor(MapFeature.TELEPORTER));
+	    g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);
+	}
 	if (t.has(MapFeature.DIFFICULT)) {
 	    paintDifficult(g, x, y);
 	}
@@ -211,11 +215,9 @@ public class MapPanel extends JPanel {
 	    g.drawLine(x, y, x+tileWidth-1, y+tileHeight-1);
 	    g.drawLine(x+tileWidth-1, y, x, y+tileHeight-1);
 	}
-	
-	if (t.has(MapFeature.PIT)) {
-	    g.setColor(colors.getColor(MapFeature.PIT));
-	    g.fillRect(x, y, tileWidth, tileHeight);
-	}
+
+	paintFullSquareFeature(g, p, t, MapFeature.PIT);
+	paintFullSquareFeature(g, p, t, MapFeature.ELEMENTAL_WALL);
 
 	// Walls
 	if (t.hasWall()) {
@@ -379,4 +381,12 @@ public class MapPanel extends JPanel {
 	g.drawOval(x, y, width, height);
 	g.fillOval(x+width/2-1, y+height/2-1, 3, 3);
     }
+
+    private void paintFullSquareFeature(Graphics g, java.awt.Point p, MapSquare t, MapFeature f) {
+	if (t.has(f)) {
+	    g.setColor(colors.getColor(f));
+	    g.fillRect(p.x, p.y, tileWidth, tileHeight);
+	}
+    }
+
 }
