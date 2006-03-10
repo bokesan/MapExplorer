@@ -1,0 +1,40 @@
+map Broken Demongate
+
+width 34
+height 22
+
+basecolor 708075
+
+start A G1-J3 Q1-V6
+exit A K1-O1
+victory A L29-O31 K30-K31 L28-M28
+victory A T19-V21
+
+start B A34-E30 R22-S24
+exit B L34-P34
+victory B A1-D4 S13-V16
+
+solid D4 G6 A7-D7 D8 D9 E10 A15 A16
+solid K5-K8 J7 L5-L7 M7 I12-J12 N11-O11
+solid D16 D15-I15 E14-F14 I16-J17
+solid D22-D23 F30-F32 T22-T24 G30-G32
+solid T17-V17 P16-S17 R10-S12 R13
+solid Q18-Q19 Q5-R6 Q4 S6 
+
+difficult A8 A10 B8-B9 C8-C10
+difficult D10 E9 J8 B15-C16 D14
+difficult V15-V16 P12-P13 N13-N14
+difficult O15 N16-O17 O18 K16-K18
+difficult J19 L19 M21 N22 K22
+difficult F33-G34 O29-O31 N31
+difficult M28 L28-L30 K30-K31
+
+statue A1 T18 U18 V18 V34 V28 U31
+
+wall north D3 D17 F16-F17 H18-H19
+wall north D20-D21 S18 S25 S28-S29
+wall north J25-J31 O25-O31 S33-S34
+wall east A4 G21-J21 P21-S21 A27-C27
+wall east P24-Q24 G24-J24 T27-V27 
+
+magic A19-C21 E26-G28 T19-V21
