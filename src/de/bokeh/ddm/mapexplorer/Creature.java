@@ -1,5 +1,5 @@
 /*
- * $Id: Creature.java,v 1.2 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Creature.java,v 1.3 2006/03/10 11:30:02 breitko Exp $
  *
  * This file is part of Map Explorer.
  * 
@@ -59,6 +59,16 @@ public class Creature {
 	int bRow = b.location.getRow();
 	return (aCol <= bCol && aCol + sz >= bCol
 		&& aRow <= bRow && aRow + sz >= bRow);
+    }
+    
+    public boolean occupiesSquare(Location loc) {
+	int sq = size.sizeSquares();
+	int col = location.getColumn();
+	int row = location.getRow();
+	int sc = loc.getColumn();
+	int sr = loc.getRow();
+	return (sc >= col && sc < col + sq
+		&& sr >= row && sr < row + sq);
     }
 
     /**
