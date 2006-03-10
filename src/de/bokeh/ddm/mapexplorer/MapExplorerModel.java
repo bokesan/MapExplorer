@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorerModel.java,v 1.5 2006/02/10 16:58:55 breitko Exp $
+ * $Id: MapExplorerModel.java,v 1.6 2006/03/10 11:31:33 breitko Exp $
  *
  * This file is part of Map Explorer.
  * 
@@ -157,5 +157,45 @@ public class MapExplorerModel {
     public MovementMap getMovementMap() {
         return movementMap;
     }
-    
+
+    /**
+     * Toggle Elemental Wall of size x size squares at loc.
+     * @param loc a Location
+     * @param size size of the wall
+     * @return true if the wall could be placed.
+     */
+    public boolean toggleElementalWall(Location loc, int size) {
+	int row = loc.getRow();
+	int col = loc.getColumn();
+	if (map.get(loc).has(MapFeature.ELEMENTAL_WALL)) {
+	    // Remove the wall
+	    for (int roff = 0; roff < size; roff++) {
+		for (int coff = 0; coff < size; coff++) {
+		    MapSquare t = map.get(col + coff, row + roff);
+		    if (!t.has(MapFeature.ELEMENTAL_WALL))
+			return false;
+		}
+	    }
+	    for (int roff = 0; roff < size; roff++) {
+		for (int coff = 0; coff < size; coff++) {
+		    map.get(loc.getColumn() + coff, loc.getRow() + roff).removeFeature(MapFeature.ELEMENTAL_WALL);
+		}
+	    }
+	} else {
+	    // Add a wall
+	    for (int roff = 0; roff < size; roff++) {
+		for (int coff = 0; coff < size; coff++) {
+		    MapSquare t = map.get(col + coff, row + roff);
+		    if (t.hasWall() || t.has(MapFeature.ELEMENTAL_WALL))
+			return false;
+		}
+	    }
+	    for (int roff = 0; roff < size; roff++) {
+		for (int coff = 0; coff < size; coff++) {
+		    map.get(loc.getColumn() + coff, loc.getRow() + roff).addFeature(MapFeature.ELEMENTAL_WALL);
+		}
+	    }
+	}
+	return true;
+    }
 }

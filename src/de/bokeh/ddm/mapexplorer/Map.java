@@ -1,5 +1,5 @@
 /*
- * $Id: Map.java,v 1.7 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Map.java,v 1.8 2006/03/10 11:31:33 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -63,6 +63,7 @@ public class Map {
     
     /**
      * Get the set of Walls for the LOS computation.
+     * @param smokeBlocksLOS a boolean indicating whether smoke of fog blocks LoS
      * @return A set of Lines.
      */
     public Set<Line> getWalls(boolean smokeBlocksLOS) {
@@ -78,6 +79,12 @@ public class Map {
 		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
 		if (s.getWall(Direction.EAST))
 		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
+		if (s.has(MapFeature.ELEMENTAL_WALL)) {
+		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
+		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));
+		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
+		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
+		}
 		if (smokeBlocksLOS && s.has(MapFeature.SMOKE)) {
 		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
 		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));

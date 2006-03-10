@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.18 2006/02/10 17:08:41 breitko Exp $
+ * $Id: MapExplorer.java,v 1.19 2006/03/10 11:31:33 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -41,11 +41,13 @@ import java.net.URL;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20060210-experimental";
+    public static final String VERSION = "20060310";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
     private static final String ACTION_CLEAR = "clear";
+    private static final String ACTION_WALL = "wall";
+    private static final String ACTION_PLACE = "place";
     
     private JFrame appFrame;
     private JToolBar toolBar;
@@ -57,9 +59,12 @@ public class MapExplorer implements ActionListener, ItemListener {
     private JCheckBox chkSmoke;
     private JCheckBox chkMovement;
     private JComboBox cmbSize;
+    private JPopupMenu contextMenu;
     private boolean busy;
     private JFileChooser fileChooser;
     private JProgressBar progress;
+
+    private Location selectedSquare;
     
     private final MapExplorerModel model;
 
@@ -98,6 +103,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	mapPanel.setMovementMap(model.getMovementMap());
 	mapPanel.setCreatures(model.getCreatures());
 	
+	createContextMenu();
 	createStatusPanel();
 
 	appFrame.getContentPane().add(toolBar, BorderLayout.NORTH);
@@ -106,6 +112,18 @@ public class MapExplorer implements ActionListener, ItemListener {
 	
 	appFrame.pack();
 	appFrame.setVisible(true);
+    }
+    
+    private void createContextMenu() {
+	contextMenu = new JPopupMenu();
+	JMenuItem mi = new JMenuItem("place acting creature");
+	mi.setActionCommand(ACTION_PLACE);
+	mi.addActionListener(this);
+	contextMenu.add(mi);
+	mi = new JMenuItem("toggle elemental wall");
+	mi.setActionCommand(ACTION_WALL);
+	mi.addActionListener(this);
+	contextMenu.add(mi);
     }
     
     private void createToolBar() {
@@ -128,8 +146,8 @@ public class MapExplorer implements ActionListener, ItemListener {
 	chkLOS.setToolTipText("compute line-of-sight");
 	chkLOS.setSelectedIcon(loadIcon("LOS-enabled.png", "LOS"));
 	chkLOS.setContentAreaFilled(false);
-	toolBar.add(chkLOS);
-	
+	// toolBar.add(chkLOS);
+
 	chkSmoke = new JCheckBox(loadIcon("Smoke.png", "Smoke"), true);
 	chkSmoke.setSelectedIcon(loadIcon("Smoke-enabled.png", "Smoke"));
 	chkSmoke.addItemListener(this);
@@ -137,13 +155,13 @@ public class MapExplorer implements ActionListener, ItemListener {
 	chkSmoke.setToolTipText("toggle fog/smoke");
 	chkSmoke.setContentAreaFilled(false);
 	toolBar.add(chkSmoke);
-	
+
 	chkMovement = new JCheckBox(loadIcon("Movement.png", "Movement"));
 	chkMovement.setSelectedIcon(loadIcon("Movement-enabled.png", "Movement"));
 	chkMovement.addItemListener(this);
 	chkMovement.setToolTipText("compute movement range");
 	chkMovement.setContentAreaFilled(false);
-	toolBar.add(chkMovement);
+	// toolBar.add(chkMovement);
 
 	cmbSize = new JComboBox(CreatureSize.values());
 	cmbSize.setSelectedItem(CreatureSize.MEDIUM);
@@ -175,6 +193,55 @@ public class MapExplorer implements ActionListener, ItemListener {
 	statusPanel.setFloatable(false);
     }
     
+    private static class MyMouseListener extends MouseAdapter {
+
+	private final MapExplorer app;
+	
+	public MyMouseListener(MapExplorer app) {
+	    this.app = app;
+	}
+	
+	public void mousePressed(MouseEvent e) {
+	    if (app.isBusy()) {
+		Toolkit.getDefaultToolkit().beep();
+	    } else {
+		maybeShowPopup(e);
+	    }
+	}
+	
+	public void mouseReleased(MouseEvent e) {
+	    if (app.isBusy()) {
+		Toolkit.getDefaultToolkit().beep();
+	    } else {
+		maybeShowPopup(e);
+	    }
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+	    if (app.isBusy()) {
+		Toolkit.getDefaultToolkit().beep();
+	    } else {
+		Location loc = app.mapPanel.getLocation(e.getX(), e.getY());
+		if (loc != null) {
+		    if (app.placeCreature(loc)) {
+			app.compute();
+			app.mapPanel.repaint();
+		    } else
+			Toolkit.getDefaultToolkit().beep();
+		}
+	    }
+	}
+	
+	private void maybeShowPopup(MouseEvent e) {
+	    if (e.isPopupTrigger()) {
+		app.selectedSquare = app.mapPanel.getLocation(e.getX(), e.getY());
+		app.contextMenu.show(e.getComponent(), e.getX(), e.getY());
+	    }
+	}
+	
+    }
+    
+    
     
     private void start() {
 	createComponents();
@@ -185,22 +252,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	});
 	
-	mapPanel.addMouseListener(new MouseAdapter() {
-	    public void mouseClicked(MouseEvent e) {
-		if (isBusy()) {
-		    Toolkit.getDefaultToolkit().beep();
-		} else {
-		    Location loc = mapPanel.getLocation(e.getX(), e.getY());
-		    if (loc != null) {
-			if (placeCreature(loc)) {
-			    compute();
-			    mapPanel.repaint();
-			} else
-			    Toolkit.getDefaultToolkit().beep();
-		    }
-		}
-	    }
-	});
+	mapPanel.addMouseListener(new MyMouseListener(this));
     }
 
     private boolean placeCreature(Location loc) {
@@ -333,6 +385,22 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	    else if (cmd.equals(ACTION_CLEAR)) {
 		clear();
+	    }
+	    else if (cmd.equals(ACTION_PLACE)) {
+		if (placeCreature(selectedSquare)) {
+		    compute();
+		    mapPanel.repaint();
+		} else {
+		    Toolkit.getDefaultToolkit().beep();
+		}
+	    }
+	    else if (cmd.equals(ACTION_WALL)) {
+		if (!model.toggleElementalWall(selectedSquare, 2))
+		    Toolkit.getDefaultToolkit().beep();
+		else {
+		    compute();
+		    mapPanel.repaint();
+		}
 	    }
 	}
     }
