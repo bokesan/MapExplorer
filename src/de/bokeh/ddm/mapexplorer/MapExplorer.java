@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.19 2006/03/10 11:31:33 breitko Exp $
+ * $Id: MapExplorer.java,v 1.20 2006/03/10 11:34:48 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -134,7 +134,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	btn.addActionListener(this);
 	toolBar.add(btn);
 	
-	btn = makeIconButton("Clear", "Clear", "remove creature, clear LOS and movement info");
+	btn = makeIconButton("Clear", "Clear", "remove creature, clear LOS info");
 	btn.setActionCommand(ACTION_CLEAR);
 	btn.addActionListener(this);
 	toolBar.add(btn);
