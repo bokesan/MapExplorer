@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.6 2006/01/05 13:09:37 breitko Exp $
+ * $Id: LosCalculator.java,v 1.7 2006/03/10 11:30:49 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -83,8 +83,9 @@ public class LosCalculator {
 	synchronized (this) {
 	    numRndLos = 0;
 	}
+	Set<Line> noSmokeWalls = smokeBlocksLos ? map.getWalls(false) : null;
 	for (Creature c : creatures) {
-	    addTasksFor(c, ts);
+	    addTasksFor(c, ts, noSmokeWalls);
 	}
 	setTasksDone(0);
 	totalTasks = ts.size();
@@ -122,19 +123,39 @@ public class LosCalculator {
 	    for (int col = 0; col < width; col++) {
 		Location target = new Location(col, row);
 		if (!target.equals(source))
-		    ts.add(new LosTask(source, target, this));
+		    ts.add(new LosTask(source, target, this, this.walls));
 	    }
 	}
     }
+
+    private void addIfOnMap(Location source, List<Callable<Object>> ts, int col, int row, Set<Line> walls) {
+	if (col >= 0 && col < map.getWidth() && row >= 0 && row < map.getHeight()) {
+	    ts.add(new LosTask(source, new Location(col,row), this, walls));
+	}
+    }
     
-    private void addTasksFor(Creature c, List<Callable<Object>> ts) {
+    private void addTasksFor(Creature c, List<Callable<Object>> ts, Set<Line> noSmokeWalls) {
 	Location loc = c.getLocation();
 	int col = loc.getColumn();
 	int row = loc.getRow();
 	int sz = c.getSize().sizeSquares();
 	for (int xoff = 0; xoff < sz; xoff++) {
 	    for (int yoff = 0; yoff < sz; yoff++) {
-		addTasksFor(new Location(col+xoff, row+yoff), ts);
+		Location source = new Location(col+xoff, row+yoff); 
+		addTasksFor(source, ts);
+		if (noSmokeWalls != null) {
+		    // Add adjacent squares using noSmokeWalls
+		    addIfOnMap(source, ts, col - 1, row - 1, noSmokeWalls);
+		    addIfOnMap(source, ts, col + sz, row - 1, noSmokeWalls);
+		    addIfOnMap(source, ts, col - 1, row + sz, noSmokeWalls);
+		    addIfOnMap(source, ts, col + sz, row + sz, noSmokeWalls);
+		    for (int i = 0; i < sz; i++) {
+			addIfOnMap(source, ts, col - 1, row + i, noSmokeWalls);
+			addIfOnMap(source, ts, col + sz, row + i, noSmokeWalls);
+			addIfOnMap(source, ts, col + i, row - 1, noSmokeWalls);
+			addIfOnMap(source, ts, col + i, row + sz, noSmokeWalls);
+		    }
+		}
 	    }
 	}
     }
@@ -235,17 +256,19 @@ class LosTask implements Callable<Object> {
     private final Location source;
     private final Location target;
     private final LosCalculator context;
+    private final Set<Line> walls;
     
-    public LosTask(Location source, Location target, LosCalculator context) {
+    public LosTask(Location source, Location target, LosCalculator context, Set<Line> walls) {
 	this.source = source;
 	this.target = target;
 	this.context = context;
+	this.walls = walls;
     }
     
     public Object call() {
 	Map map = context.getMap();
 	LosMap losMap = context.getLos();
-	LosTester t = new LosTester(source, map.getDimension(), context.getWalls(), context.getRandomTestsPerSquare(), context.getLogger());
+	LosTester t = new LosTester(source, map.getDimension(), walls, context.getRandomTestsPerSquare(), context.getLogger());
 	MapSquare s = map.get(target);
 	if (!s.isSolid()) {
 	    int r = t.testLocation(target);
