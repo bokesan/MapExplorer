@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.15 2006/03/06 11:13:52 breitko Exp $
+ * $Id: MapPanel.java,v 1.16 2006/03/14 14:48:34 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -75,7 +75,7 @@ public class MapPanel extends JPanel {
     }
     
     static private enum FontUse {
-	NORMAL, MOVEMENT
+	NORMAL, IN_SQUARE
     };
     
     private void setFont(Graphics g, FontUse use) {
@@ -87,7 +87,7 @@ public class MapPanel extends JPanel {
 	default:
 	    size = (tileWidth + tileHeight) / 4;
 	    break;
-	case MOVEMENT:
+	case IN_SQUARE:
 	    size = (tileWidth + tileHeight) / 6;
 	}
 	g.setFont(new Font(name, style, size));
@@ -151,19 +151,32 @@ public class MapPanel extends JPanel {
 	g.setColor(colors.getColor(ColorSettings.Special.GRID));
 	g.drawRect(x, y, tileWidth-1, tileHeight-1);
 	{
-	    Color c;
-	    if (t.has(MapFeature.START_A))
+	    Color c = null;
+	    String s = "";
+	    if (t.has(MapFeature.START_A)) {
 		c = colors.getColor(MapFeature.START_A);
-	    else if (t.has(MapFeature.START_B))
-		c = colors.getColor(MapFeature.START_B);
-	    else if (t.has(MapFeature.VICTORY_A))
-		c = colors.getColor(MapFeature.VICTORY_A);
-	    else if (t.has(MapFeature.VICTORY_B))
-		c = colors.getColor(MapFeature.VICTORY_B);
-	    else
+		s = "A";
+	    }
+	    if (t.has(MapFeature.START_B)) {
+		c = ColorSettings.blend(c, colors.getColor(MapFeature.START_B));
+		s = (s.length() == 0) ? "B" : "";
+	    }
+	    if (t.has(MapFeature.VICTORY_A)) {
+		c = ColorSettings.blend(c, colors.getColor(MapFeature.VICTORY_A));
+		s = "A";
+	    }
+	    if (t.has(MapFeature.VICTORY_B)) {
+		c = ColorSettings.blend(c, colors.getColor(MapFeature.VICTORY_B));
+		s = (s.length() == 0) ? "B" : "";
+	    }
+	    if (c == null)
 		c = t.getColor();
 	    g.setColor(c);
 	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
+	    g.setColor(Color.BLACK);
+	    setFont(g, FontUse.IN_SQUARE);
+	    drawTCString(g, p, s);
+	    setFont(g, FontUse.NORMAL);
 	}
 	if (t.has(MapFeature.BLOOD_ROCK)) {
 	    int h2 = tileHeight / 4;
@@ -209,12 +222,8 @@ public class MapPanel extends JPanel {
 	    g.drawOval(x+2,y+2, tileWidth-5, tileHeight-5);
 	}
 	
-	if (t.has(MapFeature.EXIT_A) || t.has(MapFeature.EXIT_B)) {
-	    // g.drawString("Exit", x+2, y+2);
-	    g.setColor(colors.getColor(MapFeature.EXIT_A));
-	    g.drawLine(x, y, x+tileWidth-1, y+tileHeight-1);
-	    g.drawLine(x+tileWidth-1, y, x, y+tileHeight-1);
-	}
+	if (t.has(MapFeature.EXIT_A) || t.has(MapFeature.EXIT_B))
+	    paintExit(g, p, t);
 
 	paintFullSquareFeature(g, p, t, MapFeature.PIT);
 	paintFullSquareFeature(g, p, t, MapFeature.ELEMENTAL_WALL);
@@ -243,7 +252,7 @@ public class MapPanel extends JPanel {
 	g.setColor(Color.BLACK);
 	int move = movementMap.getMove(new Location(col,row));
 	if (move != MovementMap.UNREACHABLE) {
-	    setFont(g, FontUse.MOVEMENT);
+	    setFont(g, FontUse.IN_SQUARE);
 	    drawBLString(g, p, "" + move);
 	    setFont(g, FontUse.NORMAL);
 	}
@@ -260,7 +269,7 @@ public class MapPanel extends JPanel {
     }
     
     
-    public void setMap(Map map) {
+    public final void setMap(Map map) {
 	this.map = map;
 	setPreferredSize(new java.awt.Dimension(PREFERRED_TILE_WIDTH * (map.getWidth() + 1),
 		PREFERRED_TILE_HEIGHT * (map.getHeight() + 1)));
@@ -311,14 +320,21 @@ public class MapPanel extends JPanel {
     
     private void drawCenteredString(Graphics g, java.awt.Point p, String s) {
 	FontMetrics fm = getFontMetrics(g.getFont());
-	int x = p.x + tileWidth / 2 - fm.stringWidth(s) / 2;
-	int y = p.y + tileHeight / 2 + fm.getAscent() / 2;
+	int x = p.x + (tileWidth - fm.stringWidth(s)) / 2;
+	int y = p.y + (tileHeight  + fm.getAscent()) / 2;
 	g.drawString(s, x, y);
     }
     
     private void drawBLString(Graphics g, java.awt.Point p, String s) {
 	int x = p.x + 2;
 	int y = p.y + tileHeight - 3;
+	g.drawString(s, x, y);
+    }
+    
+    private void drawTCString(Graphics g, java.awt.Point p, String s) {
+	FontMetrics fm = getFontMetrics(g.getFont());
+	int x = p.x + (tileWidth - fm.stringWidth(s)) / 2;
+	int y = p.y + fm.getAscent() + 1;
 	g.drawString(s, x, y);
     }
 
@@ -387,6 +403,30 @@ public class MapPanel extends JPanel {
 	    g.setColor(colors.getColor(f));
 	    g.fillRect(p.x, p.y, tileWidth, tileHeight);
 	}
+    }
+    
+    private void paintExit(Graphics g, java.awt.Point p, MapSquare t) {
+	boolean a = t.has(MapFeature.EXIT_A);
+	boolean b = t.has(MapFeature.EXIT_B);
+	
+	Color c;
+	String legend;
+	if (a && b) {
+	    c = ColorSettings.blend(colors.getColor(MapFeature.EXIT_A), colors.getColor(MapFeature.EXIT_B));
+	    legend = "";
+	} else if (a) {
+	    c = colors.getColor(MapFeature.EXIT_A);
+	    legend = "A";
+	} else {
+	    c = colors.getColor(MapFeature.EXIT_B);
+	    legend = "B";
+	}
+	g.setColor(c);
+	g.drawLine(p.x, p.y, p.x+tileWidth-1, p.y+tileHeight-1);
+	g.drawLine(p.x+tileWidth-1, p.y, p.x, p.y+tileHeight-1);
+	setFont(g, FontUse.IN_SQUARE);
+	drawTCString(g, p, legend);
+	setFont(g, FontUse.NORMAL);
     }
 
 }
