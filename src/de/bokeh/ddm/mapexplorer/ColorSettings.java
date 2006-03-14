@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.12 2006/03/06 11:13:52 breitko Exp $
+ * $Id: ColorSettings.java,v 1.13 2006/03/14 14:45:56 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -181,4 +181,13 @@ public class ColorSettings {
         this.defaultColor = defaultColor;
     }
     
+    public static Color blend(Color a, Color b) {
+	if (a == null)
+	    return b;
+	if (b == null)
+	    return a;
+	return new Color((a.getRed() + b.getRed()) / 2,
+			 (a.getGreen() + b.getGreen()) / 2,
+			 (a.getBlue() + b.getBlue()) / 2);
+    }
 }
