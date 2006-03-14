@@ -61,4 +61,4 @@ All feedback should be sent my mail to chris@chr-breitkopf.de
 
 Thanks for using Map Explorer!
 
-Christoph Breitkopf, 2005-12-02
+Christoph Breitkopf, 2006-03-14
