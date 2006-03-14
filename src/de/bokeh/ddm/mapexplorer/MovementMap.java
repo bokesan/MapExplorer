@@ -21,7 +21,7 @@ public class MovementMap {
     /**
      * Reset movement info.
      */
-    public void clear() {
+    public final void clear() {
 	int size = move.length;
 	for (int i = 0; i < size; i++) {
 	    move[i] = UNREACHABLE;

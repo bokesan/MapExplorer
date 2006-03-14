@@ -1,5 +1,5 @@
 /*
- * $Id: LosBenchmark.java,v 1.5 2006/01/05 12:55:51 breitko Exp $
+ * $Id: LosBenchmark.java,v 1.6 2006/03/14 14:47:16 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -41,7 +41,7 @@ public class LosBenchmark {
     private final Map map;
     private final LosMap losMap;
     private final LosCalculator losCalculator;
-    private Logger logger;
+    private final Logger logger;
     private int totalLos;
     
     public LosBenchmark(Map map, int numThreads, int randomTestsPerSquare) {

@@ -1,5 +1,5 @@
 /*
- * $Id: Map.java,v 1.8 2006/03/10 11:31:33 breitko Exp $
+ * $Id: Map.java,v 1.9 2006/03/14 14:47:08 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -264,38 +264,6 @@ public class Map {
      */
     public Dimension getDimension() {
 	return new Dimension(width, height);
-    }
-    
-    /**
-     * Is there line-of-sight between (fromCol,fromRow) and (toCol,toRow)?
-     * 
-     * @param fromCol source column
-     * @param fromRow source row
-     * @param toCol   target column
-     * @param toRow   target row
-     * @return true if there is LOS between the two squares, false
-     *         otherwise.
-     */
-    public boolean lineOfSight(int fromCol, int fromRow, int toCol, int toRow) {
-	for (int mask = 0; mask < 16; mask++) {
-	    if (testLOS(fromCol + ((mask & 8) >> 3), fromRow
-		    + ((mask & 4) >> 2), toCol + ((mask & 2) >> 1), toRow
-		    + (mask & 1)))
-		return true;
-	}
-	return false;
-    }
-    
-    /*
-     * Test LOS for one line.
-     * @param sx source column
-     * @param sy source row
-     * @param dx dest column
-     * @param dy dest row
-     */
-    private boolean testLOS(int sx, int sy, int dx, int dy) {
-	
-	return false;
     }
     
     public void writeSvgFile(File file) throws FileNotFoundException {

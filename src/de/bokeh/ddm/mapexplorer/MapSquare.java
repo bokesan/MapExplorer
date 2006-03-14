@@ -1,5 +1,5 @@
 /*
- * $Id: MapSquare.java,v 1.8 2006/02/10 16:59:44 breitko Exp $
+ * $Id: MapSquare.java,v 1.9 2006/03/14 14:48:57 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -36,9 +36,9 @@ import java.util.EnumSet;
  */
 public class MapSquare {
     
-    private EnumSet<MapFeature> features;
+    private final EnumSet<MapFeature> features;
     
-    private EnumSet<Direction> wall;
+    private final EnumSet<Direction> wall;
     
     private Color color;
     

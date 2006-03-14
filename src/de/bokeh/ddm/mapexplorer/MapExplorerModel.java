@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorerModel.java,v 1.6 2006/03/10 11:31:33 breitko Exp $
+ * $Id: MapExplorerModel.java,v 1.7 2006/03/14 14:47:32 breitko Exp $
  *
  * This file is part of Map Explorer.
  * 
@@ -39,7 +39,7 @@ public class MapExplorerModel {
     private LosMap losMap;
     private MovementMap movementMap;
     
-    private Set<Creature> creatures; // LOS sources
+    private final Set<Creature> creatures; // LOS sources
     
     private boolean smokeBlocksLos;
     
@@ -103,7 +103,7 @@ public class MapExplorerModel {
     /**
      * @param map The map to set.
      */
-    public void setMap(Map map) {
+    public final void setMap(Map map) {
         this.map = map;
         this.losMap = new LosMap(map.getDimension());
         this.movementMap = new MovementMap(map.getDimension());
@@ -126,7 +126,7 @@ public class MapExplorerModel {
 	return Collections.unmodifiableSet(creatures);
     }
     
-    public void removeAllCreatures() {
+    public final void removeAllCreatures() {
 	creatures.clear();
     }
 
