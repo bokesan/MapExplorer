@@ -51,10 +51,6 @@ Map Explorer will not always find all LOS squares. If you find case
 where Map Explorer misses a LOT on one of the offical maps, please
 send me an email with the name of the map and the squares.
 
-The support for smoke is preliminary, and does not work
-in the way the current rule version states. This will be fixed
-when the rules have settled.
-
 
 FEEDBACK
 ========
