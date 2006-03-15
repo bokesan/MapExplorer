@@ -1,0 +1,41 @@
+map Teleport Temple
+
+width 34
+height 22
+
+basecolor 307040
+
+start A D4-J9
+exit A I16-M16
+victory A N7-P9
+victory A F24-H26
+
+start B I26-R31
+exit B I16-M16
+victory B I23-K25
+victory B I13 J10 J11-K13 L13
+
+solid Q4-S5 R6-S6
+solid Q13-R16 S13-S15
+solid I14-M15 M13
+solid D16-E20
+solid D27-E28
+solid T20-V21 U22-V22
+
+difficult I13 J10 J11-K13 L13
+difficult J6-J7
+difficult I20-K20
+difficult I28-I29
+difficult R28-R29
+difficult M26-N26 D9
+
+statue F4 G9 J4 J9
+
+wall north J4-J9 I10 C9-C11
+wall north M7-M9 H16 M16 H20-H31
+wall north P20-P22 R26-R31
+wall east D3-K3 D9-J9 N9-Q9 F23-H23
+wall east L20-P20 I25-R25 I31-M31 Q31-R31
+wall east A23-B23 A31-D31
+
+teleporter B18 B30 B33 G10 G22 L2 N21 O15 U2 U18 U24
