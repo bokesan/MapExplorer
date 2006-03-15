@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.16 2006/03/14 14:48:34 breitko Exp $
+ * $Id: MapPanel.java,v 1.17 2006/03/15 14:44:43 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -150,33 +150,29 @@ public class MapPanel extends JPanel {
 	int y = p.y;
 	g.setColor(colors.getColor(ColorSettings.Special.GRID));
 	g.drawRect(x, y, tileWidth-1, tileHeight-1);
+	String playerMarker = null;
 	{
 	    Color c = null;
-	    String s = "";
 	    if (t.has(MapFeature.START_A)) {
 		c = colors.getColor(MapFeature.START_A);
-		s = "A";
+		playerMarker = "A";
 	    }
 	    if (t.has(MapFeature.START_B)) {
 		c = ColorSettings.blend(c, colors.getColor(MapFeature.START_B));
-		s = (s.length() == 0) ? "B" : "";
+		playerMarker = (playerMarker == null) ? "B" : null;
 	    }
 	    if (t.has(MapFeature.VICTORY_A)) {
 		c = ColorSettings.blend(c, colors.getColor(MapFeature.VICTORY_A));
-		s = "A";
+		playerMarker = "A";
 	    }
 	    if (t.has(MapFeature.VICTORY_B)) {
 		c = ColorSettings.blend(c, colors.getColor(MapFeature.VICTORY_B));
-		s = (s.length() == 0) ? "B" : "";
+		playerMarker = (playerMarker == null) ? "B" : null;
 	    }
 	    if (c == null)
 		c = t.getColor();
 	    g.setColor(c);
 	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
-	    g.setColor(Color.BLACK);
-	    setFont(g, FontUse.IN_SQUARE);
-	    drawTCString(g, p, s);
-	    setFont(g, FontUse.NORMAL);
 	}
 	if (t.has(MapFeature.BLOOD_ROCK)) {
 	    int h2 = tileHeight / 4;
@@ -220,6 +216,13 @@ public class MapPanel extends JPanel {
 	if (t.has(MapFeature.STATUE)) {
 	    g.setColor(colors.getColor(MapFeature.STATUE));
 	    g.drawOval(x+2,y+2, tileWidth-5, tileHeight-5);
+	}
+	
+	if (playerMarker != null) {
+	    g.setColor(Color.BLACK);
+	    setFont(g, FontUse.IN_SQUARE);
+	    drawTCString(g, p, playerMarker);
+	    setFont(g, FontUse.NORMAL);
 	}
 	
 	if (t.has(MapFeature.EXIT_A) || t.has(MapFeature.EXIT_B))
