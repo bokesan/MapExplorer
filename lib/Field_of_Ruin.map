@@ -5,6 +5,7 @@ basecolor CC9933
 # Special thanks to Guy Fullerton for the Field of Ruin wall diagram on his clarification page
 # http://homepage.mac.com/guyf/DDM/FieldOfRuin.jpg
 difficult G7 G8-H9 I8 M6-M7 L7 P11-Q11 Q12-R12 V11 U12 V13 K16 J17 N17-N18 M19 D14-D15 B15-C15 C16 P20 N21-P21 T24-T25 L26 R28 T29-T31 Q31-S31 E30 C30-C32 B31 D32-H32
+difficult E9
 solid D6-F7 E8-F8 F9-F10 A11 A12-B14 C13-C14 K5-L6 Q4-S6 N10-O11 U14-V19 T16-T17 O15-P17 O18 N19-O20 M20 K15 I15-J16 G17-I18 I19-I20 D24-F26 J25-K27 L25-O25 D30 D31-H31 O29-P29 Q29-S30
 start A E32-G34 P31-V34
 start B A1-G4 Q1-S3
