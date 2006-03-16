@@ -9,6 +9,6 @@ rem ME_HOME not correctly set - try jar file w/o path
 %JVM% -jar MapExplorer.jar %*
 goto DONE
 :HOME_OK
-%JVM% -Dmapexplorer.home=%ME_HOME% -jar %ME_HOME%\MapExplorer.jar %*
+%JVM% "-Dmapexplorer.home=%ME_HOME%" -jar "%ME_HOME%\MapExplorer.jar" %*
 :DONE
 endlocal
