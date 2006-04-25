@@ -1,0 +1,43 @@
+map Dungeon of Blood
+# from Fantastic Locations - Fields of Ruin
+width 30
+height 21
+basecolor 786880
+
+
+wall west A1-O1
+wall north U4-U18 U24-U26
+wall south A5-A14 A18-A27
+wall east D30-H30 M30-R30
+
+solid Q23 S25 Q24-S24 P28 S28 N25 M25-M28 L23-L25
+solid T19-U19 U8 Q12-S12 R15-S15 Q16-Q19
+solid F1 I1 L1 O1 R1 R4-R8
+solid F4-F6 I4-I5 L4-L5 O4-O5 I6-O6
+
+solid A4-B4 C8-C9 D9-D14 C14 C18 D18-D19 C22-D22
+solid A25-B25 E25-I25 I23-I24 H26-H28
+
+
+bloodrock I7 L7 M8-P8 Q9 R10 S11-T11 U11-U16 T16
+bloodrock G8-H8 F9 F10 E10-E16 D15-D16 F16 F17-I17
+bloodrock L20-M20 N21-O23 P20-R20 R19 S17-S19
+statue J7-K7
+
+magic I17-L20
+difficult R2-S3 T1 P14-Q15 Q13
+difficult M7-M11 N11-N12 G6 H6-H9 I9-L9
+difficult C4 C7 A14-B14 D20-D21
+difficult N28-O28 O25-P25 P26 Q28-R28
+pit J18-K19
+
+# crystal pillars
+solid G12 G19 N19
+
+start A F2-O3 G4-H5 J4-K5 M4-N5
+victory A I17-L20 A19-C21
+exit A A1-A3
+
+start B A26-G30 N26-R27
+exit B I30-L30
+victory B I7-L8 M10-M11 N11-N12

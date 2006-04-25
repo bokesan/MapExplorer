@@ -1,0 +1,14 @@
+map Keep of fallen Kings II
+# from Fantastic Locations - Fields of Ruin
+width 30
+height 21
+basecolor 609070
+
+
+solid A6-C6 C5-G5 G6-J6 N6 N5-R5 R6-R9 Q9-Q10
+wall east A9-C9 north C9 C12 C16
+solid A17-C17 C18-E18
+solid J17 K17-K19 L19-M19 M20-O20
+wall south N17 N18 M17 west M17 N17
+wall south N10-N13
+

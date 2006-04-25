@@ -1,0 +1,47 @@
+map King's Road
+# from Fantastic Locations - Fields of Ruin
+width 30
+height 21
+basecolor 688070
+
+# outcroppings
+solid A11-A14 B12-B13 C13
+solid T11-U16 S12-S15 R14-R15 Q15
+
+
+# stone spikes
+solid J7-K8
+solid E17-F18
+solid E22-F23
+solid L20-M21
+solid S25-T26
+difficult O4 J16
+
+
+forest A1-A5 B1-B3 C1
+forest F5-G6 G4-H4
+forest A9-A10 B10-B11 C10-C12 D12-E14 E15-F15 B14-C14 A15-B17
+forest S3-U4 T5-U5
+forest U7-U10 R9-U10 P8-R8 S11 R11-R13 Q13-Q14 N14-P15 P16-S16 R17-U17
+
+
+forest J9-K14 I11-I12 L9-L11 M10-M11 N11
+
+forest A23-A30 B23-B27 C24-C27 D25-D28
+forest Q21-R22 P22-P23 O23-O24
+forest I26-J26 H27-I27
+
+
+start A B27-E30 Q27-U30
+exit A N30-P30
+victory A D8-E11
+
+
+# shared victory area
+victory A N14-O15
+victory B N14-O15
+
+start B C1-H3 Q1-U3
+exit B L1-N1
+victory B D16-G19
+

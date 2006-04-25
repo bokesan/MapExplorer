@@ -1,0 +1,39 @@
+map Keep of fallen Kings I
+# from Fantastic Locations - Fields of Ruin
+width 30
+height 21
+basecolor 607090
+
+
+solid D5-H5 D6 H6-I6 O5-P5 N6-O6 U6
+solid E10-E13 D18-F18 E19-E22 D22-D26
+solid E26-H26 H25-I25 O25 O26-Q26
+solid R17-U17 R18-R20
+solid M10-M11 K11-L11 J11-J20 K20-N20
+wall north M15 M19
+wall south R15-R16
+wall north U7-U9 U14-U16
+wall east T9-U9
+
+
+difficult F4-G4 J6-J7 I7 M6-M7
+difficult Q4 Q5-S5 S6-T6
+difficult D7-D9 E9 F11-F14 E14 D13
+difficult R12-U12 N12-O12
+difficult E17 F19-F21 K15-M15 N16-N17 K19
+difficult Q20 R21-R22 S22-S23 R26-S26
+difficult J25 I26 M25-N26 O27
+
+statue D11 D20 Q13 Q16
+
+
+# shared exit
+exit A A14-A17
+exit B A14-A17
+
+
+start A A28-F30 P28-U30
+victory A K12-L14
+
+start B A1-F3 P1-U3
+victory B K17-M19
