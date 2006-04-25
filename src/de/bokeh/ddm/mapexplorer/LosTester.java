@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.6 2006/01/05 12:55:51 breitko Exp $
+ * $Id: LosTester.java,v 1.7 2006/04/25 13:26:22 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -48,6 +48,8 @@ public class LosTester {
     
     private final Set<Line> allWalls;
     private Set<Line> walls;
+    private final Set<Location> allForestSquares;
+    private Set<Location> forestSquares;
     
     private final Random rng;
     private final int rndTests;
@@ -60,7 +62,7 @@ public class LosTester {
      * @param rndTests the number of random tests to perform
      * @param logger a Logger
      */
-    public LosTester(Location loc, Dimension size, Set<Line> walls, int rndTests, Logger logger) {
+    public LosTester(Location loc, Dimension size, Set<Line> walls, Set<Location> forestSquares, int rndTests, Logger logger) {
 	this.location = loc;
 	this.rndTests = rndTests;
 	x = loc.x();
@@ -68,6 +70,7 @@ public class LosTester {
 	width = size.getWidth();
 	height = size.getHeight();
 	this.allWalls = walls;
+	this.allForestSquares = forestSquares;
 	rng = new Random();
 	this.logger = logger;
     }
@@ -102,6 +105,13 @@ public class LosTester {
 		    }
 		}
 	    }
+	    for (Location sq : allForestSquares) {
+		int sq_row = sq.getRow();
+		if (sq.getColumn() == col && sq_row > botRow && sq_row < topRow) {
+		    // logger.info("LoS blocked because of forest");
+		    return -1;
+		}
+	    }
 	    // logger.info("same column, no intervening walls: LOS");
 	    return 0;
 	}
@@ -123,6 +133,13 @@ public class LosTester {
 			    return -1;
 			}
 		    }
+		}
+	    }
+	    for (Location sq : allForestSquares) {
+		int sq_col = sq.getColumn();
+		if (sq.getRow() == row && sq_col > leftCol && sq_col < rightCol) {
+		    // logger.info("LoS blocked because of forest");
+		    return -1;
 		}
 	    }
 	    // logger.info("same row, no intervening walls: LOS");
@@ -242,6 +259,13 @@ public class LosTester {
 	    if (wall.intersectsOrCoincides(x1, y1, x2, y2))
 		return false;
 	}
+	if (forestSquares.size() > 0) {
+	    Line line = new Line(new Point(x1, y1), new Point(x2, y2));
+	    for (Location sq : forestSquares) {
+		if (line.intersectsSquareAsPerForest(sq))
+		    return false;
+	    }		
+	}
 	return true;
     }
 
@@ -275,6 +299,11 @@ public class LosTester {
 			&& w.getEnd().getY() > y1)
 		    walls.add(w);
 	    }
+	}
+	forestSquares = new HashSet<Location>();
+	for (Location sq : allForestSquares) {
+	    if (bounds.contains(sq))
+		forestSquares.add(sq);
 	}
     }
 }

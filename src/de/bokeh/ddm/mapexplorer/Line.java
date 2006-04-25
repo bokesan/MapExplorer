@@ -1,5 +1,5 @@
 /*
- * $Id: Line.java,v 1.5 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Line.java,v 1.6 2006/04/25 13:26:22 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -278,4 +278,40 @@ public class Line {
 	return "Line{" + start + "," + end + "}";
     }
 
+    
+    public boolean intersectsSquareAsPerForest(Location loc) {
+	Point ip1 = null;
+	
+	int x = loc.getColumn();
+	int y = loc.getRow();
+
+	for (int d = 0; d < 4; d++) {
+	    Line edge;
+	    switch (d) {
+	    case 0:
+		edge = new Line(new Point(x, y), new Point(x+1, y));
+		break;
+	    case 1:
+		edge = new Line(new Point(x, y), new Point(x, y+1));
+		break;
+	    case 2:
+		edge = new Line(new Point(x+1, y), new Point(x+1, y+1));
+		break;
+	    default:
+		edge = new Line(new Point(x, y+1), new Point(x+1, y+1));
+	        break;
+	    }
+	    IntersectionResult r = this.intersects(edge);
+	    if (r.isCoincident())
+		return true;
+	    if (r.isIntersection()) {
+		if (ip1 == null)
+		    ip1 = r.getIntersection();
+		else
+		    if (!ip1.equals(r.getIntersection()))
+			return true;
+	    }
+	}
+	return false;
+    }
 }

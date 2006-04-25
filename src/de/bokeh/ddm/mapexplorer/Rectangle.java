@@ -1,5 +1,5 @@
 /*
- * $Id: Rectangle.java,v 1.5 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Rectangle.java,v 1.6 2006/04/25 13:26:22 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -158,5 +158,16 @@ public class Rectangle {
 	    for (int col = left; col <= right; col++)
 		locs[i++] = new Location(col, row);
 	return locs;
+    }
+    
+    /**
+     * Does this rectangle contain a Location?
+     * @param loc a Location
+     * @return true if this Rectangle contains the Location.
+     */
+    public boolean contains(Location loc) {
+	int col = loc.getColumn();
+	int row = loc.getRow();
+	return col >= left && col <= right && row >= bottom && row <= top;
     }
 }

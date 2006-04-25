@@ -1,5 +1,5 @@
 /*
- * $Id: LosCalculator.java,v 1.7 2006/03/10 11:30:49 breitko Exp $
+ * $Id: LosCalculator.java,v 1.8 2006/04/25 13:26:22 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -52,6 +52,7 @@ public class LosCalculator {
     private int randomTestsPerSquare;
     private final Logger logger;
     private Set<Line> walls;
+    private Set<Location> forestSquares;
 
     
     /**
@@ -77,6 +78,7 @@ public class LosCalculator {
      */
     public void computeLos() {
 	walls = map.getWalls(smokeBlocksLos);
+	forestSquares = getForestSquares(map);
 	List<Callable<Object>> ts = new ArrayList<Callable<Object>>();
 	
 	los.clear();
@@ -98,6 +100,17 @@ public class LosCalculator {
 		logger.warning("invokeAll() interrupted");
 	    }
 	}
+    }
+    
+    private Set<Location> getForestSquares(Map map) {
+	Set<Location> r = new HashSet<Location>();
+	for (int row = map.getHeight() - 1; row >= 0; row--) {
+	    for (int col = map.getWidth() - 1; col >= 0; col--) {
+		if (map.get(col, row).has(MapFeature.FOREST))
+		    r.add(new Location(col, row));
+	    }
+	}
+	return r;
     }
     
     public void setMap(Map map, LosMap losMap) {
@@ -123,14 +136,14 @@ public class LosCalculator {
 	    for (int col = 0; col < width; col++) {
 		Location target = new Location(col, row);
 		if (!target.equals(source))
-		    ts.add(new LosTask(source, target, this, this.walls));
+		    ts.add(new LosTask(source, target, this, this.walls, this.forestSquares));
 	    }
 	}
     }
 
     private void addIfOnMap(Location source, List<Callable<Object>> ts, int col, int row, Set<Line> walls) {
 	if (col >= 0 && col < map.getWidth() && row >= 0 && row < map.getHeight()) {
-	    ts.add(new LosTask(source, new Location(col,row), this, walls));
+	    ts.add(new LosTask(source, new Location(col,row), this, walls, this.forestSquares));
 	}
     }
     
@@ -257,18 +270,20 @@ class LosTask implements Callable<Object> {
     private final Location target;
     private final LosCalculator context;
     private final Set<Line> walls;
+    private final Set<Location> forestSquares;
     
-    public LosTask(Location source, Location target, LosCalculator context, Set<Line> walls) {
+    public LosTask(Location source, Location target, LosCalculator context, Set<Line> walls, Set<Location> forestSquares) {
 	this.source = source;
 	this.target = target;
 	this.context = context;
 	this.walls = walls;
+	this.forestSquares = forestSquares;
     }
     
     public Object call() {
 	Map map = context.getMap();
 	LosMap losMap = context.getLos();
-	LosTester t = new LosTester(source, map.getDimension(), walls, context.getRandomTestsPerSquare(), context.getLogger());
+	LosTester t = new LosTester(source, map.getDimension(), walls, forestSquares, context.getRandomTestsPerSquare(), context.getLogger());
 	MapSquare s = map.get(target);
 	if (!s.isSolid()) {
 	    int r = t.testLocation(target);
