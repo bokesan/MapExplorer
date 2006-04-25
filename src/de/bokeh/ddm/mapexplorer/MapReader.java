@@ -1,5 +1,5 @@
 /*
- * $Id: MapReader.java,v 1.6 2006/03/06 11:13:52 breitko Exp $
+ * $Id: MapReader.java,v 1.7 2006/04/25 12:21:29 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -88,6 +88,9 @@ public class MapReader {
 		}
 		else if (f[0].equals("smoke")) {
 		    handleFeature(m, f, MapFeature.SMOKE);
+		}
+		else if (f[0].equals("forest")) {
+		    handleFeature(m, f, MapFeature.FOREST);
 		}
 		else if (f[0].equals("pit")) {
 		    handleFeature(m, f, MapFeature.PIT);

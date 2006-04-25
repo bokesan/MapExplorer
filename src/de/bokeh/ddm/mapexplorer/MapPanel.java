@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.17 2006/03/15 14:44:43 breitko Exp $
+ * $Id: MapPanel.java,v 1.18 2006/04/25 12:21:25 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -196,6 +196,9 @@ public class MapPanel extends JPanel {
 	    g.setColor(colors.getColor(MapFeature.TELEPORTER));
 	    g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);
 	}
+	if (t.has(MapFeature.FOREST)) {
+	    paintForest(g, x, y);
+	}
 	if (t.has(MapFeature.DIFFICULT)) {
 	    paintDifficult(g, x, y);
 	}
@@ -309,6 +312,14 @@ public class MapPanel extends JPanel {
 	g.drawLine(x+tileWidth/2, y+tileHeight/3, midx, midy);
 	g.drawLine(midx, midy, x+tileWidth/3, y+tileHeight-tileHeight/3);
 	g.drawLine(midx, midy, x+tileWidth-tileWidth/3, y+tileHeight-tileHeight/3);
+	g.setColor(Color.BLACK);
+    }
+    
+    private void paintForest(Graphics g, int x, int y) {
+	// Tree
+	g.setColor(colors.getColor(MapFeature.FOREST));
+	g.drawArc(x + tileWidth/3, y + tileHeight/6, tileWidth/3, tileHeight/3, 0, 360);
+	g.drawLine(x+tileWidth/2, y+tileHeight/2, x+tileWidth/2, y+5*tileHeight/6);
 	g.setColor(Color.BLACK);
     }
     

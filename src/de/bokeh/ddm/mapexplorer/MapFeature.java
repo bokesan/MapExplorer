@@ -1,5 +1,5 @@
 /*
- * $Id: MapFeature.java,v 1.5 2006/03/06 11:13:52 breitko Exp $
+ * $Id: MapFeature.java,v 1.6 2006/04/25 12:21:21 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -65,6 +65,9 @@ public enum MapFeature {
     
     /** Smoke.<p>Blocks LOS. */
     SMOKE,
+    
+    /** Forest.<p>Blocks LOS. */
+    FOREST,
     
     /** Teleporter. */
     TELEPORTER,

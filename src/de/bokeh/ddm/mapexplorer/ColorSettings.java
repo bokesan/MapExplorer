@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.13 2006/03/14 14:45:56 breitko Exp $
+ * $Id: ColorSettings.java,v 1.14 2006/04/25 12:21:45 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -153,6 +153,7 @@ public class ColorSettings {
 	featureColor.put(MapFeature.PIT, Color.GRAY);
 	featureColor.put(MapFeature.LAVA, new Color(255, 128, 0));
 	featureColor.put(MapFeature.SMOKE, new Color(48, 48, 64, 208));
+	featureColor.put(MapFeature.FOREST, new Color(0, 192, 0));
 	featureColor.put(MapFeature.TELEPORTER, new Color(192, 255, 128));
 	featureColor.put(MapFeature.ELEMENTAL_WALL, new Color(48, 48, 32, 208));
 	
