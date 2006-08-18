@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.7 2006/04/25 13:26:22 breitko Exp $
+ * $Id: LosTester.java,v 1.8 2006/08/18 14:18:40 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -47,9 +47,9 @@ public class LosTester {
     private final int height;
     
     private final Set<Line> allWalls;
-    private Set<Line> walls;
+    private Line[] walls;
     private final Set<Location> allForestSquares;
-    private Set<Location> forestSquares;
+    private Location[] forestSquares;
     
     private final Random rng;
     private final int rndTests;
@@ -259,7 +259,7 @@ public class LosTester {
 	    if (wall.intersectsOrCoincides(x1, y1, x2, y2))
 		return false;
 	}
-	if (forestSquares.size() > 0) {
+	if (forestSquares != null) {
 	    Line line = new Line(new Point(x1, y1), new Point(x2, y2));
 	    for (Location sq : forestSquares) {
 		if (line.intersectsSquareAsPerForest(sq))
@@ -280,7 +280,7 @@ public class LosTester {
 
     
     private void getRelevantWalls(Rectangle bounds) {
-	walls = new HashSet<Line>();
+	HashSet<Line> walls = new HashSet<Line>();
 	double x1 = bounds.getLeft();
 	double x2 = bounds.getRight() + 1;
 	double y1 = bounds.getBottom();
@@ -300,10 +300,16 @@ public class LosTester {
 		    walls.add(w);
 	    }
 	}
-	forestSquares = new HashSet<Location>();
+	this.walls = walls.toArray(new Line[walls.size()]);
+	
+	HashSet<Location> forestSquares = new HashSet<Location>();
 	for (Location sq : allForestSquares) {
 	    if (bounds.contains(sq))
 		forestSquares.add(sq);
 	}
+	if (forestSquares.size() == 0)
+	    this.forestSquares = null;
+	else
+	    this.forestSquares = forestSquares.toArray(new Location[forestSquares.size()]);
     }
 }
