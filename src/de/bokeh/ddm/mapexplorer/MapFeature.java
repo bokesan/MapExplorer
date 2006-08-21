@@ -1,5 +1,5 @@
 /*
- * $Id: MapFeature.java,v 1.6 2006/04/25 12:21:21 breitko Exp $
+ * $Id: MapFeature.java,v 1.7 2006/08/21 14:24:18 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -26,6 +26,9 @@
 
 package de.bokeh.ddm.mapexplorer;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Map features.
  * @author Christoph Breitkopf
@@ -51,6 +54,9 @@ public enum MapFeature {
     /** Blood Rock.<p>Melee attacks score critical hits on a natural 19 or 20. */
     BLOOD_ROCK,
     
+    /** Zone of Death.<p>Must make a morale check if hit by a melee attack. */
+    ZONE_OF_DEATH,
+    
     /** Haunted.<p>-2 to all saves. */
     HAUNTED,
     
@@ -59,6 +65,9 @@ public enum MapFeature {
     
     /** A pit or chasm. */
     PIT,
+    
+    /** Steep slope. */
+    STEEP_SLOPE,
     
     /** Lava. */
     LAVA,
@@ -71,6 +80,9 @@ public enum MapFeature {
     
     /** Teleporter. */
     TELEPORTER,
+    
+    /** Waterfall. */
+    WATERFALL,
     
     /** Start area A. */
     START_A,
@@ -91,6 +103,36 @@ public enum MapFeature {
     VICTORY_B,
     
     /** Temporary wall terrain created using an Elemental Wall or other means. */
-    ELEMENTAL_WALL
+    ELEMENTAL_WALL;
+    
+    static final Map<String, MapFeature> tagNames = new HashMap<String, MapFeature>();
+    static {
+	tagNames.put("difficult", DIFFICULT);
+	tagNames.put("smoke", SMOKE);
+	tagNames.put("forest", FOREST);
+	tagNames.put("pit", PIT);
+	tagNames.put("spikestones", SPIKE_STONES);
+	tagNames.put("lava", LAVA);
+	tagNames.put("risky", RISKY);
+	tagNames.put("magic", SACRED_CIRCLE);
+	tagNames.put("summoning", SUMMONING_CIRCLE);
+	tagNames.put("statue", STATUE);
+	tagNames.put("bloodrock", BLOOD_ROCK);
+	tagNames.put("haunted", HAUNTED);
+	tagNames.put("teleporter", TELEPORTER);
+	tagNames.put("elementel_wall", ELEMENTAL_WALL);
+	tagNames.put("steep_slope", STEEP_SLOPE);
+	tagNames.put("death_zone", ZONE_OF_DEATH);
+	tagNames.put("waterfall", WATERFALL);
+    }
+    
+    
+    
+    public static MapFeature valueOfTag(String tag) {
+	MapFeature f = tagNames.get(tag);
+	if (f == null)
+	    throw new IllegalArgumentException("unknown tag for MapFeature: " + tag);
+	return f;
+    }
     
 }
