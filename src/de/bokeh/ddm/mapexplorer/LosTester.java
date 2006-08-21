@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.8 2006/08/18 14:18:40 breitko Exp $
+ * $Id: LosTester.java,v 1.9 2006/08/21 14:23:15 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -171,6 +171,27 @@ public class LosTester {
 	}
 	return r;
     }
+	
+    static final double[] testOffsets = {
+	0, 1,
+	1/32.0, 31/32.0,
+	2/32.0, 30/32.0,
+	3/32.0, 29/32.0, //
+	4/32.0, 28/32.0,
+	5/32.0, 27/32.0, //
+	6/32.0, 26/32.0,
+	7/32.0, 25/32.0,
+	8/32.0, 24/32.0,
+	9/32.0, 23/32.0,
+	10/32.0, 22/32.0,
+	11/32.0, 21/32.0, //
+	12/32.0, 20/32.0,
+	13/32.0, 19/32.0, //
+	14/32.0, 18/32.0,
+	15/32.0, 17/32.0,
+	1/512.0, 511/512.0,
+	0.5
+    };
     
     /**
      * Test two diagonals
@@ -181,35 +202,14 @@ public class LosTester {
     private int testEdges(Location loc, int slope) {
 	getRelevantWalls(new Rectangle(location, loc));
 	
-	final double[] off = {
-		0, 1,
-		1/32.0, 31/32.0,
-		2/32.0, 30/32.0,
-		3/32.0, 29/32.0, //
-		4/32.0, 28/32.0,
-		5/32.0, 27/32.0, //
-		6/32.0, 26/32.0,
-		7/32.0, 25/32.0,
-		8/32.0, 24/32.0,
-		9/32.0, 23/32.0,
-		10/32.0, 22/32.0,
-		11/32.0, 21/32.0, //
-		12/32.0, 20/32.0,
-		13/32.0, 19/32.0, //
-		14/32.0, 18/32.0,
-		15/32.0, 17/32.0,
-		1/512.0, 511/512.0,
-		0.5
-	};
-	
 	final double x1 = location.getColumn();
 	final double x2 = loc.getColumn();
 	if (slope == 0) {
 	    // ascending
 	    final double y1 = location.getRow();
 	    final double y2 = loc.getRow();
-	    for (double e1off : off) {
-		for (double e2off : off) {
+	    for (double e1off : testOffsets) {
+		for (double e2off : testOffsets) {
 		    if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
 			return 0;
 		    }
@@ -230,8 +230,8 @@ public class LosTester {
 	    // descending
 	    final double y1 = location.getRow() + 1;
 	    final double y2 = loc.getRow() + 1;
-	    for (double e1off : off) {
-		for (double e2off : off) {
+	    for (double e1off : testOffsets) {
+		for (double e2off : testOffsets) {
 		    if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
 			return 0;
 		    }
