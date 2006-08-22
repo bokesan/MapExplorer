@@ -1,0 +1,35 @@
+map Forest Cliff Lair
+# from DragonDown Grotto
+width 30
+height 21
+basecolor 887080
+
+solid A16-B16 F16-H16 N16-R16
+solid A17-A24 B24 B23-D23 C27 D27 D28
+solid G17-G21 E19-F19
+solid G24-L24 K25-K26
+solid O19-O22 Q27-Q30
+solid S20-U20 U21-U23 S24-U24
+
+forest A5-A8 B11-C13 A15-C15 C16
+forest D1-G2 E3-H3 F4 G4-N5 I6 M6 Q3
+forest N6-O7 O7-O10 P7-P11 R11 Q12-S13 Q9-Q15
+forest U4-U10 T5-T9 U16
+forest D7-E8 F8-F15 G10 G11 H11
+
+difficult B3-C3 C4-D5 G6-H6 F7-G7
+difficult K10 L9-M11 M10-N13
+
+magic J6-L8
+bloodrock I18-M22
+
+waterfall I16-M16
+difficult I16-M16
+
+start A A28-D30 R27-U30
+exit A I30-M30
+victory A K9-N10 L11 M11-N13
+
+start B A1-D3 R1-U3
+exit B I1-M1
+victory B J19-L21
