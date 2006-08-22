@@ -1,5 +1,5 @@
 /*
- * $Id: MapExplorer.java,v 1.24 2006/04/25 13:26:22 breitko Exp $
+ * $Id: MapExplorer.java,v 1.25 2006/08/22 12:43:37 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -41,7 +41,7 @@ import java.net.URL;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20060425";
+    public static final String VERSION = "20060822";
     
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
