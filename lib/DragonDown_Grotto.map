@@ -1,0 +1,32 @@
+map Dragondown Grotto
+width 30
+height 21
+basecolor 807890
+
+solid A5-B6 J6-M7
+
+death_zone K15-K19 O15-O19 L15-N15 L19-N19
+
+forest D1-F4 C4 G2 G4 F8
+forest M1-N1 P1-S3 O4-Q4 N5-O5
+forest U6-U8 T7 R13-S13 S18-S19 U18-U19
+forest S24-S25 Q24-R27 R28 P25-P26
+forest J17-J18 I18-I19 F21-I21 A22-I22 I23-I24 F23-F25 B23 A23-A25
+
+steep_slope I8-Q8 G9-Q9 Q10 R10-R12
+steep_slope E10-G12 D12-D14 E13-E14 F13
+steep_slope A20-J20 J19-K19 A21-E21 H27-I28 G28
+steep_slope R21 R22 Q22 Q23 P23 P24 O25 N25 N26 M26
+
+difficult R13 R15
+difficult S10 S12-S16 S19 S21 S23
+difficult T11 T13 T16 T20 T22
+difficult U12 U14 U16 U18 U21
+
+start A A28-C30 P28-U30
+exit A I30-M30
+victory A A14-B15 L16-N18
+
+start B A1-F3 N1-Q3
+exit B I1-M1
+victory B T16-U17 L16-N18
