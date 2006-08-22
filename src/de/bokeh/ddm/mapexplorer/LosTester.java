@@ -1,5 +1,5 @@
 /*
- * $Id: LosTester.java,v 1.9 2006/08/21 14:23:15 breitko Exp $
+ * $Id: LosTester.java,v 1.10 2006/08/22 11:46:40 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -200,10 +200,11 @@ public class LosTester {
      * @return Something
      */
     private int testEdges(Location loc, int slope) {
-	getRelevantWalls(new Rectangle(location, loc));
+	getRelevantWalls(loc);
 	
 	final double x1 = location.getColumn();
 	final double x2 = loc.getColumn();
+	
 	if (slope == 0) {
 	    // ascending
 	    final double y1 = location.getRow();
@@ -279,7 +280,8 @@ public class LosTester {
     }
 
     
-    private void getRelevantWalls(Rectangle bounds) {
+    private void getRelevantWalls(Location dest) {
+	Rectangle bounds = new Rectangle(location, dest);
 	HashSet<Line> walls = new HashSet<Line>();
 	double x1 = bounds.getLeft();
 	double x2 = bounds.getRight() + 1;
@@ -302,14 +304,18 @@ public class LosTester {
 	}
 	this.walls = walls.toArray(new Line[walls.size()]);
 	
-	HashSet<Location> forestSquares = new HashSet<Location>();
-	for (Location sq : allForestSquares) {
-	    if (bounds.contains(sq))
-		forestSquares.add(sq);
-	}
-	if (forestSquares.size() == 0)
+	if (dest.isNeighborOf(location))
 	    this.forestSquares = null;
-	else
-	    this.forestSquares = forestSquares.toArray(new Location[forestSquares.size()]);
+	else {
+	    HashSet<Location> forestSquares = new HashSet<Location>();
+	    for (Location sq : allForestSquares) {
+		if (bounds.contains(sq) && !sq.equals(dest) && !sq.equals(location))
+		    forestSquares.add(sq);
+	    }
+	    if (forestSquares.size() == 0)
+		this.forestSquares = null;
+	    else
+		this.forestSquares = forestSquares.toArray(new Location[forestSquares.size()]);
+	}
     }
 }

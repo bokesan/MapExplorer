@@ -1,5 +1,5 @@
 /*
- * $Id: Location.java,v 1.4 2006/01/05 12:55:51 breitko Exp $
+ * $Id: Location.java,v 1.5 2006/08/22 11:46:39 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -154,4 +154,20 @@ public class Location {
 	return 17 * column + row + 61612357;
     }
     
+    /**
+     * Check whether another Location is adjecent to this Location.
+     * <p>
+     * Also returns <code>true</code> for equal locations.
+     * 
+     * @param loc a Location
+     * @return <code>true</code> if the Location is adjacent to this Location,
+     *    <code>false</code> otherwise.
+     */
+    public boolean isNeighborOf(Location loc) {
+	int dx = column - loc.column;
+	if (dx < -1 || dx > 1)
+	    return false;
+	int dy = row - loc.row;
+	return (dy >= -1 && dy <= 1);
+    }
 }
