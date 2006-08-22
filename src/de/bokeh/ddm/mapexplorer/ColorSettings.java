@@ -1,5 +1,5 @@
 /*
- * $Id: ColorSettings.java,v 1.17 2006/08/22 11:43:10 breitko Exp $
+ * $Id: ColorSettings.java,v 1.18 2006/08/22 12:42:01 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -158,7 +158,7 @@ public class ColorSettings {
 	featureColor.put(MapFeature.ELEMENTAL_WALL, new Color(48, 48, 32, 208));
 	featureColor.put(MapFeature.ZONE_OF_DEATH, new Color(40, 0, 70));
 	featureColor.put(MapFeature.STEEP_SLOPE, Color.DARK_GRAY);
-	featureColor.put(MapFeature.WATERFALL, Color.BLUE);
+	featureColor.put(MapFeature.WATERFALL, new Color(0, 0, 255, 128));
 	
 	featureColor.put(MapFeature.START_A, Color.LIGHT_GRAY);
 	featureColor.put(MapFeature.START_B, Color.LIGHT_GRAY);

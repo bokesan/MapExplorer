@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.20 2006/08/22 11:44:37 breitko Exp $
+ * $Id: MapPanel.java,v 1.21 2006/08/22 12:42:01 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -174,6 +174,7 @@ public class MapPanel extends JPanel {
 	    g.setColor(c);
 	    g.fillRect(x+1, y+1, tileWidth-2, tileHeight-2);
 	}
+	paintFullSquareFeature(g, p, t, MapFeature.WATERFALL);
 	if (t.has(MapFeature.BLOOD_ROCK)) {
 	    int h2 = tileHeight / 4;
 	    int w2 = tileWidth / 4;
@@ -242,7 +243,6 @@ public class MapPanel extends JPanel {
 
 	paintFullSquareFeature(g, p, t, MapFeature.PIT);
 	paintFullSquareFeature(g, p, t, MapFeature.ELEMENTAL_WALL);
-	paintFullSquareFeature(g, p, t, MapFeature.WATERFALL);
 
 	// Walls
 	if (t.hasWall()) {
