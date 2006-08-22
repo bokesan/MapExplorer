@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.19 2006/08/21 14:24:18 breitko Exp $
+ * $Id: MapPanel.java,v 1.20 2006/08/22 11:44:37 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -211,6 +211,9 @@ public class MapPanel extends JPanel {
 	if (t.has(MapFeature.SPIKE_STONES)) {
 	    paintSpikestones(g, x, y);
 	}
+	if (t.has(MapFeature.STEEP_SLOPE)) {
+	    paintSteepSlope(g, x, y);
+	}
 	if (t.has(MapFeature.RISKY)) {
 	    paintRisky(g, x, y);
 	}
@@ -239,7 +242,6 @@ public class MapPanel extends JPanel {
 
 	paintFullSquareFeature(g, p, t, MapFeature.PIT);
 	paintFullSquareFeature(g, p, t, MapFeature.ELEMENTAL_WALL);
-	paintFullSquareFeature(g, p, t, MapFeature.STEEP_SLOPE);
 	paintFullSquareFeature(g, p, t, MapFeature.WATERFALL);
 
 	// Walls
@@ -301,6 +303,18 @@ public class MapPanel extends JPanel {
 	g.drawLine(x+2*w3, y+2*h3, x+w2, y+h3);
 	g.setColor(Color.BLACK);
     }
+
+    private void paintSteepSlope(Graphics g, int x, int y) {
+	int h6 = tileHeight / 6;
+	int v2h6 = 2 * tileHeight / 6;
+	int w6 = tileWidth / 6;
+	int v2w6 = 2 * tileWidth / 6;
+	g.setColor(colors.getColor(MapFeature.STEEP_SLOPE));
+	g.drawLine(x+w6, y+tileHeight-v2h6, x+tileWidth-v2w6, y+h6);
+	g.drawLine(x+v2w6, y+tileHeight-h6, x+tileWidth-w6, y+v2h6);
+	g.setColor(Color.BLACK);
+    }
+    
     
     private void paintRisky(Graphics g, int x, int y) {
 	// Skull
