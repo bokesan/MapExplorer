@@ -1,0 +1,56 @@
+map Underground Grotto
+# from Gargantuan Black Dragon
+
+# Contributed by Jai:
+#   I used pits for the pools, and forest for the mushrooms. I left the throne empty!
+
+width 34
+height 22
+basecolor 805848
+
+solid A6-A9 A14-A23 A28-A29
+solid B7 B14 B19-B21
+solid C20-C21
+solid G1
+solid H1-H2 H34
+solid I1-I2 I34
+solid J1 J34
+solid K1
+solid L1 L14 L20-L21
+solid M1 M13-M15 M20-M22
+solid N1 N13-N14 N20-N23
+solid O1-O2
+solid P1-P2 P34
+solid Q34
+solid T25
+solid U24-U25
+solid V7-V8 V24-V29
+
+wall north V1-V6 V9-V23 V30-V34
+wall east E34 F34 G34 K34 L34 M34 N34 O34 R34 S34 T34 U34 V34
+wall south A5 A30
+wall west E1 F1 Q1 R1 S1 T1 U1 V1
+
+forest B16-B18 C16-C19 D16-D21 E15-E20 F15-F19 G15-G19 H16-H17 I16
+forest D29-D31 E29-E31 F31
+
+pit D6-D9 E6-E9 F6-F9 G6-G9
+pit O5-O8 P5-P8 Q5-Q8 R5-R8
+pit F27-F30 G27-G30 H27-H30 I27-I30
+pit P28-P31 Q28-Q31 R28-R31 S28-S31
+
+difficult I3 J2-J4 K2-K4 L2 K33 L33-L34 M32-M34
+difficult S13-S15 T13-T15 U13-U15 V13-V15
+difficult S20-S22 T20-T22 U20-U22 V20-V22
+difficult Q15-Q20 R14-R21
+
+# The Throne
+solid S16-V19
+
+exit A A24-A27
+start A A30-A34 B30-B34 C30-C34 D30-D34 E30-E34 R32-R34 S32-S34 T31-T34 U31-U34 V31-V34
+victory A T13-T15 U13-U15 V13-V15
+
+exit B A10-A13
+start B A1-A5 B1-B5 C1-C5 D1-D5 E1-E5 R1-R4 S1-S4 T1-T4 U1-U4 V1-V4
+victory B T20-T22 U20-U22 V20-V22
