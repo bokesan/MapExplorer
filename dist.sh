@@ -20,4 +20,4 @@ cd ..
 zip -9 tmp/MapExplorer-$version.src.zip `find . -name '*.java' -print` build.xml License.txt \
  lib/*.map README.txt lib/*.properties lib/mapexplorer lib/MapExplorer.bat
 
-cp www/* tmp/MapExplorer-$version.*zip ~/prj/ddm/mapexplorer
+cp www/* tmp/MapExplorer-$version.*zip lib/Underground_Grotto.map ~/prj/ddm/mapexplorer
