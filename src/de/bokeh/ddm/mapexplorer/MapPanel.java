@@ -1,5 +1,5 @@
 /*
- * $Id: MapPanel.java,v 1.21 2006/08/22 12:42:01 breitko Exp $
+ * $Id: MapPanel.java,v 1.22 2006/11/13 10:58:14 breitko Exp $
  * 
  * This file is part of Map Explorer.
  * 
@@ -123,11 +123,14 @@ public class MapPanel extends JPanel {
 	computeSizes();
 	super.paintComponent(g);
 
+	LocationFormatter fmt = LocationFormatterFactory.getVassalFormatter(map.getDimension());
+	
 	for (int row = 0; row < map.getHeight(); row++) {
 	    java.awt.Point p = locPoint(-1, row);
-	    drawCenteredString(g, p, Location.rowToString(row));
+	    String r = fmt.formatRow(row);
+	    drawCenteredString(g, p, r);
 	    p = locPoint(map.getWidth(), row);
-	    drawCenteredString(g, p, Location.rowToString(row));
+	    drawCenteredString(g, p, r);
 	    for (int col = 0; col < map.getWidth(); col++) {
 		drawTile(g, col, row);
 	    }
@@ -137,8 +140,9 @@ public class MapPanel extends JPanel {
 		drawCreature(g, c);
 	}
 	for (int col = 0; col < map.getWidth(); col++) {
-	    drawCenteredString(g, locPoint(col, -1), Location.columnToString(col));
-	    drawCenteredString(g, locPoint(col, map.getHeight()), Location.columnToString(col));
+	    String c = fmt.formatColumn(col);
+	    drawCenteredString(g, locPoint(col, -1), c);
+	    drawCenteredString(g, locPoint(col, map.getHeight()), c);
 	}
 	g.setColor(Color.BLACK);
     }
