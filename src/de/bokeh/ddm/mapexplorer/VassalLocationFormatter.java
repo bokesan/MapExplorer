@@ -13,9 +13,11 @@ public class VassalLocationFormatter implements LocationFormatter {
     }
 
     public String formatColumn(int col) {
-	if (col < 26)
-	    return Character.toString((char) ('A' + col));
-	return "A" + formatColumn(col - 26);
+	int n = col / 26 + 1;
+	char c = (char) ('A' + col % 26);
+	char[] r = new char[n];
+	java.util.Arrays.fill(r, c);
+	return String.valueOf(r);
     }
 
     public String formatRow(int row) {
