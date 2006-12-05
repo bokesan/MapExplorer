@@ -42,7 +42,7 @@ import java.net.URL;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20061205";
+    public static final String VERSION = "20061205-1";
 
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
@@ -174,16 +174,14 @@ public class MapExplorer implements ActionListener, ItemListener {
 	chkMovement.setContentAreaFilled(false);
 	// toolBar.add(chkMovement);
 	
-	chkMapImage = new JCheckBox("Map image");
+	chkMapImage = new JCheckBox("Map image", model.isUseMapImage());
 	chkMapImage.addItemListener(this);
 	chkMapImage.setToolTipText("use scanned image for map display");
-	chkMapImage.setSelected(model.isUseMapImage());
 	toolBar.add(chkMapImage);
 	
-	chkVassalCoordinates = new JCheckBox("Vassal coordinates");
+	chkVassalCoordinates = new JCheckBox("Vassal coordinates", model.isUseVassalCoordinates());
 	chkVassalCoordinates.addItemListener(this);
 	chkVassalCoordinates.setToolTipText("use Vassal coordinates");
-	chkVassalCoordinates.setSelected(model.isUseVassalCoordinates());
 	toolBar.add(chkVassalCoordinates);
 
 	cmbSize = new JComboBox(CreatureSize.values());
