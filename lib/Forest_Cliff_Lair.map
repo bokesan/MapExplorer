@@ -3,6 +3,7 @@ map Forest Cliff Lair
 width 30
 height 21
 basecolor 887080
+image Map_ForestCliffLair.jpg
 
 solid A16-B16 F16-H16 N16-R16
 solid A17-A24 B24 B23-D23 C27 D27 D28

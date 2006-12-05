@@ -3,6 +3,7 @@ width 30
 height 21
 
 basecolor 9040b0
+image Map_DrowEnclave.jpg
 
 wall west A1-U1 south A4-A27 north U4-U27 east A30-U30
 solid N1 U10-U11

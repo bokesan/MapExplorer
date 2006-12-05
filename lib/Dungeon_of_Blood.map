@@ -3,6 +3,7 @@ map Dungeon of Blood
 width 30
 height 21
 basecolor 786880
+image Map_DungeonOfBlood.jpg
 
 
 wall west A1-O1

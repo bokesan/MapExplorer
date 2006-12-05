@@ -56,6 +56,9 @@ public class MapPanel extends JPanel {
     
     private Set<Creature> creatures;
     
+    private Image mapImage = null;
+    private LocationFormatter locationFormatter;
+    
     /**
      * Constructs and initializes a new MapPanel for a given map.
      * @param map a Map
@@ -64,6 +67,11 @@ public class MapPanel extends JPanel {
 	super();
 	colors = new ColorSettings();
 	setMap(map);
+	locationFormatter = LocationFormatterFactory.getDefaultFormatter(map.getDimension());
+    }
+    
+    public void setMapImage(Image image) {
+	mapImage = image;
     }
 
     private void computeSizes() {
@@ -123,29 +131,48 @@ public class MapPanel extends JPanel {
 	computeSizes();
 	super.paintComponent(g);
 
-	LocationFormatter fmt = LocationFormatterFactory.getVassalFormatter(map.getDimension());
-	
+	if (mapImage != null) {
+	    java.awt.Point p = locPoint(0, -1);
+	    java.awt.Point p2 = locPoint(map.getWidth(), map.getHeight() - 1);
+	    g.drawImage(mapImage, p.x, p2.y, p2.x, p.y,
+		    25, 25, mapImage.getWidth(this) - 25, mapImage.getHeight(this) - 25,
+		    this);
+	}
 	for (int row = 0; row < map.getHeight(); row++) {
 	    java.awt.Point p = locPoint(-1, row);
-	    String r = fmt.formatRow(row);
+	    String r = locationFormatter.formatRow(row);
 	    drawCenteredString(g, p, r);
 	    p = locPoint(map.getWidth(), row);
 	    drawCenteredString(g, p, r);
 	    for (int col = 0; col < map.getWidth(); col++) {
-		drawTile(g, col, row);
+		if (mapImage == null)
+		    drawTile(g, col, row);
+		else
+		    drawLosForTile(g, col, row);
 	    }
+	    g.setColor(Color.BLACK);
 	}
+
 	if (creatures != null) {
 	    for (Creature c : creatures)
 		drawCreature(g, c);
 	}
 	for (int col = 0; col < map.getWidth(); col++) {
-	    String c = fmt.formatColumn(col);
+	    String c = locationFormatter.formatColumn(col);
 	    drawCenteredString(g, locPoint(col, -1), c);
 	    drawCenteredString(g, locPoint(col, map.getHeight()), c);
 	}
 	g.setColor(Color.BLACK);
     }
+    
+    private void drawLosForTile(Graphics g, int col, int row) {
+	if (losMap.get(col, row)) {
+	    java.awt.Point p = locPoint(col, row);
+	    g.setColor(colors.getColor(ColorSettings.Special.LOS));
+	    drawLosIcon(g, p);
+	}
+    }
+    
     
     private void drawTile(Graphics g, int col, int row) {
 	MapSquare t = map.get(col, row);
@@ -467,6 +494,20 @@ public class MapPanel extends JPanel {
 	setFont(g, FontUse.IN_SQUARE);
 	drawTCString(g, p, legend);
 	setFont(g, FontUse.NORMAL);
+    }
+
+    /**
+     * @return Returns the locationFormatter.
+     */
+    public LocationFormatter getLocationFormatter() {
+        return locationFormatter;
+    }
+
+    /**
+     * @param locationFormatter The locationFormatter to set.
+     */
+    public void setLocationFormatter(LocationFormatter locationFormatter) {
+        this.locationFormatter = locationFormatter;
     }
 
 }

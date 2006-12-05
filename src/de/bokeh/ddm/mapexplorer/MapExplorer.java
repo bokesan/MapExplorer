@@ -31,6 +31,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
 import java.net.URL;
 
 
@@ -41,8 +42,8 @@ import java.net.URL;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20060822";
-    
+    public static final String VERSION = "20061205";
+
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
     private static final String ACTION_CLEAR = "clear";
@@ -58,6 +59,8 @@ public class MapExplorer implements ActionListener, ItemListener {
     private JCheckBox chkLOS;
     private JCheckBox chkSmoke;
     private JCheckBox chkMovement;
+    private JCheckBox chkMapImage;
+    private JCheckBox chkVassalCoordinates;
     private JComboBox cmbSize;
     private JPopupMenu contextMenu;
     private boolean busy;
@@ -85,6 +88,14 @@ public class MapExplorer implements ActionListener, ItemListener {
 	mapPanel.setLosMap(model.getLosMap());
 	mapPanel.setCreatures(model.getCreatures());
 	mapPanel.setMovementMap(model.getMovementMap());
+	
+	if (model.isUseMapImage()) {
+	    Image img = loadImage(map.getImageFile());
+	    mapPanel.setMapImage(img);
+	} else {
+	    mapPanel.setMapImage(null);
+	}
+	
 	mapPanel.repaint();
 	chkSmoke.setEnabled(map.has(MapFeature.SMOKE));
     }
@@ -162,6 +173,18 @@ public class MapExplorer implements ActionListener, ItemListener {
 	chkMovement.setToolTipText("compute movement range");
 	chkMovement.setContentAreaFilled(false);
 	// toolBar.add(chkMovement);
+	
+	chkMapImage = new JCheckBox("Map image");
+	chkMapImage.addItemListener(this);
+	chkMapImage.setToolTipText("use scanned image for map display");
+	chkMapImage.setSelected(model.isUseMapImage());
+	toolBar.add(chkMapImage);
+	
+	chkVassalCoordinates = new JCheckBox("Vassal coordinates");
+	chkVassalCoordinates.addItemListener(this);
+	chkVassalCoordinates.setToolTipText("use Vassal coordinates");
+	chkVassalCoordinates.setSelected(model.isUseVassalCoordinates());
+	toolBar.add(chkVassalCoordinates);
 
 	cmbSize = new JComboBox(CreatureSize.values());
 	cmbSize.setSelectedItem(CreatureSize.MEDIUM);
@@ -290,13 +313,10 @@ public class MapExplorer implements ActionListener, ItemListener {
     
     public static void main(String[] args) {
 	boolean benchmark = false;
-	String fileSep = System.getProperty("file.separator");
-	if (fileSep == null)
-	    fileSep = "/";
 	String mapFile = "Fane_of_Lolth.map";
 	String p = System.getProperty("mapexplorer.home");
 	if (p != null)
-	    mapFile = p + fileSep + mapFile;
+	    mapFile = p + File.separator + mapFile;
 	
 	int numCPUs = Runtime.getRuntime().availableProcessors();
 	int rndTests = 100;
@@ -347,6 +367,8 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	} else {
 	    MapExplorerModel model = new MapExplorerModel(numCPUs);
+	    model.setUseMapImage(properties.getProperty("mapexplorer.usemapimage", "false").equals("true"));
+	    model.setUseVassalCoordinates(properties.getProperty("mapexplorer.usevassalcoordinates", "false").equals("true"));
 	    model.getLosCalculator().setRandomTestsPerSquare(rndTests);
 	    MapExplorer app = new MapExplorer(model);
 	    app.start();
@@ -425,6 +447,23 @@ public class MapExplorer implements ActionListener, ItemListener {
 	Object source = e.getItemSelectable();
 	if (source == chkSmoke || source == chkLOS || source == chkMovement) {
 	    compute();
+	}
+	else if (source == chkVassalCoordinates) {
+	    model.setUseVassalCoordinates(chkVassalCoordinates.getModel().isSelected());
+	    if (model.isUseVassalCoordinates())
+		mapPanel.setLocationFormatter(LocationFormatterFactory.getVassalFormatter(model.getMap().getDimension()));
+	    else
+		mapPanel.setLocationFormatter(LocationFormatterFactory.getDefaultFormatter(model.getMap().getDimension()));
+	    mapPanel.repaint();
+	}
+	else if (source == chkMapImage) {
+	    model.setUseMapImage(chkMapImage.getModel().isSelected());
+	    if (model.isUseMapImage()) {
+		mapPanel.setMapImage(loadImage(model.getMap().getImageFile()));
+	    } else {
+		mapPanel.setMapImage(null);
+	    }
+	    mapPanel.repaint();
 	}
     }
 
@@ -527,13 +566,10 @@ public class MapExplorer implements ActionListener, ItemListener {
     private static Properties loadProperties() {
 	Properties result = new Properties();
 	String[] keys = { "mapexplorer.home", "user.home", "user.dir" };
-	String fs = System.getProperty("file.separator");
-	if (fs == null)
-	    fs = "/";
 	for (String key : keys) {
 	    String dir = System.getProperty(key);
 	    if (dir != null) {
-		File f = new File(dir + fs + "mapexplorer.properties");
+		File f = new File(dir + File.separator + "mapexplorer.properties");
 		try {
 		    result.load(new FileInputStream(f));
 		}
@@ -543,5 +579,44 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    }
 	}
 	return result;
+    }
+    
+    private Image loadImage(String name) {
+	if (name == null) {
+	    JOptionPane.showMessageDialog(appFrame, "No image available for this map", "No map image", JOptionPane.WARNING_MESSAGE);
+	    return null;
+	}
+	String[] keys = { "mapexplorer.home", "user.home", "user.dir" };
+	Toolkit tk = Toolkit.getDefaultToolkit();
+	for (String key : keys) {
+	    String dir = System.getProperty(key);
+	    if (dir != null) {
+		File f = new File(dir + File.separator + "DDM_1-11-1.mod");
+		try {
+		    ZipFile mod = new ZipFile(f);
+		    ZipEntry e = mod.getEntry("images/" + name);
+		    if (e != null) {
+			byte[] data = new byte[(int) e.getSize()];
+			InputStream s = mod.getInputStream(e);
+			int offs = 0;
+			while (offs < data.length) {
+			    int r = s.read(data, offs, data.length - offs);
+			    if (r <= 0)
+				break;
+			    offs += r;
+			}
+			s.close();
+			return tk.createImage(data);
+		    }
+		    mod.close();
+		}
+		catch (IOException e) {
+		    // just ignore this.
+		}
+	    }
+	}
+	JOptionPane.showMessageDialog(appFrame, "Could not load map image " + name, "Error loading map image",
+		JOptionPane.ERROR_MESSAGE);
+	return null;
     }
 }

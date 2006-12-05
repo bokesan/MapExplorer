@@ -2,6 +2,7 @@ map Mushroom Cavern
 width 30
 height 21
 basecolor 067363
+image Map_MushroomCavern.jpg
 
 solid A1-A5 B1-F1 F2 E2-E3 U16-U22 U29 R30-U30 
 solid K1-K2 L1-L2 M1-M5 N1-N2 O1-T1 U1-U2

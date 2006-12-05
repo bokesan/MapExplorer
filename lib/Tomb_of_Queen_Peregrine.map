@@ -2,6 +2,7 @@ map Tomb of Queen Peregrine
 width 30
 height 21
 basecolor 607050
+image Map_Tomb_Bright.jpg
 
 solid T4-U7 S4 S7
 solid S19 S20-U21

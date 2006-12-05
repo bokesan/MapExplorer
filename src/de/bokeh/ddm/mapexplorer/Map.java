@@ -42,6 +42,7 @@ public class Map {
     private final int height;
     private final int width;
     private final MapSquare[] map;
+    private String imageFile = null;
     
     public Map(Dimension size) {
 	this(size.getWidth(), size.getHeight(), null);
@@ -410,6 +411,20 @@ public class Map {
 	    }
 	}
 	return false;
+    }
+
+    /**
+     * @return Returns the imageFile.
+     */
+    public String getImageFile() {
+        return imageFile;
+    }
+
+    /**
+     * @param imageFile The imageFile to set.
+     */
+    public void setImageFile(String imageFile) {
+        this.imageFile = imageFile;
     }
     
 }

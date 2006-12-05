@@ -3,6 +3,7 @@ map Dragon Graveyard
 width 30
 height 21
 basecolor 707090
+image Map_DragonGraveyard.jpg
 
 solid F1-F3 J3-M3 Q5-U5 T6-U10 M8-O8
 solid E6-I6 E7-E9 D9-D11 A14-B14 C18-C21

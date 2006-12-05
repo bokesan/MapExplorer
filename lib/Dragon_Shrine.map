@@ -2,6 +2,8 @@ map Dragon Shrine
 width 34
 height 22
 basecolor 00000080
+image Map_DragonShrine.jpg
+
 statue A1-B2 T2 T3 U2 U3 A11 I12 N13 N21 I22 A33-B34 L33-M34 U33-V34 D23 N23 N26 T16-V18
 difficult S16-S18
 magic D16-F18 M16-O18

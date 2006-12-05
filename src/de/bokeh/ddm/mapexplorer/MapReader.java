@@ -86,6 +86,9 @@ public class MapReader {
 		else if (f[0].equals("basecolor")) {
 		    m.setColor(parseColor(f[1]));
 		}
+		else if (f[0].equals("image")) {
+		    m.setImageFile(f[1]);
+		}
 		else {
 		    MapFeature feature = null;
 		    try {

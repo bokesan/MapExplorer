@@ -42,6 +42,8 @@ public class MapExplorerModel {
     private final Set<Creature> creatures; // LOS sources
     
     private boolean smokeBlocksLos;
+    private boolean useMapImage = false;
+    private boolean useVassalCoordinates = false;
     
     private final LosCalculator losCalculator;
     
@@ -197,5 +199,33 @@ public class MapExplorerModel {
 	    }
 	}
 	return true;
+    }
+
+    /**
+     * @return Returns the useMapImage.
+     */
+    public boolean isUseMapImage() {
+        return useMapImage;
+    }
+
+    /**
+     * @param useMapImage The useMapImage to set.
+     */
+    public void setUseMapImage(boolean useMapImage) {
+        this.useMapImage = useMapImage;
+    }
+
+    /**
+     * @return Returns the useVassalCoordinates.
+     */
+    public boolean isUseVassalCoordinates() {
+        return useVassalCoordinates;
+    }
+
+    /**
+     * @param useVassalCoordinates The useVassalCoordinates to set.
+     */
+    public void setUseVassalCoordinates(boolean useVassalCoordinates) {
+        this.useVassalCoordinates = useVassalCoordinates;
     }
 }
