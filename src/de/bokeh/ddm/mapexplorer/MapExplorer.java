@@ -42,7 +42,7 @@ import java.net.URL;
  */
 public class MapExplorer implements ActionListener, ItemListener {
 
-    public static final String VERSION = "20061205-1";
+    public static final String VERSION = "20070102";
 
     // ActionCommands
     private static final String ACTION_LOAD_MAP = "loadMap";
