@@ -69,6 +69,8 @@ public class MapExplorer implements ActionListener, ItemListener {
 
     private Location selectedSquare;
     
+    private String imagesArchiveName;
+    
     private final MapExplorerModel model;
 
     public MapExplorer(MapExplorerModel model) {
@@ -369,6 +371,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    model.setUseVassalCoordinates(properties.getProperty("mapexplorer.usevassalcoordinates", "false").equals("true"));
 	    model.getLosCalculator().setRandomTestsPerSquare(rndTests);
 	    MapExplorer app = new MapExplorer(model);
+	    app.imagesArchiveName = properties.getProperty("mapexplorer.images", "DDM_1-11-2.mod");
 	    app.start();
 	    app.getMapPanel().setColors(new ColorSettings(properties));
 	    app.loadMap(mapFile);
@@ -589,7 +592,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	for (String key : keys) {
 	    String dir = System.getProperty(key);
 	    if (dir != null) {
-		File f = new File(dir + File.separator + "DDM_1-11-1.mod");
+		File f = new File(dir + File.separator + imagesArchiveName);
 		try {
 		    ZipFile mod = new ZipFile(f);
 		    ZipEntry e = mod.getEntry("images/" + name);
