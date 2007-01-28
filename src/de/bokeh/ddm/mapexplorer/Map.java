@@ -64,7 +64,7 @@ public class Map {
     
     /**
      * Get the set of Walls for the LOS computation.
-     * @param smokeBlocksLOS a boolean indicating whether smoke of fog blocks LoS
+     * @param smokeBlocksLOS a boolean indicating whether smoke or fog blocks LoS
      * @return A set of Lines.
      */
     public Set<Line> getWalls(boolean smokeBlocksLOS) {
