@@ -80,21 +80,23 @@ public class Map {
 		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
 		if (s.getWall(Direction.EAST))
 		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
-		if (s.has(MapFeature.ELEMENTAL_WALL)) {
-		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
-		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));
-		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
-		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
-		}
-		if (smokeBlocksLOS && s.has(MapFeature.SMOKE)) {
-		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
-		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));
-		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
-		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
+		if ((smokeBlocksLOS && s.has(MapFeature.SMOKE)) || s.has(MapFeature.ELEMENTAL_WALL)) {
+		    addSquareWalls(walls, x, y, 1);
 		}
 	    }
 	}
 	return walls;
+    }
+    
+    private void addSquareWalls(Set<Line> walls, int x, int y, int size) {
+	Point bl = new Point(x, y);
+	Point br = new Point(x + size, y);
+	Point tl = new Point(x, y + size);
+	Point tr = new Point(x + size, y + size);
+	addWall(walls, new Line(bl, br));
+	addWall(walls, new Line(bl, tl));
+	addWall(walls, new Line(tl, tr));
+	addWall(walls, new Line(br, tr));
     }
     
     private void addWall(Set<Line> walls, Line wall) {
