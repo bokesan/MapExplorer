@@ -106,11 +106,10 @@ public class Line {
 	     */
 	    double ua = num_Ua / denom;
 	    double ub = num_Ub / denom;
-	    double x = x1 + ua * (x2 - x1);
-	    double y = y1 + ua * (y2 - y1);
+	    Point pt = new Point(x1 + ua * (x2 - x1), y1 + ua * (y2 - y1));
 	    if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
-		return IntersectionResult.at(new Point(x,y));
-	    return IntersectionResult.outside(new Point(x,y));
+		return IntersectionResult.at(pt);
+	    return IntersectionResult.outside(pt);
 	}
     }
     
