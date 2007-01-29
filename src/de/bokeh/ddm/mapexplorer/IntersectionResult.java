@@ -1,9 +1,7 @@
 /*
- * $Id: IntersectionResult.java,v 1.6 2006/01/05 12:55:51 breitko Exp $
- * 
  * This file is part of Map Explorer.
  * 
- * Copyright © 2005-2006 Christoph Breitkopf
+ * Copyright © 2005-2007 Christoph Breitkopf
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
@@ -32,7 +30,7 @@ package de.bokeh.ddm.mapexplorer;
  * Result of a line intersection test.
  * <p>
  * This class has no public constructor. Instead the factory methods
- * at(), outside(), coincident(), and parallel() are used to create
+ * <code>at</code>, <code>outside</code>, <code>coincident</code>, and <code>parallel</code> are used to create
  * instances.
  * 
  * @author Christoph Breitkopf
