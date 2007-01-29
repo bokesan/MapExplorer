@@ -34,7 +34,7 @@ package de.bokeh.ddm.mapexplorer;
  * @author Christoph Breitkopf
  *
  */
-public class Point implements Comparable {
+public class Point implements Comparable<Point> {
 
     private final double x;
     private final double y;
@@ -110,8 +110,7 @@ public class Point implements Comparable {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(T)
      */
-    public int compareTo(Object o) {
-	Point p = (Point) o;
+    public int compareTo(Point p) {
 	if (x < p.x)
 	    return -1;
 	if (x > p.x)
