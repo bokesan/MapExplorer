@@ -105,6 +105,7 @@
   	  <zipfileset dir="lib" prefix="MapExplorer">
   	  	<include name="*.jar" />
   	  	<include name="*.map" />
+		<include name="check-results.dat" />
   	  	<!-- <include name="mapexplorer" /> -->
   	  	<include name="*.bat" />
   	  	<include name="README.*" />

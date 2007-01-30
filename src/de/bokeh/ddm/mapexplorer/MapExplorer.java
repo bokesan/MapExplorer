@@ -309,8 +309,11 @@ public class MapExplorer implements ActionListener, ItemListener {
 	lblStatus.setText(s);
     }
     
+    private enum RunMode { GUI, BENCHMARK, CHECK }
+    
     public static void main(String[] args) {
-	boolean benchmark = false;
+        RunMode mode = RunMode.GUI;
+        boolean fog = false;
 	String mapFile = "Fane_of_Lolth.map";
 	String p = System.getProperty("mapexplorer.home");
 	if (p != null)
@@ -333,14 +336,20 @@ public class MapExplorer implements ActionListener, ItemListener {
 		return;
 	    }
 	    if (args[i].equals("-benchmark")) {
-		benchmark = true;
+		mode = RunMode.BENCHMARK;
 	    }
+            else if (args[i].equals("-check")) {
+                mode = RunMode.CHECK;
+            }
 	    else if (args[i].equals("-j")) {
 		numCPUs = Integer.parseInt(args[++i]);
 	    }
 	    else if (args[i].equals("-rnd")) {
 		rndTests = Integer.parseInt(args[++i]);
 	    }
+            else if (args[i].equals("-fog")) {
+                fog = true;
+            }
 	    else {
 		mapFile = args[i];
 	    }
@@ -351,10 +360,23 @@ public class MapExplorer implements ActionListener, ItemListener {
 	if (numCPUs <= 0)
 	    numCPUs = 1;
 	
-	if (benchmark) {
+        switch (mode) {
+        case GUI:
+            MapExplorerModel model = new MapExplorerModel(numCPUs);
+            model.setUseMapImage(properties.getProperty("mapexplorer.usemapimage", "false").equals("true"));
+            model.setUseVassalCoordinates(properties.getProperty("mapexplorer.usevassalcoordinates", "false").equals("true"));
+            model.getLosCalculator().setRandomTestsPerSquare(rndTests);
+            MapExplorer app = new MapExplorer(model);
+            app.imagesArchiveName = properties.getProperty("mapexplorer.images", "DDM_1-11-2.mod");
+            app.start();
+            app.getMapPanel().setColors(new ColorSettings(properties));
+            app.loadMap(mapFile);
+            break;
+        case BENCHMARK:
 	    try {
 		Map map = new MapReader().read(mapFile);
 		LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
+                b.setSmokeBlocksLos(fog);
 		b.run();
 	    }
 	    catch (SyntaxError err) {
@@ -363,16 +385,16 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    catch (IOException ex) {
 		ex.printStackTrace();
 	    }
-	} else {
-	    MapExplorerModel model = new MapExplorerModel(numCPUs);
-	    model.setUseMapImage(properties.getProperty("mapexplorer.usemapimage", "false").equals("true"));
-	    model.setUseVassalCoordinates(properties.getProperty("mapexplorer.usevassalcoordinates", "false").equals("true"));
-	    model.getLosCalculator().setRandomTestsPerSquare(rndTests);
-	    MapExplorer app = new MapExplorer(model);
-	    app.imagesArchiveName = properties.getProperty("mapexplorer.images", "DDM_1-11-2.mod");
-	    app.start();
-	    app.getMapPanel().setColors(new ColorSettings(properties));
-	    app.loadMap(mapFile);
+	    break;
+        case CHECK:
+            try {
+                doCheck(numCPUs, rndTests);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            break;
+        default:
+            throw new AssertionError(mode);
 	}
     }
 
@@ -617,5 +639,118 @@ public class MapExplorer implements ActionListener, ItemListener {
 	JOptionPane.showMessageDialog(appFrame, "Could not load map image " + name, "Error loading map image",
 		JOptionPane.ERROR_MESSAGE);
 	return null;
+    }
+
+
+    private static class CheckSpecs implements Iterable<CheckSpecs.Entry> {
+        
+        static class Entry {
+            final String mapName;
+            final boolean fog;
+            final long squaresTested;
+            final long totalLos;
+            final long elapsedTime;
+            
+            Entry(String mapName, boolean fog, long squaresTested, long totalLos, long elapsedTime) {
+                this.mapName = mapName;
+                this.fog = fog;
+                this.squaresTested = squaresTested;
+                this.totalLos = totalLos;
+                this.elapsedTime = elapsedTime;
+            }
+            
+            boolean matches(long[] r) {
+                long tested = r[0];
+                long los = r[1];
+                long rnd = r[2];
+                if (rnd != 0)
+                    return false;
+                return tested == squaresTested && los == totalLos;
+            }
+        }
+
+        private final java.util.List<Entry> specs = new java.util.ArrayList<Entry>();
+        
+        static CheckSpecs parseFile(BufferedReader f) throws IOException {
+            CheckSpecs s = new CheckSpecs();
+            for (;;) {
+                String line = f.readLine();
+                if (line == null)
+                    break;
+                String[] x = line.split(";");
+                String mapName = x[0];
+                long squaresTested = Long.parseLong(x[1]);
+                long totalLos = Long.parseLong(x[2]);
+                long elapsedTime = Long.parseLong(x[3]);
+                s.specs.add(new Entry(mapName, false, squaresTested, totalLos, elapsedTime));
+                if (x.length > 4) {
+                    squaresTested = Long.parseLong(x[4]);
+                    totalLos = Long.parseLong(x[5]);
+                    elapsedTime = Long.parseLong(x[6]);
+                    s.specs.add(new Entry(mapName, true, squaresTested, totalLos, elapsedTime));
+                }
+            }
+            return s;
+        }
+        
+        long getTotalElapsedTime() {
+            long total = 0;
+            for (Entry e : specs) {
+                total += e.elapsedTime;
+            }
+            return total;
+        }
+        
+        int size() { return specs.size(); }
+
+        /* (non-Javadoc)
+         * @see java.lang.Iterable#iterator()
+         */
+        public Iterator<Entry> iterator() {
+            return specs.iterator();
+        }
+        
+    }
+    
+    private static void doCheck(int numCPUs, int rndTests) throws IOException, SyntaxError {
+        PrintStream out = System.out;
+        BufferedReader checksFile = new BufferedReader(new FileReader("check-results.dat"));
+        CheckSpecs specs = CheckSpecs.parseFile(checksFile);
+        checksFile.close();
+        final int tests = specs.size();
+        int errors = 0;
+        int i = 0;
+        long timeSoFar = 0;
+        long specTimeSoFar = 0;
+        final long specTimeTotal = specs.getTotalElapsedTime();
+        for (CheckSpecs.Entry spec : specs) {
+            i++;
+            out.format("[%d/%d] %s", i, tests, spec.mapName);
+            if (spec.fog)
+                out.print(" (fog enabled)");
+            out.flush();
+            Map map = new MapReader().read(spec.mapName);
+            LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
+            b.setLogLevel(java.util.logging.Level.WARNING);
+            b.setSmokeBlocksLos(spec.fog);
+            long[] result = b.run();
+            if (spec.matches(result)) {
+                out.print(" - success");
+            } else {
+                errors++;
+                out.format(" - failed: expected %d,%d but got %d,%d,%d",
+                           spec.squaresTested, spec.totalLos,
+                           result[0], result[1], result[2]);
+            }
+            timeSoFar += result[3];
+            specTimeSoFar += spec.elapsedTime;
+            long percentDone = 100 * specTimeSoFar / specTimeTotal;
+            long remMs = (long) ((specTimeTotal - specTimeSoFar) * ((double) timeSoFar / specTimeSoFar)) - 3600000;
+            out.format(" [%d%% done, remaining time: %tT]\n", percentDone, remMs);
+        }
+        checksFile.close();
+        assert specTimeSoFar == specTimeTotal;
+        out.format("%d out of %d tests failed.\n", errors, tests);
+        out.format("Total time: %tT, speed factor: %.3f\n", timeSoFar, (double) specTimeTotal / timeSoFar);
     }
 }

@@ -40,8 +40,14 @@ public class LosBenchmark {
     private final LosMap losMap;
     private final LosCalculator losCalculator;
     private final Logger logger;
-    private int totalLos;
     
+    /**
+     * Create new LosBenchmark.
+     * 
+     * @param map the Map to test
+     * @param numThreads number of threads to use
+     * @param randomTestsPerSquare number of random samples per squares
+     */
     public LosBenchmark(Map map, int numThreads, int randomTestsPerSquare) {
 	this.map = map;
 	this.losMap = new LosMap(map.getDimension());
@@ -52,10 +58,20 @@ public class LosBenchmark {
 	logger = Logger.getLogger(this.getClass().getPackage().getName());
     }
     
+    public void setLogLevel(Level level) {
+        logger.setLevel(level);
+    }
+    
     /**
-     * Run benchmark. 
+     * Run benchmark.
+     * 
+     * @return A four-element array of <code>long</code> values.
+     * The value at index 0 contains the number of squares tested for LOS.
+     * Index 1 contains the total number of LOS-Squares found.
+     * Index 2 contains the number of squares found by random sampling.
+     * Index 3 contains the elapsed time in milliseconds.
      */
-    public void run() {
+    public long[] run() {
 	logger.info("Starting LOS benchmark for map " + map.getName());
 	long startTime = System.currentTimeMillis();
 
@@ -68,7 +84,7 @@ public class LosBenchmark {
 	final int width = map.getWidth();
 	int numSquaresTested = 0;
 	int numRnd = 0;
-	totalLos = 0;
+	int totalLos = 0;
 	for (int row = 0; row < height; row++) {
 	    for (int col = 0; col < width; col++) {
 		Location loc = new Location(col, row);
@@ -104,6 +120,7 @@ public class LosBenchmark {
 	}
 	logger.info(numRnd + " found by random testing.");
 	losCalculator.shutdown();
+        return new long[]{numSquaresTested, totalLos, numRnd, elapsedTime};
     }
     
     /**
