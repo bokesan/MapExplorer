@@ -266,66 +266,6 @@ public class Map {
     public Dimension getDimension() {
 	return new Dimension(width, height);
     }
-    
-    public void writeSvgFile(File file) throws FileNotFoundException {
-	PrintWriter o = new PrintWriter(file);
-	
-	// header
-	o
-	.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\" ?>\n"
-		+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\"\n"
-		+ "\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">\n"
-		+ "<svg width=\""
-		+ (300 * width)
-		+ "\" height=\""
-		+ (300 * height)
-		+ "\" xmlns=\"http://www.w3.org/2000/svg\">\n"
-		+ "<title>"
-		+ name
-		+ "</title>\n"
-		+ "<desc>Terrain Tile '" + name + "'</desc>\n");
-	
-	// TODO: defs
-	
-	int r = 0;
-	for (int row = height - 1; row >= 0; row--, r++) {
-	    for (int c = 0; c < width; c++) {
-		String loc = " x=\"" + (300 * c) + "\" y=\"" + (300 * r)
-		+ "\" ";
-		MapSquare q = get(c, r);
-		if (q.isSolid())
-		    o.println("<use xlink:href=\"#Solid\"" + loc + "/>");
-		else {
-		    o.println("<use xlink:href=\"#Square\"" + loc + "/>");
-		    if (q.getWall(Direction.NORTH))
-			o.println("<use xlink:href=\"#Wall-North\"" + loc
-				+ "/>");
-		    if (q.getWall(Direction.EAST))
-			o
-			.println("<use xlink:href=\"#Wall-East\"" + loc
-				+ "/>");
-		    if (q.getWall(Direction.SOUTH))
-			o.println("<use xlink:href=\"#Wall-South\"" + loc
-				+ "/>");
-		    if (q.getWall(Direction.WEST))
-			o
-			.println("<use xlink:href=\"#Wall-West\"" + loc
-				+ "/>");
-		    if (q.has(MapFeature.BLOOD_ROCK))
-			o.println("<use xlink:href=\"#Blood-Rock\"" + loc
-				+ "/>");
-		    if (q.has(MapFeature.DIFFICULT))
-			o
-			.println("<use xlink:href=\"#Difficult\"" + loc
-				+ "/>");
-		}
-	    }
-	}
-	
-	// footer
-	o.println("</svg>");
-	o.close();
-    }
 
     
     public void setSolid(Location loc) {
