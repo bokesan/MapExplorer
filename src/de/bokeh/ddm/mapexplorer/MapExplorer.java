@@ -591,12 +591,19 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    String dir = System.getProperty(key);
 	    if (dir != null) {
 		File f = new File(dir + File.separator + "mapexplorer.properties");
+                FileInputStream in = null;
 		try {
-		    result.load(new FileInputStream(f));
+                    in = new FileInputStream(f);
+		    result.load(in);
 		}
 		catch (IOException e) {
-		    // just ignore this.
+		    // ignore.
 		}
+                finally {
+                    if (in != null) {
+                        try {in.close(); } catch (IOException ex) { /* ignore */ }
+                    }
+                }
 	    }
 	}
 	return result;
