@@ -47,6 +47,10 @@ public class Line {
 	    this.end = start;
 	}
     }
+    
+    public Line(double x1, double y1, double x2, double y2) {
+        this(new Point(x1, y1), new Point(x2, y2));
+    }
 
     /**
      * Compute line intersection.
@@ -76,7 +80,7 @@ public class Line {
 	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
 	
 	if (denom == 0 && num_Ua == 0 && num_Ub == 0) {
-	    return IntersectionResult.coincident();
+	    return resolveCoincident(ln);
 	} else if (denom == 0) {
 	    return IntersectionResult.parallel();
 	} else {
@@ -163,7 +167,9 @@ public class Line {
 	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
 	
 	if (denom == 0 && num_Ua == 0 && num_Ub == 0) {
-	    return true;
+	    if (Point.compare(x3, y3, x4, y4) > 0)
+		return coincidentWithOverlap(x1, y1, x2, y2, x4, y4, x3, y3);
+	    return coincidentWithOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
 	} else if (denom == 0) {
 	    return false;
 	} else {
@@ -220,6 +226,29 @@ public class Line {
 	}
 	assert isHorizontal();
 	return Direction.EAST;
+    }
+    
+    /**
+     * Does this line contain the wall edge?
+     * <p>
+     * Edge must be either horizontal or vertical.
+     * @param edge a Line
+     * @return <code>true</code> if this line contains <code>edge</code>;
+     *   <code>false</code> otherwise.
+     */
+    public boolean containsEdge(Line edge) {
+        if (isVertical()) {
+            if (edge.isVertical()) {
+                return edge.start.getX() == start.getX() && edge.start.getY() >= start.getY() && edge.end.getY() <= end.getY();
+            }
+            return false;
+        }
+        if (isHorizontal()) {
+            if (edge.isHorizontal()) {
+                return edge.start.getY() == start.getY() && edge.start.getX() >= start.getX() && edge.end.getX() <= end.getX();
+            }
+        }
+        return false;
     }
     
     
@@ -295,4 +324,46 @@ public class Line {
 	}
 	return false;
     }
+    
+    private IntersectionResult resolveCoincident(Line ln) {
+	final double d1 = start.distOrigSquare();
+	final double d2 = end.distOrigSquare();
+	final double d3 = ln.start.distOrigSquare();
+	final double d4 = ln.end.distOrigSquare();
+	
+	double lo, hi;
+	Point loPt, hiPt;
+	if (d1 > d3) {
+	    lo = d1;
+	    loPt = start;
+	} else {
+	    lo = d3;
+	    loPt = ln.start;
+	}
+	if (d2 < d4) {
+	    hi = d2;
+	    hiPt = end;
+	} else {
+	    hi = d4;
+	    hiPt = ln.end;
+	}
+	if (lo > hi)
+	    return IntersectionResult.outsideCoincident();
+	if (lo < hi)
+	    return IntersectionResult.coincident(new Line(loPt, hiPt));
+	return IntersectionResult.coincident(loPt);
+    }
+
+    private static boolean coincidentWithOverlap(double x1, double y1, double x2, double y2,
+	    double x3, double y3, double x4, double y4)
+    {
+	final double d1 = x1*x1 + y1*y1;
+	final double d2 = x2*x2 + y2*y2;
+	final double d3 = x3*x3 + y3*y3;
+	final double d4 = x4*x4 + y4*y4;
+	final double lo = (d1 > d3) ? d1 : d3;
+	final double hi = (d2 < d4) ? d2 : d4;
+	return lo <= hi;
+    }
+
 }

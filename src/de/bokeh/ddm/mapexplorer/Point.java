@@ -28,6 +28,10 @@ package de.bokeh.ddm.mapexplorer;
  * Map locations used for LOS calculations.
  * <p>
  * Like Location, but with floating-point coordinates.
+ * <p>
+ * In Map Explorer, all points have x and y coordinates &gt;= 0.
+ * The rest of the code, such as class <code>Line</code> depend on this,
+ * and will break if this is changed.
  * 
  * @author Christoph Breitkopf
  *
@@ -109,17 +113,36 @@ public class Point implements Comparable<Point> {
      * @see java.lang.Comparable#compareTo(T)
      */
     public int compareTo(Point p) {
-	if (x < p.x)
+	return compare(x, y, p.x, p.y);
+    }
+    
+    /**
+     * Compare two points given by x and y coordinates.
+     * @param x1 x coordinate of the first point
+     * @param y1 y coordinate of the first point
+     * @param x2 x coordinate of the second point
+     * @param y2 y coordinate of the second point
+     * @return Returns -1 if the first point is less than the second point,
+     *  0 if the points are equal, and 1 if the first point is greater than the
+     *  second point.
+     */
+    public static int compare(double x1, double y1, double x2, double y2) {
+	if (x1 < x2)
 	    return -1;
-	if (x > p.x)
+	if (x1 > x2)
 	    return 1;
-	// x == p.x
-	if (y < p.y)
+	if (y1 < y2)
 	    return -1;
-	if (y > p.y)
+	if (y1 > y2)
 	    return 1;
 	return 0;
     }
     
-    
+    /**
+     * Distance to origin, squared.
+     * @return Returns the square of the distance to the origin.
+     */
+    public double distOrigSquare() {
+	return x*x + y*y;
+    }
 }
