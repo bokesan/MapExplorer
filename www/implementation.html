@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>Map Explorer implementation notes</title>
+ <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+ <meta name="author" content="Christoph Breitkopf" />
+ <meta name="copyright" content="&copy; 2007 Christoph Breitkopf" />
+ <meta name="description" content="Line-of-Sight Calculator Software for the DDM Skirmish game" />
+ <meta name="keywords" content="DDM, D&amp;D Miniatures, Line-of-Sight" />
+ <!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+ <!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+</head>
+<body>
+<a href="index.html">Home</a>
+
+<h1>Map Explorer implementation notes</h1>
+
+<hr />
+<h2><a name="los">Line-of-Sight algorithm</a></h2>
+
+<p>Line-of-sight is defined in the DDM rules as follows:</p>
+<blockquote>
+Two creatures can see each other if they can trace at least one
+unblocked straight line between any part of one creature's space
+to any part of the other creature's space. This line is unblocked
+if it does not intersect or even touch squares that block line of sight.
+</blockquote>
+<p>While <em>point-to-point</em> line of sight is easy to solve, <em>area-to-area</em>
+line of sight, as used in DDM, is harder. I'm only aware of probabilistic
+solutions. These work by randomly or systematically testing lines between the spaces
+(using a point-to-point algorithm) until either an unblocked line is found or a
+maximum number of tests has been done, in which case there is a certain
+(high) probability that no line of sight exists. This is implemented in Map Explorer.</p>
+
+<p>This works and does not seem to miss any lines on the official maps, but
+I still find it somewhat unsatisfactory. While general area-to-area line of sight seems
+to be hard, the two-dimensional square grid of finite (and usually small) size
+used in DDM might allow a better solution.</p>
+
+<p>The LOS computation is currently done in floating-point. It should be converted to use
+integer arithmetic. There are two reasons for this:</p>
+
+<ul>
+  <li>Accuracy: While FP has potentially high accuracy (53 bits), it is quite hard
+  (at least for me) to prove that no precision-related bugs can occur. Much easier
+  with integer, where I only have to care about overflow.</li>
+
+  <li>Performance: Desktop CPUs usually have very fast FP units, so converting
+     to integer might actually make things slower. However, CPUs for smaller devices
+     like PDAs often have no or very slow FP hardware. Since desktop and notebook systems
+     are fast enough anyway, converting to integer would be good for a PDA version.</li>
+</ul>
+
+<hr/>
+<h2>Geometric Objects</h2>
+
+<p>Java contains geometric objects such as points, lines, and polygons
+in the <code>java.awt</code> and <code>java.awt.geom</code> packages.
+These even have methods for testing for intersections. There are two reasons
+why I did not use these classes:</p>
+
+<ol>
+<li>I don't like these types to be mutable.</li>
+<li>Performance: they are slower the my more special-purpose classes, in particular
+on the default client VM. Using <code>-server</code> and <code>-XX:CompileThreshold</code>
+mostly closes the gap, but many systems don't even have a server VM installed.</li>
+</ol>
+
+
+
+
+<hr />
+<div id="footer">
+Copyright &copy; 2007 Christoph Breitkopf (chris@chr-breitkopf.de)
+<br />
+<i>Last change: 2007-01-29</i>
+</div>
+
+</body>
+</html>
