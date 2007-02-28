@@ -221,7 +221,8 @@ public class LosTester {
 		if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
 		    Point p1 = new Point(x1 + e1off, y1 + e1off);
 		    Point p2 = new Point(x2 + e2off, y2 + e2off);
-		    logger.warning("Found random " + p1 + " - " + p2);
+		    logger.warning("Found random " + p1.getLocation() + " - " + p2.getLocation()
+                                   + " [" + p1 + ", " + p2 + "]");
 		    return i;
 		}
 	    }
@@ -243,7 +244,8 @@ public class LosTester {
 		if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
 		    Point p1 = new Point(x1 + e1off, y1 - e1off);
 		    Point p2 = new Point(x2 + e2off, y2 - e2off);
-		    logger.warning("Found random " + p1 + " - " + p2);
+                    logger.warning("Found random " + p1.getLocation() + " - " + p2.getLocation()
+                                   + " [" + p1 + ", " + p2 + "]");
 		    return i;
 		}
 	    }
