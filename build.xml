@@ -12,9 +12,6 @@
   <property name="test.reports.dir" location="${test.dir}/reports" />
 
   <property name="findbugs.home" value="${env.HOME}/bin/findbugs" />
-  <taskdef name="findbugs"
-  	       classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-           classpath="${findbugs.home}/lib/findbugs-ant.jar" />
 
   <path id="compile.classpath">
     <pathelement location="${classes.dir}" />
@@ -25,7 +22,7 @@
 
   <path id="test.classpath">
     <path refid="compile.classpath" />
-    <pathelement location="${junit.jar}" />
+    <pathelement location="${env.JUNIT_HOME}/junit.jar" />
     <pathelement location="${test.dir}" />
   </path>
 
@@ -123,9 +120,12 @@
   </target>
 
   <target name="findbugs" depends="dist" description="Run findbugs">
+    <taskdef name="findbugs"
+  	     classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+             classpath="${findbugs.home}/lib/findbugs-ant.jar" />
     <findbugs home="${findbugs.home}"
-              output="xml"
-              outputFile="${ant.project.name}-fb.xml"
+              output="html"
+              outputFile="findbugs-results.html"
 	      reportLevel="low"
               effort="max" >
       <sourcePath path="src" />
@@ -156,21 +156,22 @@
 
   <path id="pmd.classpath">
     <pathelement location="${build}"/>
-    <fileset dir="/home/breitko/bin/pmd-3.4/lib/">
+    <fileset dir="${env.HOME}/bin/pmd/lib/">
       <include name="*.jar"/>
     </fileset>
   </path>
 
-  <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
 
   <target name="pmd" depends="compile">
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath" />
     <pmd shortFilenames="true"
          encoding="UTF-8"
 	 targetjdk="1.5">
-      <ruleset>unusedcode</ruleset>
       <ruleset>basic</ruleset>
-      <ruleset>design</ruleset>
-      <!-- <ruleset>controversial</ruleset> -->
+      <ruleset>imports</ruleset>    
+      <ruleset>coupling</ruleset>
+      <ruleset>sunsecure</ruleset>
+      <ruleset>unusedcode</ruleset>
       
       <formatter type="html" toFile="pmd_report.html" />
       <fileset dir="src/">
@@ -180,6 +181,28 @@
         <include name="**/*.java"/>
       </fileset>
     </pmd>
+  </target>
+
+
+  <property name="cpd.minTokenCount" value="50" />
+
+  <target name="cpd" depends="compile" description="Find duplicate code">
+    <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="pmd.classpath" />
+    <cpd minimumTokenCount="${cpd.minTokenCount}" outputFile="cpd1.txt">
+        <fileset dir="src/">
+          <include name="**/*.java"/>
+        </fileset>
+    </cpd>
+    <cpd minimumTokenCount="${cpd.minTokenCount}" ignoreLiterals="true" outputFile="cpd2.txt">
+        <fileset dir="src/">
+          <include name="**/*.java"/>
+        </fileset>
+    </cpd>
+    <cpd minimumTokenCount="${cpd.minTokenCount}" ignoreLiterals="true" ignoreIdentifiers="true" outputFile="cpd3.txt">
+        <fileset dir="src/">
+          <include name="**/*.java"/>
+        </fileset>
+    </cpd>
   </target>
 
 </project>
