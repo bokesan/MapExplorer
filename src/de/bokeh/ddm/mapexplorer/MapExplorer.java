@@ -752,12 +752,22 @@ public class MapExplorer implements ActionListener, ItemListener {
             timeSoFar += result[3];
             specTimeSoFar += spec.elapsedTime;
             long percentDone = 100 * specTimeSoFar / specTimeTotal;
-            long remMs = (long) ((specTimeTotal - specTimeSoFar) * ((double) timeSoFar / specTimeSoFar)) - 3600000;
-            out.format(" [%d%% done, remaining time: %tT]\n", percentDone, remMs);
+            long remMs = (long) ((specTimeTotal - specTimeSoFar) * ((double) timeSoFar / specTimeSoFar));
+            out.format(" [%d%% done, remaining time: %s]\n", percentDone, formatRuntime(remMs));
         }
         checksFile.close();
         assert specTimeSoFar == specTimeTotal;
         out.format("%d out of %d tests failed.\n", errors, tests);
-        out.format("Total time: %tT, speed factor: %.3f\n", timeSoFar, (double) specTimeTotal / timeSoFar);
+        out.format("Total time: %s, speed factor: %.3f\n", formatRuntime(timeSoFar), (double) specTimeTotal / timeSoFar);
+    }
+    
+    protected static String formatRuntime(long millis) {
+	long hours = millis / 3600000;
+	millis %= 3600000;
+	long minutes = millis / 60000;
+	millis %= 60000;
+	long seconds = millis / 1000;
+	if ((millis % 1000L) >= 500) seconds++;
+	return String.format("%d:%02d:%02d", hours, minutes, seconds);
     }
 }
