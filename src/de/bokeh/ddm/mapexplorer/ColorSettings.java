@@ -148,7 +148,7 @@ public class ColorSettings {
 	featureColor.put(MapFeature.RISKY, Color.ORANGE);
 	featureColor.put(MapFeature.BLOOD_ROCK, Color.RED);
 	featureColor.put(MapFeature.HAUNTED, new Color(255, 0, 255, 208));
-	featureColor.put(MapFeature.PIT, Color.GRAY);
+	featureColor.put(MapFeature.PIT, new Color(120,120,136));
 	featureColor.put(MapFeature.LAVA, new Color(255, 128, 0));
 	featureColor.put(MapFeature.SMOKE, new Color(48, 48, 64, 208));
 	featureColor.put(MapFeature.FOREST, new Color(0, 208, 92));

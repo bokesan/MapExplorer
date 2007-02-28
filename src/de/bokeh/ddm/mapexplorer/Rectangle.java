@@ -86,7 +86,7 @@ public class Rectangle {
     }
     
     public static Rectangle parse(String s) {
-	int i = s.indexOf("-");
+	int i = s.indexOf('-');
 	if (i >= 0) {
 	    return new Rectangle(new Location(s.substring(0, i)), new Location(s.substring(i+1)));
 	}
@@ -159,13 +159,38 @@ public class Rectangle {
     }
     
     /**
-     * Does this rectangle contain a Location?
+     * Does this rectangle contain a given Location?
      * @param loc a Location
-     * @return true if this Rectangle contains the Location.
+     * @return Returns <code>true</code> if this Rectangle contains the Location <code>loc</code>;
+     *  <code>false</code> otherwise.
      */
     public boolean contains(Location loc) {
 	int col = loc.getColumn();
 	int row = loc.getRow();
 	return col >= left && col <= right && row >= bottom && row <= top;
     }
+    
+    /**
+     * Does this rectangle contain a given Point?
+     * @param p a Point
+     * @return Returns <code>true</code> if this Rectangle contains the Point <code>p</code>;
+     *  <code>false</code> otherwise.
+     */
+    public boolean contains(Point p) {
+        double x = p.getX();
+        double y = p.getY();
+        return x >= left && x <= right + 1 && y >= bottom && y <= top + 1;
+    }
+
+    public Line getEdge(Direction dir) {
+        switch (dir) {
+        case NORTH: return new Line(left, top+1, right+1, top+1);
+        case EAST:  return new Line(right+1, bottom, right+1, top+1);
+        case SOUTH: return new Line(left, bottom, right+1, bottom);
+        case WEST:  return new Line(left, bottom, left, top+1);
+        default:
+            throw new AssertionError(dir);
+        }
+    }
+
 }

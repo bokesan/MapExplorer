@@ -168,4 +168,16 @@ public class Location {
 	int dy = row - loc.row;
 	return (dy >= -1 && dy <= 1);
     }
+    
+    public Line getEdge(Direction dir) {
+        switch (dir) {
+        case NORTH: return new Line(column, row+1, column+1, row+1);
+        case EAST:  return new Line(column+1, row, column+1, row+1);
+        case SOUTH: return new Line(column, row, column+1, row);
+        case WEST:  return new Line(column, row, column, row+1);
+        default:
+            throw new AssertionError(dir);
+        }
+    }
+
 }

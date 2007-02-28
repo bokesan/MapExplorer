@@ -24,7 +24,6 @@
 
 package de.bokeh.ddm.mapexplorer;
 
-import java.io.*;
 import java.util.*;
 
 
@@ -40,6 +39,9 @@ public class Map {
     private final int height;
     private final int width;
     private final MapSquare[] map;
+    private final List<Line> thinWalls;
+    private final List<Polygon> thickWalls;
+    
     private String imageFile = null;
     
     public Map(Dimension size) {
@@ -58,6 +60,31 @@ public class Map {
 	for (int i = 0; i < size; i++)
 	    map[i] = new MapSquare();
 	this.name = name;
+        thinWalls = new ArrayList<Line>();
+        thickWalls = new ArrayList<Polygon>();
+    }
+
+    
+    /**
+     * Add a thick wall.
+     * @param wall a Polygon defining the wall
+     */
+    public void addWall(Polygon wall) {
+        thickWalls.add(wall);
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                if (wall.contains(col + 0.5, row + 0.5))
+                    get(col, row).setSolid(true);
+            }
+        }
+    }
+    
+    /**
+     * Add a thin wall.
+     * @param wall a Line
+     */
+    public void addWall(Line wall) {
+        thinWalls.add(wall);
     }
     
     /**
@@ -66,18 +93,14 @@ public class Map {
      * @return A set of Lines.
      */
     public Set<Line> getWalls(boolean smokeBlocksLOS) {
-	Set<Line> walls = new HashSet<Line>();
+	Set<Line> walls = new HashSet<Line>(thinWalls);
+        for (Polygon wall : thickWalls) {
+            for (Line e : wall.getEdges())
+                walls.add(e);
+        }
 	for (int x = 0; x < width; x++) {
 	    for (int y = 0; y < height; y++) {
 		MapSquare s = get(x, y);
-		if (s.getWall(Direction.SOUTH))
-		    addWall(walls, new Line(new Point(x,y), new Point(x+1,y)));
-		if (s.getWall(Direction.WEST))
-		    addWall(walls, new Line(new Point(x,y), new Point(x,y+1)));
-		if (s.getWall(Direction.NORTH))
-		    addWall(walls, new Line(new Point(x,y+1), new Point(x+1,y+1)));
-		if (s.getWall(Direction.EAST))
-		    addWall(walls, new Line(new Point(x+1,y), new Point(x+1,y+1)));
 		if ((smokeBlocksLOS && s.has(MapFeature.SMOKE)) || s.has(MapFeature.ELEMENTAL_WALL)) {
 		    addSquareWalls(walls, x, y, 1);
 		}
@@ -267,45 +290,6 @@ public class Map {
 	return new Dimension(width, height);
     }
 
-    
-    public void setSolid(Location loc) {
-	setSolid(loc.getColumn(), loc.getRow());
-    }
-    
-    public void setSolid(int col, int row) {
-	dblWall(col, row, Direction.NORTH);
-	dblWall(col, row, Direction.EAST);
-	dblWall(col, row, Direction.SOUTH);
-	dblWall(col, row, Direction.WEST);
-    }
-    
-    
-    
-    public void dblWall(int col, int row, Direction dir) {
-	get(col, row).setWall(dir, true);
-	switch (dir) {
-	case NORTH:
-	    row++;
-	    dir = Direction.SOUTH;
-	    break;
-	case EAST:
-	    col++;
-	    dir = Direction.WEST;
-	    break;
-	case SOUTH:
-	    row--;
-	    dir = Direction.NORTH;
-	    break;
-	case WEST:
-	    col--;
-	    dir = Direction.EAST;
-	    break;
-	default:
-	    throw new AssertionError();
-	}
-	if (col >= 0 && col < getWidth() && row >= 0 && row < getHeight())
-	    get(col, row).setWall(dir, true);
-    }
 
     /**
      * Does any square of this map have feature f?
@@ -337,20 +321,35 @@ public class Map {
 	int top = bottom + size - 1;
 	for (int row = bottom; row <= top; row++) {
 	    for (int col = left; col <= right; col++) {
+                Location loc1 = new Location(col, row);
 		MapSquare s = get(col, row);
 		if (s.isSolid())
 		    return true;
-		if (col > left && s.getWall(Direction.WEST))
+		if (col > left && wallExists(loc1.getEdge(Direction.WEST)))
 		    return true;
-		if (col < right && s.getWall(Direction.EAST))
+		if (col < right && wallExists(loc1.getEdge(Direction.EAST)))
 		    return true;
-		if (row > bottom && s.getWall(Direction.SOUTH))
+		if (row > bottom && wallExists(loc1.getEdge(Direction.SOUTH)))
 		    return true;
-		if (row < top && s.getWall(Direction.NORTH))
+		if (row < top && wallExists(loc1.getEdge(Direction.NORTH)))
 		    return true;
 	    }
 	}
 	return false;
+    }
+    
+    protected boolean wallExists(Line edge) {
+        for (Line w : thinWalls) {
+            if (w.containsEdge(edge))
+                return true;
+        }
+        for (Polygon p : thickWalls) {
+            for (Line e : p.getEdges()) {
+                if (e.containsEdge(edge))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -365,6 +364,20 @@ public class Map {
      */
     public void setImageFile(String imageFile) {
         this.imageFile = imageFile;
+    }
+
+    /**
+     * @return Returns the thickWalls.
+     */
+    public List<Polygon> getThickWalls() {
+        return thickWalls;
+    }
+
+    /**
+     * @return Returns the thinWalls.
+     */
+    public List<Line> getThinWalls() {
+        return thinWalls;
     }
     
 }

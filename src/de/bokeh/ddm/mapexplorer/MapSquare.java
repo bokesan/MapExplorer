@@ -35,9 +35,7 @@ import java.util.EnumSet;
 public class MapSquare {
     
     private final EnumSet<MapFeature> features;
-    
-    private final EnumSet<Direction> wall;
-    
+    private boolean solid; // "impassable" might be better
     private Color color;
     
     /**
@@ -45,8 +43,8 @@ public class MapSquare {
      */
     public MapSquare() {
 	features = EnumSet.noneOf(MapFeature.class);
-	wall = EnumSet.noneOf(Direction.class);
 	color = java.awt.Color.WHITE;
+        solid = false;
     }
     
     /**
@@ -88,46 +86,6 @@ public class MapSquare {
     
     
     /**
-     * Does this square have a wall in the specified direction?
-     * @param dir a Direction
-     * @return true if the square has a wall in the Direction dir.
-     */
-    public boolean getWall(Direction dir) {
-	return wall.contains(dir);
-    }
-    
-    /**
-     * Add or remove a wall in a specified direction.
-     * @param dir a Direction
-     * @param value wether to add or to remove the wall
-     */
-    public void setWall(Direction dir, boolean value) {
-	if (value)
-	    wall.add(dir);
-	else
-	    wall.remove(dir);
-    }
-    
-    /**
-     * Does this square have at least one wall?
-     * @return True if this square has at least one wall.
-     */
-    public boolean hasWall() {
-	return !wall.isEmpty();
-    }
-    
-    /**
-     * Check if this square is solid rock.
-     * @return true if this square is solid rock.
-     */
-    public boolean isSolid() {
-	return wall.contains(Direction.NORTH)
-	    && wall.contains(Direction.EAST)
-	    && wall.contains(Direction.SOUTH)
-	    && wall.contains(Direction.WEST);
-    }
-
-    /**
      * Return the color of this square.
      * @return the Color of this MapSquare.
      */
@@ -155,5 +113,19 @@ public class MapSquare {
 	return (features.contains(MapFeature.DIFFICULT)
 		|| features.contains(MapFeature.SPIKE_STONES)
 		|| features.contains(MapFeature.STATUE));
+    }
+
+    /**
+     * @return Returns the solid.
+     */
+    public boolean isSolid() {
+        return solid;
+    }
+
+    /**
+     * @param solid The solid to set.
+     */
+    public void setSolid(boolean solid) {
+        this.solid = solid;
     }
 }

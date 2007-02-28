@@ -186,7 +186,7 @@ public class MapExplorerModel {
 	    for (int roff = 0; roff < size; roff++) {
 		for (int coff = 0; coff < size; coff++) {
 		    MapSquare t = map.get(col + coff, row + roff);
-		    if (t.hasWall() || t.has(MapFeature.ELEMENTAL_WALL))
+		    if (t.isSolid() || t.has(MapFeature.ELEMENTAL_WALL))
 			return false;
 		}
 	    }

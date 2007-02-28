@@ -44,4 +44,11 @@ public class LocationTest extends TestCase {
 	}
     }
 
+    public void testGetEdge() {
+        Location a = new Location(1, 10);
+        assertEquals(new Line(1,10,1,11), a.getEdge(Direction.WEST));
+        assertEquals(new Line(1,10,2,10), a.getEdge(Direction.SOUTH));
+        assertEquals(new Line(1,11,2,11), a.getEdge(Direction.NORTH));
+        assertEquals(new Line(2,10,2,11), a.getEdge(Direction.EAST));
+    }
 }

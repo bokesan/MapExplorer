@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>Map Explorer - Line-of-Sight tool for D&amp;D Miniatures</title>
+ <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+ <meta name="author" content="Christoph Breitkopf" />
+ <meta name="copyright" content="&copy; 2006, 2007 Christoph Breitkopf" />
+ <meta name="description" content="Line-of-Sight Calculator Software for the DDM Skirmish game" />
+ <meta name="keywords" content="DDM, D&amp;D Miniatures, Line-of-Sight" />
+ <!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+ <!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+</head>
+<body>
+<a href="../index.html">home</a>
+
+
+<h1>Map Explorer unofficial test releases</h1>
+
+<p>Test release with diagnonal edge support: <a href="MapExplorer-20070228-test.zip">20070228-test</a>.
+</p>
+
+<p><strong>Known problems</strong></p>
+
+<p>Incorrect LoS behind thin wall with clipped edge. This screenshot from Hailstorm Tower
+shows LoS from I11 to H13, which is obviously wrong.</p>
+<img src="dw_bug1_hailstorm.png" alt="LoS bug illustration" />
+
+
+<p>Missed LoS. I know the reasons for this, but not yet the cure (at least not without
+severely impacting performance). Here are the Lines I know about that are usually missed on the
+maps with diagonal walls:</p>
+
+<ul>
+<li><strong>Caves of Chaos:</strong> B1 - D25, N16 - T28, H11 - U20.</li>
+<li><strong>Frostfell Rift:</strong> J25 - Q9.</li>
+<li><strong>Hailstorm Tower:</strong> B29 - T13, G1 - H22.</li>
+</ul>
+
+
+
+<hr />
+<div id="footer">
+Copyright &copy; 2007 Christoph Breitkopf (chris@chr-breitkopf.de)
+<br />
+<i>Last change: 2007-02-28</i>
+</div>
+
+</body>
+</html>

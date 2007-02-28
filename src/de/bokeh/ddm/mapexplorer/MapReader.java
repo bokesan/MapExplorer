@@ -87,6 +87,12 @@ public class MapReader {
 		else if (f[0].equals("image")) {
 		    m.setImageFile(f[1]);
 		}
+                else if (f[0].equals("polygon")) {
+                    handlePoly(m, f);
+                }
+                else if (f[0].equals("thinwall")) {
+                    handleThinWall(m, f);
+                }
 		else {
 		    MapFeature feature = null;
 		    try {
@@ -150,17 +156,58 @@ public class MapReader {
 	    } else {
 		Rectangle r = Rectangle.parse(f[i]);
 		for (Location loc : r.getLocations())
-		    m.dblWall(loc.getColumn(), loc.getRow(), dir);
+                    m.addWall(loc.getEdge(dir));
 	    }
 	}
     }
     
+    
     private void handleSolid(Map m, String[] f) {
 	for (int i = 1; i < f.length; i++) {
 	    Rectangle r = Rectangle.parse(f[i]);
+            m.addWall(new Polygon(r));
 	    for (Location loc : r.getLocations())
-		m.setSolid(loc);
+                m.get(loc).setSolid(true);
 	}
+    }
+
+    
+    private void handlePoly(Map m, String[] f) {
+        Point[] vertices = new Point[f.length - 1];
+        for (int i = 1; i < f.length; i++) {
+            vertices[i-1] = parsePoint(f[i]);
+        }
+        m.addWall(new Polygon(vertices));
+    }
+    
+    private void handleThinWall(Map m, String[] f) {
+        Point[] vertices = new Point[f.length - 1];
+        for (int i = 1; i < f.length; i++) {
+            vertices[i-1] = parsePoint(f[i]);
+        }
+        for (int i = 1; i < vertices.length; i++) {
+            m.addWall(new Line(vertices[i-1], vertices[i]));
+        }
+    }
+    
+    private static Point parsePoint(String s) {
+        int i = s.indexOf('+');
+        if (i < 0)
+            return new Point(new Location(s));
+        Location base = new Location(s.substring(0, i));
+        int k = s.indexOf('+', i+1);
+        double xoff = parseFraction(s.substring(i+1, k));
+        double yoff = parseFraction(s.substring(k+1));
+        return new Point(base.getColumn() + xoff, base.getRow() + yoff);
+    }
+    
+    private static double parseFraction(String s) {
+        int i = s.indexOf('/');
+        if (i < 0)
+            return Integer.parseInt(s);
+        int num = Integer.parseInt(s.substring(0, i));
+        int denom = Integer.parseInt(s.substring(i+1));
+        return (double) num / denom;
     }
     
     public static Color parseColor(String s) {

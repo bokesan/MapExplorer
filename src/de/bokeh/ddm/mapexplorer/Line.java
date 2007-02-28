@@ -276,6 +276,9 @@ public class Line {
 	return start.getX() == end.getX();
     }
     
+    public boolean isDiagonal() {
+        return start.getX() != end.getX() && start.getY() != end.getY();
+    }
     
 
     /* (non-Javadoc)
@@ -323,6 +326,16 @@ public class Line {
 	    if (hadIntersection) return true;
 	}
 	return false;
+    }
+    
+    
+    public boolean intersects(Rectangle r) {
+        if (r.contains(start) || r.contains(end)) return true;
+        if (this.intersectsOrCoincides(r.getEdge(Direction.NORTH))) return true;
+        if (this.intersectsOrCoincides(r.getEdge(Direction.EAST))) return true;
+        if (this.intersectsOrCoincides(r.getEdge(Direction.SOUTH))) return true;
+        if (this.intersectsOrCoincides(r.getEdge(Direction.WEST))) return true;
+        return false;
     }
     
     private IntersectionResult resolveCoincident(Line ln) {

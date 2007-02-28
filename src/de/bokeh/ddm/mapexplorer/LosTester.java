@@ -46,6 +46,7 @@ public class LosTester {
     
     private final Set<Line> allWalls;
     private Line[] walls;
+    private boolean haveDiagonalWalls;
     private final Set<Location> allForestSquares;
     private Location[] forestSquares;
     
@@ -83,68 +84,7 @@ public class LosTester {
     public int testLocation(Location loc) {
 	if (loc.equals(location))
 	    return 0;
-	if (loc.x() == location.x()) {
-	    // same column
-	    int botRow, topRow;
-	    if (loc.y() < location.y()) {
-		botRow = loc.y(); topRow = location.y();
-	    } else {
-		botRow = location.y(); topRow = loc.y();
-	    }
-	    int col = loc.getColumn();
-	    for (Line w : allWalls) {
-		if (w.isHorizontal()) {
-		    double row = w.getStart().getY();
-		    if (row > botRow && row <= topRow) {
-			if (w.getStart().getX() <= col && w.getEnd().getX() >= (col+1)) {
-			    // logger.info("same column, intervening walls: no LOS");
-			    return -1;
-			}
-		    }
-		}
-	    }
-	    for (Location sq : allForestSquares) {
-		int sq_row = sq.getRow();
-		if (sq.getColumn() == col && sq_row > botRow && sq_row < topRow) {
-		    // logger.info("LoS blocked because of forest");
-		    return -1;
-		}
-	    }
-	    // logger.info("same column, no intervening walls: LOS");
-	    return 0;
-	}
-	if (loc.y() == location.y()) {
-	    // same row
-	    int leftCol, rightCol;
-	    if (loc.x() < location.x()) {
-		leftCol = loc.x(); rightCol = location.x();
-	    } else {
-		leftCol = location.x(); rightCol = loc.x();
-	    }
-	    int row = loc.getRow();
-	    for (Line w : allWalls) {
-		if (w.isVertical()) {
-		    double col = w.getStart().getX();
-		    if (col > leftCol && col <= rightCol) {
-			if (w.getStart().getY() <= row && w.getEnd().getY() >= (row+1)) {
-			    // logger.info("same row, intervening walls: no LOS");
-			    return -1;
-			}
-		    }
-		}
-	    }
-	    for (Location sq : allForestSquares) {
-		int sq_col = sq.getColumn();
-		if (sq.getRow() == row && sq_col > leftCol && sq_col < rightCol) {
-		    // logger.info("LoS blocked because of forest");
-		    return -1;
-		}
-	    }
-	    // logger.info("same row, no intervening walls: LOS");
-	    return 0;
-	}
 	
-	// different row/column
 	int r;
 	if (location.x() < loc.x()) {
 	    if (location.y() < loc.y()) {
@@ -169,27 +109,29 @@ public class LosTester {
 	}
 	return r;
     }
-	
-    static final double[] testOffsets = {
-	0, 1,
-	1/32.0, 31/32.0,
-	2/32.0, 30/32.0,
-	3/32.0, 29/32.0, //
-	4/32.0, 28/32.0,
-	5/32.0, 27/32.0, //
-	6/32.0, 26/32.0,
-	7/32.0, 25/32.0,
-	8/32.0, 24/32.0,
-	9/32.0, 23/32.0,
-	10/32.0, 22/32.0,
-	11/32.0, 21/32.0, //
-	12/32.0, 20/32.0,
-	13/32.0, 19/32.0, //
-	14/32.0, 18/32.0,
-	15/32.0, 17/32.0,
-	1/512.0, 511/512.0,
-	0.5
-    };
+
+    // protected for testing only
+    protected static double[] makeTestOffsets(int steps) {
+	assert steps > 0 && Integer.bitCount(steps) == 1;
+	double[] offs = new double[steps + (steps < 512 ? 3 : 1)];
+	final double frac = 1 / (double) steps;
+	offs[0] = 0.0;
+	offs[1] = 1.0;
+	final int half = steps / 2;
+	for (int i = 1; i < half; i++) {
+	    offs[2 * i] = i * frac;
+	    offs[2 * i + 1] = (steps - i) * frac;
+	}
+	if (steps < 512) {
+	    offs[offs.length - 3] = 1.0 / 512.0;
+	    offs[offs.length - 2] = 511.0 / 512.0;
+	}
+	offs[offs.length - 1] = 0.5;
+	return offs;
+    }
+
+    private static final int TEST_STEPS_NORMAL = 32;
+    private static final int TEST_STEPS_FINE = 64;
     
     /**
      * Test two diagonals
@@ -203,6 +145,7 @@ public class LosTester {
 	final double x1 = location.getColumn();
 	final double x2 = loc.getColumn();
 	
+        final double[] testOffsets = makeTestOffsets(haveDiagonalWalls ? TEST_STEPS_FINE : TEST_STEPS_NORMAL);
 	if (slope == 0) {
 	    // ascending
 	    final double y1 = location.getRow();
@@ -283,24 +226,13 @@ public class LosTester {
     private void getRelevantWalls(Location dest) {
 	Rectangle bounds = new Rectangle(location, dest);
 	HashSet<Line> walls = new HashSet<Line>();
-	double x1 = bounds.getLeft();
-	double x2 = bounds.getRight() + 1;
-	double y1 = bounds.getBottom();
-	double y2 = bounds.getTop() + 1;
+        haveDiagonalWalls = false;
 	for (Line w : allWalls) {
-	    if (w.isHorizontal()) {
-		double wy = w.getStart().getY();
-		if (wy > y1 && wy < y2
-			&& w.getStart().getX() < x2
-			&& w.getEnd().getX() > x1)
-		    walls.add(w);
-	    } else {
-		double wx = w.getStart().getX();
-		if (wx > x1 && wx < x2
-			&& w.getStart().getY() < y2
-			&& w.getEnd().getY() > y1)
-		    walls.add(w);
-	    }
+            if (w.intersects(bounds)) {
+                walls.add(w);
+                if (w.isDiagonal())
+                    haveDiagonalWalls = true;
+            }
 	}
 	this.walls = walls.toArray(new Line[walls.size()]);
 	

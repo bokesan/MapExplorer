@@ -105,6 +105,12 @@ public class MapPanel extends JPanel {
 	return new java.awt.Point(x, y);
     }
 
+    private java.awt.Point locPoint(Point p) {
+        double x = tileWidth * (p.getX() + 1);
+        double y = tileHeight * (1 + map.getHeight() - p.getY());
+        return new java.awt.Point((int)x, (int)y);
+    }
+
     /**
      * Return map square Location of a pixel.
      * @param x the x coordinate of the pixel
@@ -150,6 +156,8 @@ public class MapPanel extends JPanel {
 	    }
 	    g.setColor(Color.BLACK);
 	}
+	if (mapImage == null)
+	    paintWalls(g);
 
 	if (creatures != null) {
 	    for (Creature c : creatures)
@@ -162,6 +170,30 @@ public class MapPanel extends JPanel {
 	}
 	g.setColor(Color.BLACK);
     }
+
+    
+    private void paintWalls(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(colors.getColor(ColorSettings.Special.WALL));
+        Stroke oldStroke = g2.getStroke();
+        g2.setStroke(new BasicStroke(2.5f));
+
+        for (Line w : map.getThinWalls()) {
+            java.awt.Point p1 = locPoint(w.getStart());
+            java.awt.Point p2 = locPoint(w.getEnd());
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+        
+        for (Polygon p : map.getThickWalls()) {
+            java.awt.Polygon p1 = makeJ2dPolygon(p);
+            g2.fillPolygon(p1);
+            g2.drawPolygon(p1);
+        }
+        
+        g2.setStroke(oldStroke);
+        g2.setColor(Color.BLACK);
+    }
+    
     
     private void drawLosForTile(Graphics g, int col, int row) {
 	if (losMap.get(col, row)) {
@@ -270,26 +302,12 @@ public class MapPanel extends JPanel {
 	if (t.has(MapFeature.EXIT_A) || t.has(MapFeature.EXIT_B))
 	    paintExit(g, p, t);
 
-	paintFullSquareFeature(g, p, t, MapFeature.PIT);
+        if (t.has(MapFeature.PIT)) {
+            g.setColor(colors.getColor(MapFeature.PIT));
+            g.fillRect(x+1,y+1, tileWidth-2, tileHeight-2);
+        }
 	paintFullSquareFeature(g, p, t, MapFeature.ELEMENTAL_WALL);
 
-	// Walls
-	if (t.hasWall()) {
-	    g.setColor(colors.getColor(ColorSettings.Special.WALL));
-	    if (t.isSolid()) {
-		g.fillRect(x, y, tileWidth, tileHeight);
-	    } else {
-		if (t.getWall(Direction.NORTH))
-		    g.fillRect(x, y, tileWidth, wallWidth);
-		if (t.getWall(Direction.WEST))
-		    g.fillRect(x, y, wallWidth, tileHeight);
-		if (t.getWall(Direction.SOUTH))
-		    g.fillRect(x, y+tileHeight-wallWidth, tileWidth, wallWidth);
-		if (t.getWall(Direction.EAST))
-		    g.fillRect(x+tileWidth-wallWidth, y, wallWidth, tileHeight);
-	    }
-	}
-	
 	if (losMap.get(col, row)) {
 	    g.setColor(colors.getColor(ColorSettings.Special.LOS));
 	    drawLosIcon(g, p);
@@ -508,4 +526,16 @@ public class MapPanel extends JPanel {
         this.locationFormatter = locationFormatter;
     }
 
+    private java.awt.Polygon makeJ2dPolygon(Polygon p) {
+        Point[] vertices = p.getVertices();
+        int n = vertices.length;
+        int[] x = new int[n];
+        int[] y = new int[n];
+        for (int i = 0; i < n; i++) {
+            java.awt.Point pt = locPoint(vertices[i]);
+            x[i] = pt.x;
+            y[i] = pt.y;
+        }
+        return new java.awt.Polygon(x, y, n);
+    }
 }

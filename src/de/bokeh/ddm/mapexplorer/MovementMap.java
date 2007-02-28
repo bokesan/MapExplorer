@@ -184,7 +184,8 @@ public class MovementMap {
 		    difficult = true;
 	    }
 	    for (Direction d : mc.wallsToCheck) {
-		if (dest.getWall(d))
+		Line wall = destLoc.getEdge(d);
+		if (m.wallExists(wall))
 		    return null;
 	    }
 	}
