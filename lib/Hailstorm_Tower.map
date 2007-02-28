@@ -1,0 +1,48 @@
+map Hailstorm Tower
+width 30
+height 21
+basecolor 8884e0
+image Map_HailstormTower.JPG
+
+polygon K1 K4 L4 L5 M5 M1
+polygon H7 H8 N8 N7+1/2+0 M7+0+1/2
+polygon A3 A4 B4+0+1/2 C5+0+1/2 E5 E4 D4+0+1/2 C3+0+1/2
+polygon Q5 Q6+1/2+0 R7+1/2+0 R10 S10 S6+1/2+0 Q5+0+1/2
+polygon U11+1/2+1 U12 U13+1/2+0 T14+1/2+0 T15 U15+0+1
+polygon U18+0+1 S18+0+1/2 R17+0+1/2 R17 R19 R19+0+1/2 T21+0+1/2 U21+0+1
+polygon S12 P12+0+1/2 O13+0+1/2 M13 M15 P15 P14 R14 R13 R13+0+1/2 S12+1/2+0
+polygon M17 M19 L19 L20 M20+0+1/2 N19+1/2+0 N19 O19 O17
+thinwall M13 H13+0+1/2 H13+1/2+0 H14
+thinwall H18 H18+1/2+0 H19+0+1/2 L19
+
+polygon F9 D9+0+1/2 D9+1/2+0 D13 E13 E10+1/2+0 E10+0+1/2 F10
+polygon A25 A29 C29+0+1/2 D28+0+1/2 E28 E27+1/2+0 D27+0+1/2 C27+0+1/2 A25+0+1/2
+polygon F22 F23 F23+0+1/2 G24+0+1/2 I24+0+1/2 J23+1/2+0 J23 H23+0+1/2 G22+0+1/2
+polygon L24 P24+0+1/2 Q23+1/2+0 Q23 L23+0+1/2 L23+1/2+0
+polygon R27 R28 T28+0+1/2 U26+1/2+1 U24+0+1 U24 U25+1/2+0 T25+1/2+1/2 T26 T27
+polygon I30+1+0 N30+1+0 N30+1/2+0 O29+1/2+0 O27 N27+0+1/2 N27+1/2+0 N28+1/2+0 L30+0+1/2 I30+0+1/2 I30+1/2+0
+
+solid D15-D18
+
+
+magic I14-L17
+
+difficult E4-E6 E8 F5-F9 G6-G8
+difficult J6 K5 K6
+difficult U7 T7 T8 S8 S9 Q10-R11 P11 S12 T12
+difficult C12-C15 D13 D14
+difficult D19-D21 C22 E20-E22 F21
+difficult Q17 O18 P18
+difficult S21 T22 U23
+difficult J23 K23 I24-L24
+difficult O27-P28 Q27
+
+
+start A A29-D30 R28-U30 U27
+exit A E30-H30
+
+start B A1-D2 D3 M1-Q2
+exit B R1-U1
+
+victory A T15-U17 I14-L17
+victory B T15-U17 I14-L17

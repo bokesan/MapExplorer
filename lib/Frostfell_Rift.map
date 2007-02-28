@@ -1,0 +1,60 @@
+map Frostfell Rift
+width 30
+height 21
+basecolor 8884e0
+image Map_FrostfellRift.JPG
+
+# used risky fpr slippery surface
+
+
+polygon E1 E2 G2+0+1/2 H1+1/2+0 H1
+polygon D9 D10 F10 F7 G7 G6 E6 E9
+polygon J5 L5 L7 M7 M5 O5 O4 J4+0+1/2 J4+1/2+0
+polygon A15 A17 B17 B15+1/2+0 A15+0+1/2
+polygon E14 E14+1/2+0 E15+0+1/2 F15 F14
+polygon N30+1+0 Q30+1+0 Q30 N30+0+1/2 N30+1/2+0
+polygon H28 K28+0+1/2 L27+1/2+0 L26 O26 O25 K25+0+1/2 I27+0+1/2 H27
+
+solid A5
+
+solid R4-U4
+solid A27-D27
+polygon Q15 Q18 R18 R16 S16 S15
+polygon Q22 Q26 R26 R23 S23 S22
+
+# ice blocks
+solid K10-L11
+solid J21-K22
+
+
+wall west H1-U1
+wall south A6-A14
+wall east A30-M30 Q30-R30
+
+pit R5-U7
+pit M5-N7 F7-M9 F10-H10
+pit A17-B18 C18
+pit F14-G15 G15-I16
+pit N15-P17 P13-R14 R12
+pit A24-D26
+pit H24-J26 I23-P24 L23-P23 N21-P22 L22-M22
+
+
+# slippery
+risky P4-P7  F12-H12  K15-L16
+risky T12-T15  F24-F27
+risky N19-P19  C15 D16 E17 F18
+
+difficult M1 I4 G5-I5 R8 U11
+difficult U18-U20 T19
+difficult A11 A12
+difficult J10 M10 M11
+difficult I21 I22 G23 H30 I30
+
+start A A28-B30 J28-K30 R27-U30
+exit A U28-U30 T30 S30
+victory A J15-M16 F11-H13 O4-Q7
+
+start B A1-D4 K1-L3 T1-U3
+exit B A1-C1 A2-A3
+victory B J15-M16 N18-P20 E24-G27
