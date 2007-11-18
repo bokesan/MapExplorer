@@ -22,7 +22,6 @@
 
   <path id="test.classpath">
     <path refid="compile.classpath" />
-    <pathelement location="${env.JUNIT_HOME}/junit.jar" />
     <pathelement location="${test.dir}" />
   </path>
 
