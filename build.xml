@@ -109,7 +109,7 @@
   	</zip>
   </target>
 
-  <target name="manifest" depends="init" description="Manifest für jar Datei erzeugen">
+  <target name="manifest" depends="init" description="Create manifest for jar">
     <manifest file="tmp/MANIFEST.MF">
       <attribute name="Built-By" value="${user.name}" />
       <attribute name="Built-On" value="${timestamp.isoformat}" />
