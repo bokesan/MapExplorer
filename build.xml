@@ -44,6 +44,7 @@
     <javac srcdir="src"
            destdir="${classes.dir}"
 	   source="1.5"
+	   target="1.5"
 	   encoding="utf-8"
 	   debug="${build.debug}">
       <classpath refid="compile.classpath" />
@@ -56,6 +57,7 @@
            debug="${build.debug}"
            includeAntRuntime="true"
            source="1.5"
+	   target="1.5"
     	   encoding="utf-8"
            srcdir="test">
       <classpath refid="test.classpath" />
