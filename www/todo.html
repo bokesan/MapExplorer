@@ -18,6 +18,9 @@
 
 <ul>
   <li>It is not possible to place an elemental wall next to a wall.</li>
+  <li>When a map file can not be found, the program should show a file
+      dialog instead of just an error message. In particular, this applies to
+      not finding the starting map (Fane of Lolth) on startup.</li>
 </ul>
 
 <hr/>
@@ -26,21 +29,26 @@
 
 <h2>Line-of-Sight algorithm</h2>
 
-<p>The LOS algorithm could be improved. See the
+<p>The LoS algorithm could be improved. See the
  <a href="implementation.html#los">implementation notes</a> for details.</p>
 
-<h2>Improved GUI</h2>
-
-<p>Better map rendering. Should use transparency for some map features
-and generally look better.</p>
-
-<h2>Features</h2>
+<h2>GUI</h2>
 
 <ul>
-  <li>Show ranged cover in addition to LOS.</li>
-  <li>When starting map can not be found, open a file
-      dialog instead of showing an error message.</li>
+  <li>Better map rendering. Should use transparency for some map features
+      and generally look better.</li>
+  <li>User defineable map features. New features that don't change the way LoS works
+      should not require programming.</li>
+  <li>A settings or preferences dialog.</li>
+  <li>Preferences should be saved in a per-user configuration file.</li>
+  <li>Add an about dialog. Should contain a link to the home page.</li>
 </ul>
+
+<h2>Mobile device support</h2>
+
+<p>On a tablet pc or UMPC should work as-is. Maybe the user interface could be improved for
+touch-screen operation. For smaller devices, such as PDAs or Smartphones, would require
+considerable effort.</p>
 
 
 <h2>Big Features</h2>
@@ -49,6 +57,7 @@ and generally look better.</p>
 does. Here is a list of bigger features that might be useful:</p>
 
 <ul>
+ <li>Show ranged cover in addition to LoS.</li>
  <li><em>Movement ranges.</em> Depending on creature size and movement type. To be really useful,
  need to be ably to place friendly and opposing creatues on the map, as they affect movement.
  Might show normal and double movement with different colors or icons.
@@ -64,7 +73,7 @@ does. Here is a list of bigger features that might be useful:</p>
 <div id="footer">
 Copyright &copy; 2007 Christoph Breitkopf (chris@chr-breitkopf.de)
 <br />
-<i>Last change: 2007-02-28</i>
+<i>Last change: 2007-11-19</i>
 </div>
 
 </body>
