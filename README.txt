@@ -33,13 +33,6 @@ Map Explorer. (And if you associate mapexplorer.bat with the .map
 extension in Windows Explorer, you should be able to open
 Map Explorer by double-clicking on a map file).
 
-For Mac OS X, MapExplorer now contains the mapfiles within the
-application bundle itself.
-If you want to add your own mapfiles, do the following:
- * Right-click on the MapExplorer application and select "Show Package
-   Contents".
- * Go to Contents/Resources/Java/maps in the application's folder.
-
 
 To show LOS from a map square, just click on the square.
 
@@ -61,4 +54,4 @@ All feedback should be sent my mail to chris@chr-breitkopf.de
 
 Thanks for using Map Explorer!
 
-Christoph Breitkopf, 2006-03-14
+Christoph Breitkopf, 2007-11-19
