@@ -142,17 +142,17 @@ public class LosTester {
     private int testEdges(Location loc, int slope) {
 	getRelevantWalls(loc);
 	
-	final double x1 = location.getColumn();
-	final double x2 = loc.getColumn();
+	final int x1 = location.getColumn();
+	final int x2 = loc.getColumn();
 	
         final double[] testOffsets = makeTestOffsets(haveDiagonalWalls ? TEST_STEPS_FINE : TEST_STEPS_NORMAL);
 	if (slope == 0) {
 	    // ascending
-	    final double y1 = location.getRow();
-	    final double y2 = loc.getRow();
+	    final int y1 = location.getRow();
+	    final int y2 = loc.getRow();
 	    for (double e1off : testOffsets) {
 		for (double e2off : testOffsets) {
-		    if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
+		    if (los(x1, e1off, y1, e1off, x2, e2off, y2, e2off)) {
 			return 0;
 		    }
 		}
@@ -161,7 +161,7 @@ public class LosTester {
 	    for (int i = 1; i <= rndTests; i++) {
 		final double e1off = rng.nextDouble();
 		final double e2off = rng.nextDouble();
-		if (los(x1 + e1off, y1 + e1off, x2 + e2off, y2 + e2off)) {
+		if (los(x1, e1off, y1, e1off, x2, e2off, y2, e2off)) {
 		    Point p1 = new Point(x1 + e1off, y1 + e1off);
 		    Point p2 = new Point(x2 + e2off, y2 + e2off);
 		    logger.warning("Found random " + p1.getLocation() + " - " + p2.getLocation()
@@ -171,11 +171,11 @@ public class LosTester {
 	    }
 	} else {
 	    // descending
-	    final double y1 = location.getRow() + 1;
-	    final double y2 = loc.getRow() + 1;
+	    final int y1 = location.getRow();
+	    final int y2 = loc.getRow();
 	    for (double e1off : testOffsets) {
 		for (double e2off : testOffsets) {
-		    if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
+		    if (los(x1, e1off, y1, 1 - e1off, x2, e2off, y2, 1 - e2off)) {
 			return 0;
 		    }
 		}
@@ -184,7 +184,7 @@ public class LosTester {
 	    for (int i = 1; i <= rndTests; i++) {
 		double e1off = rng.nextDouble();
 		double e2off = rng.nextDouble();
-		if (los(x1 + e1off, y1 - e1off, x2 + e2off, y2 - e2off)) {
+		if (los(x1, e1off, y1, 1 - e1off, x2, e2off, y2, 1 - e2off)) {
 		    Point p1 = new Point(x1 + e1off, y1 - e1off);
 		    Point p2 = new Point(x2 + e2off, y2 - e2off);
                     logger.warning("Found random " + p1.getLocation() + " - " + p2.getLocation()
@@ -198,7 +198,12 @@ public class LosTester {
     }
     
     
-    private boolean los(double x1, double y1, double x2, double y2) {
+    private boolean los(int p1x, double o1x, int p1y, double o1y,
+                        int p2x, double o2x, int p2y, double o2y) {
+        double x1 = p1x + o1x;
+	double y1 = p1y + o1y;
+	double x2 = p2x + o2x;
+	double y2 = p2y + o2y;
 	for (Line wall : walls) {
 	    if (wall.intersectsOrCoincides(x1, y1, x2, y2))
 		return false;
@@ -209,6 +214,18 @@ public class LosTester {
 		if (line.intersectsSquareAsPerForest(sq))
 		    return false;
 	    }		
+	}
+	if (haveDiagonalWalls) {
+	    // point must have LoS to center of square
+	    double c1x = p1x + 0.5;
+	    double c1y = p1y + 0.5;
+	    double c2x = p2x + 0.5;
+	    double c2y = p2y + 0.5;
+	    for (Line wall : walls) {
+		if (wall.intersectsOrCoincides(x1, y1, c1x, c1y)
+		    || wall.intersectsOrCoincides(x2, y2, c2x, c2y))
+		    return false;
+	    }
 	}
 	return true;
     }

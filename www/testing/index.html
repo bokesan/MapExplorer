@@ -17,15 +17,10 @@
 
 <h1>Map Explorer unofficial test releases</h1>
 
-<p>Test release with diagnonal edge support: <a href="MapExplorer-20070228-test.zip">20070228-test</a>.
+<p>Test release with diagnonal edge support: <a href="MapExplorer-20071119-test.zip">20071119-test</a>.
 </p>
 
-<p><strong>Known problems</strong></p>
-
-<p>Incorrect LoS behind thin wall with clipped edge. This screenshot from Hailstorm Tower
-shows LoS from I11 to H13, which is obviously wrong.</p>
-<img src="dw_bug1_hailstorm.png" alt="LoS bug illustration" />
-
+<h2>Known problems</h2>
 
 <p>Missed LoS. I know the reasons for this, but not yet the cure (at least not without
 severely impacting performance). Here are the Lines I know about that are usually missed on the
@@ -37,13 +32,22 @@ maps with diagonal walls:</p>
 <li><strong>Hailstorm Tower:</strong> B29 - T13, G1 - H22.</li>
 </ul>
 
+<p>Map painting problems: walls are sometimes drawn a pixel or two beyond the map borders.</p>
+
+<h2>Fixed problems</h2>
+
+<p><strong>FIXED 2007-11-19:</strong>
+Incorrect LoS behind thin wall with clipped edge. This screenshot from Hailstorm Tower
+shows LoS from I11 to H13, which is obviously wrong.</p>
+<img src="dw_bug1_hailstorm.png" alt="LoS bug illustration" />
+
 
 
 <hr />
 <div id="footer">
 Copyright &copy; 2007 Christoph Breitkopf (chris@chr-breitkopf.de)
 <br />
-<i>Last change: 2007-02-28</i>
+<i>Last change: 2007-11-19</i>
 </div>
 
 </body>
