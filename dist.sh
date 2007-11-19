@@ -7,6 +7,9 @@ if [ ! $answer = yes ]; then
     exit 0
 fi
 
+wwwdest=$HOME/projects/ddm/mapexplorer
+
+
 ant jar
 version=`java -jar dist/MapExplorer.jar -version | awk '{print $4}'`
 mkdir tmp/MapExplorer
@@ -20,4 +23,6 @@ cd ..
 zip -9 tmp/MapExplorer-$version.src.zip `find src test -name '*.java' -print` build.xml License.txt \
  lib/*.map README.txt lib/*.properties lib/mapexplorer lib/MapExplorer.bat
 
-cp www/* tmp/MapExplorer-$version.*zip lib/Underground_Grotto.map ~/prj/ddm/mapexplorer
+cp www/*.html www/*.png tmp/MapExplorer-$version.*zip lib/Underground_Grotto.map $wwwdest
+cp www/testing/*.html www/testing/*.png $wwwdest/testing
+mv $wwwdest/MapExplorer-*-test.*zip $wwwdest/testing
