@@ -30,7 +30,7 @@ import java.awt.geom.*;
 /**
  * A polygon defined by a list of vertices.
  * <p>
- * The edges of the polygon are from each vertext to the next one, and from
+ * The edges of the polygon are from each vertex to the next one, and from
  * the last vertex to the first.
  */
 public class Polygon {
@@ -48,7 +48,7 @@ public class Polygon {
     }
     
     /**
-     * Construct a new Polygon from a ractangle.
+     * Construct a new Polygon from a rectangle.
      * @param rect a Rectangle
      */
     public Polygon(Rectangle rect) {
