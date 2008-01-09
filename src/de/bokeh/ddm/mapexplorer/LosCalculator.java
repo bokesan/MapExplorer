@@ -89,13 +89,19 @@ public class LosCalculator {
 	}
 	setTasksDone(0);
 	totalTasks = ts.size();
-	for (;;) {
+	Future<?>[] fs = new Future<?>[totalTasks];
+	// submit all tasks
+	for (int i = 0; i < totalTasks; i++) {
+	    fs[i] = tpe.submit(ts.get(i));
+	}
+	// wait for all tasks to finish
+	for (int i = 0; i < totalTasks; i++) {
 	    try {
-		tpe.invokeAll(ts);
-		break;
-	    }
-	    catch (InterruptedException ex) {
-		logger.warning("invokeAll() interrupted");
+	        fs[i].get();
+	    } catch (InterruptedException ex) {
+	        throw new RuntimeException("unexpected interrupt", ex);
+	    } catch (ExecutionException ex) {
+	        throw new RuntimeException("LoS task", ex);
 	    }
 	}
     }
