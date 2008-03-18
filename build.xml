@@ -206,4 +206,28 @@
     </cpd>
   </target>
 
+  <target name="profile" description="Profiling">
+    <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+    <nbprofiledirect>
+      <classpath>
+	<pathelement location="dist/MapExplorer.jar" />
+      </classpath>
+    </nbprofiledirect>
+    <java classname="de.bokeh.ddm.mapexplorer.MapExplorer"
+          failonerror="true"
+          fork="true">
+      <classpath>
+	<pathelement location="dist/MapExplorer.jar" />
+      </classpath>
+      <!-- <jvmarg value="-verbose" /> -->
+      <jvmarg value="-server" />
+      <jvmarg value="-Xmx64m" />
+      <jvmarg value="-ea" />
+      <jvmarg value="-Xfuture" />
+      <jvmarg value="${profiler.info.jvmargs.agent}" />
+      <arg value="lib/Fane_of_Lolth.map" />
+    </java>
+  </target>
+
+
 </project>
