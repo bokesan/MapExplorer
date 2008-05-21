@@ -1,0 +1,33 @@
+map Jungle Temple
+width 34
+height 22
+basecolor 486040
+image Map_JungleTemple.jpg
+
+
+
+solid A7-C7 C5-C6
+solid F6-H8 Q6-S8
+
+# Pillars
+solid J12 M12 P12 S12 J23 M23 P23
+
+solid S15-S18 O15-R15 O16 O19-O20 P20
+
+solid U24-V28 T27-T28
+solid P27-Q29 L29-M31 F27-H29
+
+solid A29 A23-C23 C24-C25
+
+
+difficult Q20 R19 S19 R20 S20 R21 R22 S22 T22 S23
+
+
+
+forest E8-E11 F9-F10 D9-D13 C10-C13 B10-B14 A11-A14
+forest H4-H5 I2-I6 J1-J5 K1-K4 L1-L2
+forest Q1-R3 R4 S3-S5 T4-T7 U5-V7
+forest A21-C22 D22-F23 D24
+forest J31-K34 O34-S34 P33-R33 V29-V31
+
+forest E30-F31
