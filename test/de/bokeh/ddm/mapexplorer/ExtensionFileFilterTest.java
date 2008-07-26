@@ -1,18 +1,16 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.io.File;
 
-public class ExtensionFileFilterTest extends TestCase {
 
-    public ExtensionFileFilterTest(String name) {
-	super(name);
-    }
+public class ExtensionFileFilterTest {
 
     /*
      * Test method for 'de.bokeh.ddm.mapexplorer.ExtensionFileFilter.accept(File)'
      */
-    public void testAcceptFile() {
+    @Test public void testAcceptFile() {
 	ExtensionFileFilter ff = new ExtensionFileFilter("test");
 	ff.addExtension("map");
 	
@@ -29,7 +27,7 @@ public class ExtensionFileFilterTest extends TestCase {
 	assertFalse("embedded extension", ff.accept(new File("a.map.1")));
     }
     
-    public void testAcceptFileEmpty() {
+    @Test public void testAcceptFileEmpty() {
 	ExtensionFileFilter ff = new ExtensionFileFilter("test");
 	ff.addExtension("map");
 
@@ -39,7 +37,7 @@ public class ExtensionFileFilterTest extends TestCase {
 	assertTrue(ff.accept(new File("map")));
     }
 
-    public void testAcceptFileMulti() {
+    @Test public void testAcceptFileMulti() {
 	// does it still work when multiple extensions are allowed?
 	
 	ExtensionFileFilter ff = new ExtensionFileFilter("test");

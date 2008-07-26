@@ -1,14 +1,11 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class LineTest extends TestCase {
+public class LineTest {
 
-    public LineTest(String method) {
-	super(method);
-    }
-    
-    public void testConstructor() {
+    @Test public void testConstructor() {
 	Point p1 = new Point(1, 1);
 	Point p2 = new Point(2, 2);
 	Line ln1 = new Line(p1, p2);
@@ -35,7 +32,7 @@ public class LineTest extends TestCase {
     /*
      * Test method for 'de.bokeh.ddm.mapexplorer.Line.intersects(Line)'
      */
-    public void testIntersects() {
+    @Test public void testIntersects() {
 	final Line g1 = new Line(new Point(1, 1), new Point(5, 1));
 	final Line g2 = new Line(new Point(1, 2), new Point(5, 2));
 	final Line g3 = new Line(new Point(2, 0), new Point(2, 5));
@@ -86,7 +83,7 @@ public class LineTest extends TestCase {
     /*
      * Test isHorizontal() and isVertical()
      */
-    public void testOrientation() {
+    @Test public void testOrientation() {
 	Line hline = new Line(new Point(1,3), new Point(5, 3));
 	Line vline = new Line(new Point(1,3), new Point(1, 8));
 	Line sline = new Line(new Point(1,3), new Point(5, 4));
@@ -98,7 +95,7 @@ public class LineTest extends TestCase {
 	assertFalse(sline.isVertical());
     }
     
-    public void testContainsEdge() {
+    @Test public void testContainsEdge() {
         Line hline = new Line(new Point(1,3), new Point(5, 3));
         Line vline = new Line(new Point(1,3), new Point(1, 8));
         Line sline = new Line(new Point(1,3), new Point(5, 4));

@@ -1,14 +1,11 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class LocationTest extends TestCase {
+public class LocationTest {
 
-    public LocationTest(String name) {
-	super(name);
-    }
-
-    public void testLocationString() {
+    @Test public void testLocationString() {
 	final String[] sx = { "A1", "A2", "B1", "A10", "A21", "C21", "Z34" };
 	final int[] cx    = {    0,    1,    0,     9,    20,    20,    33  };
 	final int[] rx    = {    0,    0,    1,     0,     0,     2,    25  };
@@ -23,7 +20,7 @@ public class LocationTest extends TestCase {
 	}
     }
     
-    public void testLocationInvalid() {
+    @Test public void testLocationInvalid() {
 	try {
 	    new Location((String)null);
 	    fail("should have thrown NullPointerException()");
@@ -44,7 +41,7 @@ public class LocationTest extends TestCase {
 	}
     }
 
-    public void testGetEdge() {
+    @Test public void testGetEdge() {
         Location a = new Location(1, 10);
         assertEquals(new Line(1,10,1,11), a.getEdge(Direction.WEST));
         assertEquals(new Line(1,10,2,10), a.getEdge(Direction.SOUTH));

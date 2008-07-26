@@ -1,12 +1,9 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class MovementMapTest extends TestCase {
-
-    public MovementMapTest(String method) {
-	super(method);
-    }
+public class MovementMapTest {
 
     private Map wallMap() {
 	Dimension d = new Dimension(13, 12);
@@ -40,8 +37,9 @@ public class MovementMapTest extends TestCase {
             }
         }
     }
-    
- 
+
+
+    @Test
     public void testSimple1() {
         Map map = new Map(new Dimension(4,3), "Map for movement tests");
         MovementMap mm = new MovementMap(map.getDimension());
@@ -52,6 +50,7 @@ public class MovementMapTest extends TestCase {
                         0, 1, 2, 3);
     }
 
+    @Test
     public void testSimple2() {
         Map map = new Map(new Dimension(4,3), "Map for movement tests");
         Rectangle r = new Rectangle(new Location(1,1));
@@ -66,6 +65,7 @@ public class MovementMapTest extends TestCase {
                         0,   1, 2, 3);
     }
 
+    @Test
     public void testSimple21() {
         Map map = new Map(new Dimension(4,3), "Map for movement tests");
         Rectangle r = new Rectangle(new Location(1,0));
@@ -80,6 +80,7 @@ public class MovementMapTest extends TestCase {
                         0, 127, 4, 4);
     }
     
+    @Test
     public void testMedium() {
 	Creature c = new Creature(CreatureSize.MEDIUM, new Location(2, 2));
 	Map map = diffMap();
@@ -102,6 +103,7 @@ public class MovementMapTest extends TestCase {
 	assertEquals("diagonal", 3, mm.getMove(new Location(0,0)));
     }
 
+    @Test
     public void testLarge() {
 	Creature c = new Creature(CreatureSize.LARGE, new Location(1, 1));
 	Map map = diffMap();

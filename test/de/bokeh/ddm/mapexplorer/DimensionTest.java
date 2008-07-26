@@ -1,17 +1,15 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class DimensionTest extends TestCase {
 
-    public DimensionTest(String name) {
-	super(name);
-    }
+public class DimensionTest {
 
     /*
      * Test method for 'de.bokeh.ddm.mapexplorer.Dimension.getHeight()'
      */
-    public void testGetHeight() {
+    @Test public void testGetHeight() {
 	Dimension d = new Dimension(13, 12);
 	assertEquals(12, d.getHeight());
     }
@@ -19,7 +17,7 @@ public class DimensionTest extends TestCase {
     /*
      * Test method for 'de.bokeh.ddm.mapexplorer.Dimension.getWidth()'
      */
-    public void testGetWidth() {
+    @Test public void testGetWidth() {
 	Dimension d = new Dimension(13, 12);
 	assertEquals(13, d.getWidth());
     }
@@ -27,7 +25,7 @@ public class DimensionTest extends TestCase {
     /*
      * Test method for 'de.bokeh.ddm.mapexplorer.Dimension.equals(Object)'
      */
-    public void testEqualsObject() {
+    @Test public void testEqualsObject() {
 	Dimension d1 = new Dimension(12, 17);
 	Dimension d2 = new Dimension(12, 17);
 	assertTrue(d1.equals(d2));

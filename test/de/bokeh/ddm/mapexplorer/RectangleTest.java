@@ -1,14 +1,11 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class RectangleTest extends TestCase {
+public class RectangleTest {
 
-    public RectangleTest(String arg0) {
-        super(arg0);
-    }
-
-    public void testRectangleLocationLocation() {
+    @Test public void testRectangleLocationLocation() {
         Rectangle r = new Rectangle(new Location(1,2), new Location(5,4));
         assertEquals(1, r.getLeft());
         assertEquals(2, r.getBottom());
@@ -16,7 +13,7 @@ public class RectangleTest extends TestCase {
         assertEquals(4, r.getTop());
     }
 
-    public void testRectangleLocationInt() {
+    @Test public void testRectangleLocationInt() {
         Rectangle r = new Rectangle(new Location(1, 2), 2);
         assertEquals(1, r.getLeft());
         assertEquals(2, r.getBottom());
@@ -24,7 +21,7 @@ public class RectangleTest extends TestCase {
         assertEquals(3, r.getTop());
     }
 
-    public void testContainsLocation() {
+    @Test public void testContainsLocation() {
         Rectangle r = new Rectangle(new Location(1,2), new Location(5,4));
         assertTrue(r.contains(new Location(1,3)));
         assertTrue(r.contains(new Location(4,4)));
@@ -34,7 +31,7 @@ public class RectangleTest extends TestCase {
         assertFalse(r.contains(new Location(1,1)));
     }
 
-    public void testContainsPoint() {
+    @Test public void testContainsPoint() {
         Rectangle r = new Rectangle(new Location(1,2), new Location(5,4));
         assertTrue(r.contains(new Point(new Location(6,5))));
         assertTrue(r.contains(new Point(1,2)));
@@ -42,7 +39,7 @@ public class RectangleTest extends TestCase {
         assertFalse(r.contains(new Point(5,5.1)));
     }
 
-    public void testGetEdge() {
+    @Test public void testGetEdge() {
         Rectangle r = new Rectangle(new Location(1,2), new Location(5,4));
         assertEquals(new Line(1,2, 6,2), r.getEdge(Direction.SOUTH));
         assertEquals(new Line(1,2, 1,5), r.getEdge(Direction.WEST));

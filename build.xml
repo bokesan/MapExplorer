@@ -22,6 +22,9 @@
 
   <path id="test.classpath">
     <path refid="compile.classpath" />
+    <fileset dir="/usr/share/java">
+  	  <include name="junit4.jar" />
+    </fileset>
     <pathelement location="${test.dir}" />
   </path>
 

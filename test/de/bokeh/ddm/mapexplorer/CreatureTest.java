@@ -1,13 +1,12 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class CreatureTest extends TestCase {
 
-    public CreatureTest(String method) {
-	super(method);
-    }
+public class CreatureTest {
 
+    @Test
     public void testOverlaps() {
 	Creature a = new Creature(CreatureSize.HUGE);
 	Creature b = new Creature(CreatureSize.MEDIUM);

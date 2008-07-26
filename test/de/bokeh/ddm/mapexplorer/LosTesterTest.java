@@ -1,15 +1,13 @@
 package de.bokeh.ddm.mapexplorer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.util.Arrays;
 
 
-public class LosTesterTest extends TestCase {
+public class LosTesterTest {
 
-    public LosTesterTest(String name) {
-	super(name);
-    }
-
+    @Test 
     public void testMakeTestOffsets() {
 	assertTrue(Arrays.equals(testOffsetsNormal, LosTester.makeTestOffsets(32)));
 	assertTrue(Arrays.equals(testOffsetsFine, LosTester.makeTestOffsets(64)));
