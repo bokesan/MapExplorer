@@ -26,6 +26,7 @@ package de.bokeh.ddm.mapexplorer;
 
 import java.util.*;
 import java.util.logging.*;
+import java.io.*;
 
 
 /**
@@ -40,6 +41,7 @@ public class LosBenchmark {
     private final LosMap losMap;
     private final LosCalculator losCalculator;
     private final Logger logger;
+    private boolean writeLosFile = false;
     
     /**
      * Create new LosBenchmark.
@@ -73,6 +75,20 @@ public class LosBenchmark {
      */
     public long[] run() {
 	logger.info("Starting LOS benchmark for map " + map.getName());
+	
+	PrintWriter losFile = null;
+	if (writeLosFile) {
+	    String name = map.getName();
+	    if (losCalculator.isSmokeBlocksLos())
+	        name += ".smoke";
+	    name += ".los";
+	    try {
+	        losFile = new PrintWriter(name);
+	    } catch (FileNotFoundException ex) {
+	        logger.warning("can't write los file " + name);
+	    }
+	}
+	
 	long startTime = System.currentTimeMillis();
 
 	Creature creature = new Creature(CreatureSize.MEDIUM);
@@ -91,11 +107,28 @@ public class LosBenchmark {
 		MapSquare s = map.get(loc);
 		if (s.isSolid()) {
 		    logger.info(loc + ": solid rock");
+		    if (losFile != null)
+		        losFile.println(loc + " rock");
 		} else {
+		    if (losFile != null)
+		        losFile.print(loc);
 		    creature.setLocation(loc);
 		    long start = System.currentTimeMillis();
 		    losCalculator.computeLos();
 		    long elapsed = System.currentTimeMillis() - start;
+		    if (losFile != null) {
+		        LosMap los = losCalculator.getLos();
+		        for (int y = 0; y < height; y++) {
+		            for (int x = 0; x < width; x++) {
+		                if (los.get(x, y)) {
+		                    losFile.print(' ');
+		                    losFile.print(new Location(x, y));
+		                }
+		            }
+		        }
+			losFile.println();
+		    }
+		    
 		    int numLos = losCalculator.getNumLos();
 		    int numRndLos = losCalculator.getNumRndLos();
 		    String msg = loc + ": " + numLos + " LOS squares, " + elapsed + " ms.";
@@ -112,6 +145,8 @@ public class LosBenchmark {
 	}
 	
 	long elapsedTime = System.currentTimeMillis() - startTime;
+	if (losFile != null)
+	    losFile.close();
 	logger.info("Total time: " + elapsedTime + " ms.");
 	logger.info("Squares tested: " + numSquaresTested);
 	logger.info("LOS squares total: " + totalLos);
@@ -135,6 +170,14 @@ public class LosBenchmark {
      */
     public boolean isSmokeBlocksLos() {
         return losCalculator.isSmokeBlocksLos();
+    }
+
+    public boolean isWriteLosFile() {
+        return writeLosFile;
+    }
+
+    public void setWriteLosFile(boolean writeLosFile) {
+        this.writeLosFile = writeLosFile;
     }
     
 }

@@ -378,6 +378,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 		Map map = new MapReader().read(mapFile);
 		LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
                 b.setSmokeBlocksLos(fog);
+		b.setWriteLosFile(true);
 		b.run();
 	    }
 	    catch (SyntaxError err) {
@@ -741,6 +742,7 @@ public class MapExplorer implements ActionListener, ItemListener {
             LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
             b.setLogLevel(java.util.logging.Level.WARNING);
             b.setSmokeBlocksLos(spec.fog);
+            b.setWriteLosFile(true);
             long[] result = b.run();
             if (spec.matches(result)) {
                 out.print(" - success");
