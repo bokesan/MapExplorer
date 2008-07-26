@@ -41,7 +41,7 @@ LIMITATIONS
 ===========
 
 Map Explorer will not always find all LOS squares. If you find case
-where Map Explorer misses a LOT on one of the offical maps, please
+where Map Explorer misses a LOS on one of the offical maps, please
 send me an email with the name of the map and the squares.
 
 
