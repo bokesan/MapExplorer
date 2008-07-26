@@ -153,12 +153,12 @@ public class Location {
     }
     
     /**
-     * Check whether another Location is adjecent to this Location.
+     * Check whether another Location is adjacent to this Location.
      * <p>
      * Also returns <code>true</code> for equal locations.
      * 
      * @param loc a Location
-     * @return <code>true</code> if the Location is adjacent to this Location,
+     * @return <code>true</code> if the Location is adjacent to or equal to this Location;
      *    <code>false</code> otherwise.
      */
     public boolean isNeighborOf(Location loc) {

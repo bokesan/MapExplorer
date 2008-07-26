@@ -30,7 +30,7 @@ package de.bokeh.ddm.mapexplorer;
  * Like Location, but with floating-point coordinates.
  * <p>
  * In Map Explorer, all points have x and y coordinates &gt;= 0.
- * The rest of the code, such as class <code>Line</code> depend on this,
+ * The rest of the code, such as class <code>Line</code>, depend on this,
  * and will break if this is changed.
  * 
  * @author Christoph Breitkopf
