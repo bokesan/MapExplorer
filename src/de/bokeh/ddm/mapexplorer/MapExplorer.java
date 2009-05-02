@@ -24,8 +24,15 @@
 
 package de.bokeh.ddm.mapexplorer;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.*;
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -38,7 +45,7 @@ import java.net.URL;
  * 
  * @author Christoph Breitkopf
  */
-public class MapExplorer implements ActionListener, ItemListener {
+public class MapExplorer implements ActionListener, ItemListener, DropTargetListener {
 
     public static final String VERSION = "20071119-test";
 
@@ -64,7 +71,8 @@ public class MapExplorer implements ActionListener, ItemListener {
     private boolean busy;
     private JFileChooser fileChooser;
     private JProgressBar progress;
-
+    private DropTarget dropTarget;
+    
     private Location selectedSquare;
     
     private String imagesArchiveName;
@@ -114,6 +122,8 @@ public class MapExplorer implements ActionListener, ItemListener {
 	mapPanel.setLosMap(model.getLosMap());
 	mapPanel.setMovementMap(model.getMovementMap());
 	mapPanel.setCreatures(model.getCreatures());
+
+	dropTarget = new DropTarget(mapPanel, this);
 	
 	createContextMenu();
 	createStatusPanel();
@@ -490,10 +500,21 @@ public class MapExplorer implements ActionListener, ItemListener {
 	}
     }
 
-    public void loadMap(String fileName) {
+    public boolean loadMap(String fileName) {
+        URL url;
+        try {
+            url = new URL(fileName);
+        } catch (java.net.MalformedURLException ex) {
+            url = null;
+        }
+        
 	try {
-	    setMap(new MapReader().read(fileName));
+	    if (url != null)
+	        setMap(new MapReader().read(url));
+	    else
+	        setMap(new MapReader().read(fileName));
 	    lblResults.setVisible(false);
+	    return true;
 	}
 	catch (SyntaxError err) {
 	    String msg = "Syntax error in file '" + err.getFile() + "', line " + err.getLine();
@@ -508,7 +529,7 @@ public class MapExplorer implements ActionListener, ItemListener {
 	    String msg = "IO-Error:\n" + ex.toString();
 	    JOptionPane.showMessageDialog(appFrame, msg, "Error loading map", JOptionPane.ERROR_MESSAGE);
 	}
-	
+	return false;
     }
 
     /**
@@ -772,5 +793,41 @@ public class MapExplorer implements ActionListener, ItemListener {
 	long seconds = millis / 1000;
 	if ((millis % 1000L) >= 500) seconds++;
 	return String.format("%d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public void dragEnter(DropTargetDragEvent dtde) {
+    }
+
+    public void dragExit(DropTargetEvent dte) {
+    }
+
+    public void dragOver(DropTargetDragEvent dtde) {
+    }
+
+    public void drop(DropTargetDropEvent dtde) {
+        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+        Transferable trans = dtde.getTransferable();
+        //logDataFlavors(trans);
+        try {
+            if (trans.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                String s = (String) trans.getTransferData(DataFlavor.stringFlavor);
+                System.out.println("stringFlavor: " + s);
+                dtde.dropComplete(loadMap(s));
+                return;
+            }
+            if (trans.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                List<File> fs = (List<File>) trans.getTransferData(DataFlavor.javaFileListFlavor);
+                if (!fs.isEmpty()) {
+                    dtde.dropComplete(loadMap(fs.get(0).getAbsolutePath()));
+                    return;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex);
+        }
+        dtde.dropComplete(false);
+    }
+
+    public void dropActionChanged(DropTargetDragEvent dtde) {
     }
 }

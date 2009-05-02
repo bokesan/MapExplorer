@@ -25,6 +25,7 @@
 package de.bokeh.ddm.mapexplorer;
 
 import java.io.*;
+import java.net.URL;
 import java.awt.Color;
 
 /**
@@ -35,7 +36,17 @@ import java.awt.Color;
 public class MapReader {
 
     public Map read(String file) throws IOException, SyntaxError {
-	BufferedReader in = new BufferedReader(new FileReader(file));
+        BufferedReader in = new BufferedReader(new FileReader(file));
+        return read(in, file);
+    }
+    
+    public Map read(URL url) throws IOException, SyntaxError {
+        InputStream in = url.openStream();
+        BufferedReader inp = new BufferedReader(new InputStreamReader(in));
+        return read(inp, url.toString());
+    }
+    
+    public Map read(BufferedReader in, String inputName) throws IOException, SyntaxError {
 	Map m = null;
 	String name = null;
 	int width = 0;
@@ -98,17 +109,17 @@ public class MapReader {
 		    try {
 			feature = MapFeature.valueOfTag(f[0]);
 		    } catch (IllegalArgumentException ex) {
-			throw new SyntaxError(file, lineNumber, line);
+			throw new SyntaxError(inputName, lineNumber, line);
 		    }
 		    handleFeature(m, f, feature);
 		}
 	    }
 	}
 	catch (NumberFormatException ex) {
-	    throw new SyntaxError(file, lineNumber, line);
+	    throw new SyntaxError(inputName, lineNumber, line);
 	}
 	catch (IllegalArgumentException ex) {
-	    throw new SyntaxError(file, lineNumber, line);
+	    throw new SyntaxError(inputName, lineNumber, line);
 	}
 	finally {
 	    in.close();
