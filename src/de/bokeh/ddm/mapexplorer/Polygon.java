@@ -79,11 +79,14 @@ public class Polygon {
     }
     
     public Point[] getVertices() {
-        return vertices; // FIXME: replace by iterable
+        return vertices; // TODO: replace by iterable
     }
     
     /**
      * Does this Polygon contain a given point?
+     * <p>
+     * FIXME: depends on <code>java.awt.geom.GeneralPath</code>. Should be rewritten completely.
+     * 
      * @param x the x-coordinate of the point to test
      * @param y the y-coordinate of the point to test
      * @return <code>true</code> if this Polygon contains the point <code>x</code>, <code>y</code>;
