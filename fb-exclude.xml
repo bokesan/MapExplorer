@@ -1,0 +1,5 @@
+<FindBugsFilter>
+  <Match>
+    <Bug code="LSC, PRMC" />
+  </Match>
+</FindBugsFilter>

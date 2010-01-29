@@ -130,6 +130,7 @@
     <findbugs home="${findbugs.home}"
               output="html"
               outputFile="findbugs-results.html"
+              excludeFilter="fb-exclude.xml"
 	      reportLevel="low"
               effort="max" >
       <sourcePath path="src" />
