@@ -316,7 +316,7 @@ public class MapPanel extends JPanel {
 	int move = movementMap.getMove(new Location(col,row));
 	if (move != MovementMap.UNREACHABLE) {
 	    setFont(g, FontUse.IN_SQUARE);
-	    drawBLString(g, p, "" + move);
+	    drawBLString(g, p, Integer.toString(move));
 	    setFont(g, FontUse.NORMAL);
 	}
     }

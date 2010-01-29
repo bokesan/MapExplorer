@@ -130,7 +130,7 @@ public class Location {
     }
     
     static public String columnToString(int column) {
-	return "" + (column + 1);
+        return Integer.toString(column + 1);
     }
     
     /* (non-Javadoc)
