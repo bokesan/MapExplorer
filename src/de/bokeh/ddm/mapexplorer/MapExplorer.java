@@ -607,10 +607,11 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
     }
     
 
+    private static final String[] FILE_SEARCH_PROPERTIES = { "mapexplorer.home", "user.home", "user.dir" };
+    
     private static Properties loadProperties() {
 	Properties result = new Properties();
-	String[] keys = { "mapexplorer.home", "user.home", "user.dir" };
-	for (String key : keys) {
+	for (String key : FILE_SEARCH_PROPERTIES) {
 	    String dir = System.getProperty(key);
 	    if (dir != null) {
 		File f = new File(dir + File.separator + "mapexplorer.properties");
@@ -637,9 +638,8 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	    JOptionPane.showMessageDialog(appFrame, "No image available for this map", "No map image", JOptionPane.WARNING_MESSAGE);
 	    return null;
 	}
-	String[] keys = { "mapexplorer.home", "user.home", "user.dir" };
 	Toolkit tk = Toolkit.getDefaultToolkit();
-	for (String key : keys) {
+	for (String key : FILE_SEARCH_PROPERTIES) {
 	    String dir = System.getProperty(key);
 	    if (dir != null) {
 		File f = new File(dir + File.separator + imagesArchiveName);
