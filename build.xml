@@ -11,7 +11,7 @@
   <property name="test.data.dir" location="${test.dir}/data" />
   <property name="test.reports.dir" location="${test.dir}/reports" />
 
-  <property name="findbugs.home" value="${env.HOME}/bin/findbugs" />
+  <property name="findbugs.home" value="/usr/share/findbugs" />
 
   <path id="compile.classpath">
     <pathelement location="${classes.dir}" />
@@ -125,8 +125,7 @@
 
   <target name="findbugs" depends="dist" description="Run findbugs">
     <taskdef name="findbugs"
-  	     classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-             classpath="${findbugs.home}/lib/findbugs-ant.jar" />
+  	     classname="edu.umd.cs.findbugs.anttask.FindBugsTask" />
     <findbugs home="${findbugs.home}"
               output="html"
               outputFile="findbugs-results.html"
