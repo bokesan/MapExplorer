@@ -33,9 +33,17 @@ public class SyntaxError extends Exception {
     private final String message;
     
     public SyntaxError(String file, int line, String message) {
+        super("Syntax error in " + file + ", line " + line + ": " + message);
 	this.file = file;
 	this.line = line;
 	this.message = message;
+    }
+    
+    public SyntaxError(String file, int line, String message, Throwable cause) {
+        super("Syntax error in " + file + ", line " + line + ": " + message, cause);
+        this.file = file;
+        this.line = line;
+        this.message = message;
     }
 
     /**

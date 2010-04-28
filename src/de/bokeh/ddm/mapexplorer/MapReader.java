@@ -109,17 +109,17 @@ public class MapReader {
 		    try {
 			feature = MapFeature.valueOfTag(f[0]);
 		    } catch (IllegalArgumentException ex) {
-			throw new SyntaxError(inputName, lineNumber, line);
+			throw new SyntaxError(inputName, lineNumber, line, ex);
 		    }
 		    handleFeature(m, f, feature);
 		}
 	    }
 	}
 	catch (NumberFormatException ex) {
-	    throw new SyntaxError(inputName, lineNumber, line);
+	    throw new SyntaxError(inputName, lineNumber, line, ex);
 	}
 	catch (IllegalArgumentException ex) {
-	    throw new SyntaxError(inputName, lineNumber, line);
+	    throw new SyntaxError(inputName, lineNumber, line, ex);
 	}
 	finally {
 	    in.close();
