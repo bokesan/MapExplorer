@@ -58,26 +58,20 @@ public class Line {
      * @return A new IntersectionResult for this line and line ln.
      */
     public IntersectionResult intersects(Line ln) {
-	/*
-	if (start.equals(ln.start) || start.equals(ln.end))
-	    return IntersectionResult.at(start);
-	if (end.equals(ln.start) || end.equals(ln.end))
-	    return IntersectionResult.at(end);
-	  */  
-	final double x1 = start.getX();
-	final double y1 = start.getY();
-	final double x2 = end.getX();
-	final double y2 = end.getY();
-	final double x3 = ln.start.getX();
-	final double y3 = ln.start.getY();
-	final double x4 = ln.end.getX();
-	final double y4 = ln.end.getY();
+	double x1 = start.getX();
+	double y1 = start.getY();
+	double x2 = end.getX();
+	double y2 = end.getY();
+	double x3 = ln.start.getX();
+	double y3 = ln.start.getY();
+	double x4 = ln.end.getX();
+	double y4 = ln.end.getY();
 	
-	final double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-	final double d1 = y1 - y3;
-	final double d2 = x1 - x3;
-	final double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
-	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
+	double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+	double d1 = y1 - y3;
+	double d2 = x1 - x3;
+	double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
+	double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
 	
 	if (denom == 0 && num_Ua == 0 && num_Ub == 0) {
 	    return resolveCoincident(ln);
@@ -155,16 +149,16 @@ public class Line {
      * @return true if ln intersects or coincides with this line.
      */
     public boolean intersectsOrCoincides(double x3, double y3, double x4, double y4) {
-	final double x1 = start.getX();
-	final double y1 = start.getY();
-	final double x2 = end.getX();
-	final double y2 = end.getY();
+	double x1 = start.getX();
+	double y1 = start.getY();
+	double x2 = end.getX();
+	double y2 = end.getY();
 	
-	final double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-	final double d1 = y1 - y3;
-	final double d2 = x1 - x3;
-	final double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
-	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
+	double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+	double d1 = y1 - y3;
+	double d2 = x1 - x3;
+	double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
+	double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
 	
 	if (denom == 0) {
             if (num_Ua == 0 && num_Ub == 0) {
@@ -339,10 +333,10 @@ public class Line {
     }
     
     private IntersectionResult resolveCoincident(Line ln) {
-	final double d1 = start.distOrigSquare();
-	final double d2 = end.distOrigSquare();
-	final double d3 = ln.start.distOrigSquare();
-	final double d4 = ln.end.distOrigSquare();
+	double d1 = start.distOrigSquare();
+	double d2 = end.distOrigSquare();
+	double d3 = ln.start.distOrigSquare();
+	double d4 = ln.end.distOrigSquare();
 	
 	double lo, hi;
 	Point loPt, hiPt;
@@ -370,12 +364,12 @@ public class Line {
     private static boolean coincidentWithOverlap(double x1, double y1, double x2, double y2,
 	    double x3, double y3, double x4, double y4)
     {
-	final double d1 = x1*x1 + y1*y1;
-	final double d2 = x2*x2 + y2*y2;
-	final double d3 = x3*x3 + y3*y3;
-	final double d4 = x4*x4 + y4*y4;
-	final double lo = (d1 > d3) ? d1 : d3;
-	final double hi = (d2 < d4) ? d2 : d4;
+	double d1 = x1*x1 + y1*y1;
+	double d2 = x2*x2 + y2*y2;
+	double d3 = x3*x3 + y3*y3;
+	double d4 = x4*x4 + y4*y4;
+	double lo = (d1 > d3) ? d1 : d3;
+	double hi = (d2 < d4) ? d2 : d4;
 	return lo <= hi;
     }
 

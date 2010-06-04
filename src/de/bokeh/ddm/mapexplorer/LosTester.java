@@ -142,14 +142,14 @@ public class LosTester {
     private int testEdges(Location loc, int slope) {
 	getRelevantWalls(loc);
 	
-	final int x1 = location.getColumn();
-	final int x2 = loc.getColumn();
+	int x1 = location.getColumn();
+	int x2 = loc.getColumn();
 	
-        final double[] testOffsets = makeTestOffsets(haveDiagonalWalls ? TEST_STEPS_FINE : TEST_STEPS_NORMAL);
+        double[] testOffsets = makeTestOffsets(haveDiagonalWalls ? TEST_STEPS_FINE : TEST_STEPS_NORMAL);
 	if (slope == 0) {
 	    // ascending
-	    final int y1 = location.getRow();
-	    final int y2 = loc.getRow();
+	    int y1 = location.getRow();
+	    int y2 = loc.getRow();
 	    for (double e1off : testOffsets) {
 		for (double e2off : testOffsets) {
 		    if (los(x1, e1off, y1, e1off, x2, e2off, y2, e2off)) {
@@ -159,8 +159,8 @@ public class LosTester {
 	    }
 	    // random tests
 	    for (int i = 1; i <= rndTests; i++) {
-		final double e1off = rng.nextDouble();
-		final double e2off = rng.nextDouble();
+		double e1off = rng.nextDouble();
+		double e2off = rng.nextDouble();
 		if (los(x1, e1off, y1, e1off, x2, e2off, y2, e2off)) {
 		    Point p1 = new Point(x1 + e1off, y1 + e1off);
 		    Point p2 = new Point(x2 + e2off, y2 + e2off);
@@ -171,8 +171,8 @@ public class LosTester {
 	    }
 	} else {
 	    // descending
-	    final int y1 = location.getRow();
-	    final int y2 = loc.getRow();
+	    int y1 = location.getRow();
+	    int y2 = loc.getRow();
 	    for (double e1off : testOffsets) {
 		for (double e2off : testOffsets) {
 		    if (los(x1, e1off, y1, 1 - e1off, x2, e2off, y2, 1 - e2off)) {
