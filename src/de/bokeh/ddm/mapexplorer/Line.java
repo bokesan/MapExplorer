@@ -166,12 +166,13 @@ public class Line {
 	final double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
 	final double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
 	
-	if (denom == 0 && num_Ua == 0 && num_Ub == 0) {
-	    if (Point.compare(x3, y3, x4, y4) > 0)
-		return coincidentWithOverlap(x1, y1, x2, y2, x4, y4, x3, y3);
-	    return coincidentWithOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
-	} else if (denom == 0) {
-	    return false;
+	if (denom == 0) {
+            if (num_Ua == 0 && num_Ub == 0) {
+	        if (Point.compare(x3, y3, x4, y4) > 0)
+		    return coincidentWithOverlap(x1, y1, x2, y2, x4, y4, x3, y3);
+	        return coincidentWithOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
+            }
+            return false;
 	} else {
 	    /*
 	     * Substituting either of these into the corresponding equation for the line gives the intersection point. For example the intersection point (x,y) is
@@ -196,11 +197,10 @@ public class Line {
 	        * If both lie within the range of 0 to 1 then the intersection
 	        * point is within both line segments. 
 	     */
-	    double ua = num_Ua / denom;
-	    double ub = num_Ub / denom;
-	    if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
-		return true;
-	    return false;
+
+            if (denom > 0)
+                return (num_Ua >= 0 && num_Ua <= denom && num_Ub >= 0 && num_Ub <= denom);
+            return (num_Ua <= 0 && num_Ua >= denom && num_Ub <= 0 && num_Ub >= denom);
 	}
     }
     
