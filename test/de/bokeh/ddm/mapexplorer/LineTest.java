@@ -21,7 +21,7 @@ public class LineTest {
     
     private IntersectionResult intersect(Line ln1, Line ln2) {
 	IntersectionResult r = ln1.intersects(ln2);
-	assertTrue("intersect is symmetric", r.equals(ln2.intersects(ln1)));
+	assertEquals("intersect is symmetric", r, ln2.intersects(ln1));
 	boolean r1 = ln1.intersectsOrCoincides(ln2);
 	assertTrue("intersectsOrCoincides is symmetric", r1 == ln2.intersectsOrCoincides(ln1));
 	assertTrue("intersectsOrCoincides matches intersects", r1 == (r.isIntersection() || r.isCoincident()));
