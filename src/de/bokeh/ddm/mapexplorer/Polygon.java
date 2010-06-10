@@ -24,8 +24,6 @@
 
 package de.bokeh.ddm.mapexplorer;
 
-import java.awt.geom.*;
-
 
 /**
  * A polygon defined by a list of vertices.
@@ -82,10 +80,14 @@ public class Polygon {
         return vertices; // TODO: replace by iterable
     }
     
+
     /**
      * Does this Polygon contain a given point?
      * <p>
      * FIXME: depends on <code>java.awt.geom.GeneralPath</code>. Should be rewritten completely.
+     * <p>
+     * Code snipped from W. Randolph Franklin
+     *   http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
      * 
      * @param x the x-coordinate of the point to test
      * @param y the y-coordinate of the point to test
@@ -93,13 +95,19 @@ public class Polygon {
      *  <code>false</code> otherwise.
      */
     public boolean contains(double x, double y) {
-        GeneralPath p = new GeneralPath();
-        p.moveTo((float) vertices[0].getX(), (float) vertices[0].getY());
-        for (int i = 1; i < vertices.length; i++) {
-            Point pt = vertices[i];
-            p.lineTo((float) pt.getX(), (float) pt.getY());
-        }
-        p.closePath();
-        return p.contains(x, y);
+	boolean c = false;
+	int nvert = vertices.length;
+	int i = 0;
+	int j = nvert - 1;
+	while (i < nvert) {
+	    if ( ((vertices[i].getY() > y) != (vertices[j].getY() > y)) &&
+		 (x < (vertices[j].getX() - vertices[i].getX()) * (y - vertices[i].getY()) / (vertices[j].getY() - vertices[i].getY()) + vertices[i].getX()) ) {
+		c = !c;
+	    }
+	    j = i;
+	    i++;
+	}
+	return c;
     }
+
 }
