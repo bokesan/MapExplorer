@@ -35,7 +35,6 @@ public class MapExplorerModel {
 
     private Map map;
     private LosMap losMap;
-    private MovementMap movementMap;
     
     private final Set<Creature> creatures; // LOS sources
     
@@ -61,13 +60,6 @@ public class MapExplorerModel {
     }
     
     /**
-     *  Clear movement info.
-     */
-    public void clearMovement() {
-	movementMap.clear();
-    }
-    
-    /**
      * Compute LOS.
      */
     public void computeLos() {
@@ -75,15 +67,6 @@ public class MapExplorerModel {
 	losCalculator.setCreatures(creatures);
 	losCalculator.setSmokeBlocksLos(smokeBlocksLos);
 	losCalculator.computeLos();
-    }
-    
-    public void computeMovement() {
-	// long start = System.currentTimeMillis();
-	movementMap.clear();
-	for (Creature c : creatures)
-	    movementMap.computeMovement(map, c);
-	// long elapsed = System.currentTimeMillis() - start;
-	// System.out.println("Movement: " + elapsed + " ms.");
     }
 
     /**
@@ -106,7 +89,6 @@ public class MapExplorerModel {
     public final void setMap(Map map) {
         this.map = map;
         this.losMap = new LosMap(map.getDimension());
-        this.movementMap = new MovementMap(map.getDimension());
         removeAllCreatures();
     }
     
@@ -149,13 +131,6 @@ public class MapExplorerModel {
      */
     public LosCalculator getLosCalculator() {
         return losCalculator;
-    }
-
-    /**
-     * @return Returns the movementMap.
-     */
-    public MovementMap getMovementMap() {
-        return movementMap;
     }
 
     /**

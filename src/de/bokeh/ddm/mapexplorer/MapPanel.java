@@ -44,7 +44,6 @@ public class MapPanel extends JPanel {
     
     private Map map;
     private LosMap losMap;
-    private MovementMap movementMap;
 
     private ColorSettings colors;
     
@@ -313,12 +312,6 @@ public class MapPanel extends JPanel {
 	    drawLosIcon(g, p);
 	}
 	g.setColor(Color.BLACK);
-	int move = movementMap.getMove(new Location(col,row));
-	if (move != MovementMap.UNREACHABLE) {
-	    setFont(g, FontUse.IN_SQUARE);
-	    drawBLString(g, p, Integer.toString(move));
-	    setFont(g, FontUse.NORMAL);
-	}
     }
     
     private void drawCreature(Graphics g, Creature c) {
@@ -408,12 +401,6 @@ public class MapPanel extends JPanel {
 	g.drawString(s, x, y);
     }
     
-    private void drawBLString(Graphics g, java.awt.Point p, String s) {
-	int x = p.x + 2;
-	int y = p.y + tileHeight - 3;
-	g.drawString(s, x, y);
-    }
-    
     private void drawTCString(Graphics g, java.awt.Point p, String s) {
 	FontMetrics fm = getFontMetrics(g.getFont());
 	int x = p.x + (tileWidth - fm.stringWidth(s)) / 2;
@@ -433,10 +420,6 @@ public class MapPanel extends JPanel {
      */
     public void setLosMap(LosMap los) {
         this.losMap = los;
-    }
-    
-    public void setMovementMap(MovementMap m) {
-	movementMap = m;
     }
     
     public void setCreatures(Set<Creature> cs) {

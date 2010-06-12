@@ -102,20 +102,6 @@ public class MapSquare {
     }
 
     /**
-     * Is this square considered difficult terrain for movement?
-     * <p>
-     * Apart from difficult terrain, spike stones and statues
-     * are difficult for movement.
-     * 
-     * @return true if this square is difficult terrain for movement.
-     */
-    public boolean isDifficult() {
-	return (features.contains(MapFeature.DIFFICULT)
-		|| features.contains(MapFeature.SPIKE_STONES)
-		|| features.contains(MapFeature.STATUE));
-    }
-
-    /**
      * @return Returns the solid.
      */
     public boolean isSolid() {

@@ -61,9 +61,7 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
     private JToolBar statusPanel;
     private JLabel lblStatus;
     private JLabel lblResults;
-    private JCheckBox chkLOS;
     private JCheckBox chkSmoke;
-    private JCheckBox chkMovement;
     private JCheckBox chkMapImage;
     private JCheckBox chkVassalCoordinates;
     private JComboBox cmbSize;
@@ -95,7 +93,6 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	mapPanel.setMap(map);
 	mapPanel.setLosMap(model.getLosMap());
 	mapPanel.setCreatures(model.getCreatures());
-	mapPanel.setMovementMap(model.getMovementMap());
 	
 	if (model.isUseMapImage()) {
 	    Image img = loadImage(map.getImageFile());
@@ -120,7 +117,6 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	
 	mapPanel = new MapPanel(model.getMap());
 	mapPanel.setLosMap(model.getLosMap());
-	mapPanel.setMovementMap(model.getMovementMap());
 	mapPanel.setCreatures(model.getCreatures());
 
 	dropTarget = new DropTarget(mapPanel, this);
@@ -163,13 +159,6 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	
 	toolBar.addSeparator();
 	
-	chkLOS = new JCheckBox(loadIcon("LOS.png", "LOS"), true);
-	chkLOS.addItemListener(this);
-	chkLOS.setToolTipText("compute line-of-sight");
-	chkLOS.setSelectedIcon(loadIcon("LOS-enabled.png", "LOS"));
-	chkLOS.setContentAreaFilled(false);
-	// toolBar.add(chkLOS);
-
 	chkSmoke = new JCheckBox(loadIcon("Smoke.png", "Smoke"), true);
 	chkSmoke.setSelectedIcon(loadIcon("Smoke-enabled.png", "Smoke"));
 	chkSmoke.addItemListener(this);
@@ -177,13 +166,6 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	chkSmoke.setToolTipText("toggle fog/smoke");
 	chkSmoke.setContentAreaFilled(false);
 	toolBar.add(chkSmoke);
-
-	chkMovement = new JCheckBox(loadIcon("Movement.png", "Movement"));
-	chkMovement.setSelectedIcon(loadIcon("Movement-enabled.png", "Movement"));
-	chkMovement.addItemListener(this);
-	chkMovement.setToolTipText("compute movement range");
-	chkMovement.setContentAreaFilled(false);
-	// toolBar.add(chkMovement);
 	
 	chkMapImage = new JCheckBox("Map image", model.isUseMapImage());
 	chkMapImage.addItemListener(this);
@@ -303,15 +285,13 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
     }
     
     /**
-     * Compute LOS, Movement, etc.
+     * Compute LOS.
      */
     private void compute() {
 	if (!model.getCreatures().isEmpty()) {
 	    setBusy(true, "computing...");
 	    model.setSmokeBlocksLos(chkSmoke.getModel().isSelected());
-	    boolean los = chkLOS.getModel().isSelected();
-	    boolean movement = chkMovement.getModel().isSelected();
-	    ComputationThread c = new ComputationThread(this, los, movement);
+	    ComputationThread c = new ComputationThread(this);
 	    c.start();
 	}
     }
@@ -463,7 +443,6 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 
     private void clear() {
 	model.clearLos();
-	model.clearMovement();
 	model.removeAllCreatures();
 	lblResults.setText("");
 	mapPanel.repaint();
@@ -479,7 +458,7 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	    return;
 	}
 	Object source = e.getItemSelectable();
-	if (source == chkSmoke || source == chkLOS || source == chkMovement) {
+	if (source == chkSmoke) {
 	    compute();
 	}
 	else if (source == chkVassalCoordinates) {
