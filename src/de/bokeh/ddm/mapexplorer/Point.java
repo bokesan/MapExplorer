@@ -145,4 +145,31 @@ public class Point implements Comparable<Point> {
     public double distOrigSquare() {
 	return x*x + y*y;
     }
+
+    public static double distanceSq(double x1, double y1, double x2, double y2) {
+	double dx = x2 - x1;
+	double dy = y2 - y1;
+	return dx * dx + dy * dy;
+    }
+
+    public static double distance(double x1, double y1, double x2, double y2) {
+	return Math.hypot(x2 - x1, y2 - y1);
+    }
+
+    public double distanceSq(double x, double y) {
+	return distanceSq(this.x, this.y, x, y);
+    }
+
+    public double distanceSq(Point p) {
+	return distanceSq(p.x, p.y);
+    }
+
+    public double distance(double x, double y) {
+	return distance(this.x, this.y, x, y);
+    }
+
+    public double distance(Point p) {
+	return distance(p.x, p.y);
+    }
+
 }
