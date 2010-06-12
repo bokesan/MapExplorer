@@ -35,21 +35,38 @@ package de.bokeh.ddm.mapexplorer;
  */
 public class Line {
 
-    private final Point start;
-    private final Point end;
-
+    private final double startX;
+    private final double startY;
+    private final double endX;
+    private final double endY;
+    
     public Line(Point start, Point end) {
+        Point s, e;
 	if (start.compareTo(end) <= 0) {
-	    this.start = start;
-	    this.end = end;
+	    s = start;
+	    e = end;
 	} else {
-	    this.start = end;
-	    this.end = start;
+	    s = end;
+	    e = start;
 	}
+	startX = s.getX();
+	startY = s.getY();
+	endX = e.getX();
+	endY = e.getY();
     }
     
     public Line(double x1, double y1, double x2, double y2) {
-        this(new Point(x1, y1), new Point(x2, y2));
+        if (Point.compare(x1, y1, x2, y2) <= 0) {
+            startX = x1;
+            startY = y1;
+            endX = x2;
+            endY = y2;
+        } else {
+            startX = x2;
+            startY = y2;
+            endX = x1;
+            endY = y1;
+        }
     }
 
     /**
@@ -58,14 +75,14 @@ public class Line {
      * @return A new IntersectionResult for this line and line ln.
      */
     public IntersectionResult intersects(Line ln) {
-	double x1 = start.getX();
-	double y1 = start.getY();
-	double x2 = end.getX();
-	double y2 = end.getY();
-	double x3 = ln.start.getX();
-	double y3 = ln.start.getY();
-	double x4 = ln.end.getX();
-	double y4 = ln.end.getY();
+	double x1 = startX;
+	double y1 = startY;
+	double x2 = endX;
+	double y2 = endY;
+	double x3 = ln.startX;
+	double y3 = ln.startY;
+	double x4 = ln.endX;
+	double y4 = ln.endY;
 	
 	double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 	double d1 = y1 - y3;
@@ -127,7 +144,7 @@ public class Line {
      * @return true if ln intersects or coincides with this line.
      */
     public boolean intersectsOrCoincides(Line ln) {
-	return intersectsOrCoincides(ln.start.getX(), ln.start.getY(), ln.end.getX(), ln.end.getY());
+	return intersectsOrCoincides(ln.startX, ln.startY, ln.endX, ln.endY);
     }
     
     /**
@@ -149,10 +166,10 @@ public class Line {
      * @return true if ln intersects or coincides with this line.
      */
     public boolean intersectsOrCoincides(double x3, double y3, double x4, double y4) {
-	double x1 = start.getX();
-	double y1 = start.getY();
-	double x2 = end.getX();
-	double y2 = end.getY();
+	double x1 = startX;
+	double y1 = startY;
+	double x2 = endX;
+	double y2 = endY;
 	
 	double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 	double d1 = y1 - y3;
@@ -206,10 +223,10 @@ public class Line {
     public Line extend(Line ln) {
 	Direction d = getDirection();
 	if (d.equals(ln.getDirection())) {
-	    if (end.equals(ln.start))
-		return new Line(start, ln.end);
-	    if (start.equals(ln.end))
-		return new Line(ln.start, end);
+	    if (endX == ln.startX && endY == ln.startY)
+		return new Line(startX, startY, ln.endX, ln.endY);
+	    if (startX == ln.endX && startY == ln.endY)
+		return new Line(ln.startX, ln.startY, endX, endY);
 	}
 	return null;
     }
@@ -233,13 +250,13 @@ public class Line {
     public boolean containsEdge(Line edge) {
         if (isVertical()) {
             if (edge.isVertical()) {
-                return edge.start.getX() == start.getX() && edge.start.getY() >= start.getY() && edge.end.getY() <= end.getY();
+                return edge.startX == startX && edge.startY >= startY && edge.endY <= endY;
             }
             return false;
         }
         if (isHorizontal()) {
             if (edge.isHorizontal()) {
-                return edge.start.getY() == start.getY() && edge.start.getX() >= start.getX() && edge.end.getX() <= end.getX();
+                return edge.startY == startY && edge.startX >= startX && edge.endX <= endX;
             }
         }
         return false;
@@ -251,7 +268,7 @@ public class Line {
      * @return Returns the end.
      */
     public Point getEnd() {
-        return end;
+        return new Point(endX, endY);
     }
 
     /**
@@ -259,19 +276,19 @@ public class Line {
      * @return Returns the start.
      */
     public Point getStart() {
-        return start;
+        return new Point(startX, startY);
     }
     
     public boolean isHorizontal() {
-	return start.getY() == end.getY();
+	return startY == endY;
     }
     
     public boolean isVertical() {
-	return start.getX() == end.getX();
+	return startX == endX;
     }
     
     public boolean isDiagonal() {
-        return start.getX() != end.getX() && start.getY() != end.getY();
+        return startX != endX && startY != endY;
     }
     
 
@@ -283,7 +300,7 @@ public class Line {
 	if (!(obj instanceof Line))
 	    return false;
 	Line ln2 = (Line) obj;
-	return start.equals(ln2.start) && end.equals(ln2.end);
+	return startX == ln2.startX && startY == ln2.startY && endX == ln2.endX && endY == ln2.endY;
     }
 
     /* (non-Javadoc)
@@ -291,7 +308,7 @@ public class Line {
      */
     @Override
     public int hashCode() {
-	return 3 * start.hashCode() + end.hashCode();
+	return (int) (17 * startX + (7 * startY + (23 * endX + 3 * endY)));
     }
 
     /* (non-Javadoc)
@@ -299,7 +316,7 @@ public class Line {
      */
     @Override
     public String toString() {
-	return "Line{" + start + "," + end + "}";
+	return "Line{" + getStart() + "," + getEnd() + "}";
     }
 
     
@@ -324,7 +341,7 @@ public class Line {
     
     
     public boolean intersects(Rectangle r) {
-        if (r.contains(start) || r.contains(end)) return true;
+        if (r.contains(startX, startY) || r.contains(endX, endY)) return true;
         if (this.intersectsOrCoincides(r.getEdge(Direction.NORTH))) return true;
         if (this.intersectsOrCoincides(r.getEdge(Direction.EAST))) return true;
         if (this.intersectsOrCoincides(r.getEdge(Direction.SOUTH))) return true;
@@ -333,26 +350,26 @@ public class Line {
     }
     
     private IntersectionResult resolveCoincident(Line ln) {
-	double d1 = start.distOrigSquare();
-	double d2 = end.distOrigSquare();
-	double d3 = ln.start.distOrigSquare();
-	double d4 = ln.end.distOrigSquare();
+	double d1 = getStart().distOrigSquare();
+	double d2 = getEnd().distOrigSquare();
+	double d3 = ln.getStart().distOrigSquare();
+	double d4 = ln.getEnd().distOrigSquare();
 	
 	double lo, hi;
 	Point loPt, hiPt;
 	if (d1 > d3) {
 	    lo = d1;
-	    loPt = start;
+	    loPt = getStart();
 	} else {
 	    lo = d3;
-	    loPt = ln.start;
+	    loPt = ln.getStart();
 	}
 	if (d2 < d4) {
 	    hi = d2;
-	    hiPt = end;
+	    hiPt = getEnd();
 	} else {
 	    hi = d4;
-	    hiPt = ln.end;
+	    hiPt = ln.getEnd();
 	}
 	if (lo > hi)
 	    return IntersectionResult.outsideCoincident();

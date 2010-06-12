@@ -209,7 +209,7 @@ public class LosTester {
 		return false;
 	}
 	if (forestSquares != null) {
-	    Line line = new Line(new Point(x1, y1), new Point(x2, y2));
+	    Line line = new Line(x1, y1, x2, y2);
 	    for (Location sq : forestSquares) {
 		if (line.intersectsSquareAsPerForest(sq))
 		    return false;

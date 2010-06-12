@@ -181,6 +181,10 @@ public class Rectangle {
         double y = p.getY();
         return x >= left && x <= right + 1 && y >= bottom && y <= top + 1;
     }
+    
+    public boolean contains(double x, double y) {
+        return x >= left && x <= right + 1 && y >= bottom && y <= top + 1;
+    }
 
     public Line getEdge(Direction dir) {
         switch (dir) {
