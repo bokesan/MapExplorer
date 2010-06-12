@@ -388,8 +388,9 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 		Map map = new MapReader().read(mapFile);
 		LosBenchmark b = new LosBenchmark(map, numCPUs, rndTests);
                 b.setSmokeBlocksLos(fog);
-		b.setWriteLosFile(true);
-		b.run();
+		// b.setWriteLosFile(true);
+		// b.run();
+		b.fullBenchmark();
 	    }
 	    catch (SyntaxError err) {
 		err.printStackTrace();

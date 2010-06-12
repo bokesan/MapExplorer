@@ -39,9 +39,12 @@ public class LosBenchmark {
 
     private final Map map;
     private final LosMap losMap;
-    private final LosCalculator losCalculator;
+    private LosCalculator losCalculator;
     private final Logger logger;
+    private int numThreads;
+    private final int randomTestsPerSquare;
     private boolean writeLosFile = false;
+    private int repetitions = 5;
     
     /**
      * Create new LosBenchmark.
@@ -53,15 +56,50 @@ public class LosBenchmark {
     public LosBenchmark(Map map, int numThreads, int randomTestsPerSquare) {
 	this.map = map;
 	this.losMap = new LosMap(map.getDimension());
-	losCalculator = new LosCalculator(numThreads);
+ 	losCalculator = new LosCalculator(numThreads);
 	losCalculator.setRandomTestsPerSquare(randomTestsPerSquare);
 	losCalculator.setSmokeBlocksLos(false);
 	losCalculator.setMap(map, losMap);
 	logger = Logger.getLogger(this.getClass().getPackage().getName());
+	this.numThreads = numThreads;
+	this.randomTestsPerSquare = randomTestsPerSquare;
     }
     
     public void setLogLevel(Level level) {
         logger.setLevel(level);
+    }
+
+    public void fullBenchmark() {
+	int nCpus = Runtime.getRuntime().availableProcessors();
+	logger.info("Starting full benchmark.");
+	logger.info("Number of processors: " + nCpus);
+	Stack<Integer> threads = new Stack<Integer>();
+	for (int n = nCpus; n >= 1; n /= 2)
+	    threads.push(n);
+
+	losCalculator.shutdown();
+
+	while (!threads.empty()) {
+	    numThreads = threads.pop();
+	    losCalculator = new LosCalculator(numThreads);
+	    losCalculator.setRandomTestsPerSquare(randomTestsPerSquare);
+	    losCalculator.setSmokeBlocksLos(false);
+	    losCalculator.setMap(map, losMap);
+	    long[] times = new long[repetitions];
+	    for (int i = 0; i < repetitions; i++) {
+		logger.info("Threads: " + numThreads + ", run " + (i + 1) + " of " + repetitions);
+		long[] result = run();
+		times[i] = result[3];
+	    }
+	    Arrays.sort(times);
+	    logger.info("Threads: " + numThreads + " times: " + Arrays.toString(times));
+	    losCalculator.shutdown();
+	    try {
+		Thread.sleep(2000);
+	    } catch (InterruptedException ex) {
+		logger.warning("sleep interrupted");
+	    }
+	}
     }
     
     /**
@@ -75,6 +113,7 @@ public class LosBenchmark {
      */
     public long[] run() {
 	logger.info("Starting LOS benchmark for map " + map.getName());
+	logger.info("Number of threads: " + numThreads);
 	
 	PrintWriter losFile = null;
 	if (writeLosFile) {
@@ -106,7 +145,7 @@ public class LosBenchmark {
 		Location loc = new Location(col, row);
 		MapSquare s = map.get(loc);
 		if (s.isSolid()) {
-		    logger.info(loc + ": solid rock");
+		    // logger.info(loc + ": solid rock");
 		    if (losFile != null)
 		        losFile.println(loc + " rock");
 		} else {
@@ -134,7 +173,7 @@ public class LosBenchmark {
 		    String msg = loc + ": " + numLos + " LOS squares, " + elapsed + " ms.";
 		    if (numRndLos > 0)
 			msg += " [" + numRndLos + " rnd]";
-		    logger.info(msg);
+		    // logger.info(msg);
 		    // LosTester lt = new LosTester(loc, map.getDimension(), map.getWalls(smokeBlocksLos), randomTestsPerSquare, logger);
 		    // numRnd += testLos(loc, lt);
 		    numSquaresTested++;
@@ -154,7 +193,7 @@ public class LosBenchmark {
 	    logger.info("Avg. " + (elapsedTime / numSquaresTested) + " ms. per tested square.");
 	}
 	logger.info(numRnd + " found by random testing.");
-	losCalculator.shutdown();
+	//losCalculator.shutdown();
         return new long[]{numSquaresTested, totalLos, numRnd, elapsedTime};
     }
     
