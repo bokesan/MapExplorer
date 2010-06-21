@@ -166,53 +166,30 @@ public class Line {
      * @return true if ln intersects or coincides with this line.
      */
     public boolean intersectsOrCoincides(double x3, double y3, double x4, double y4) {
-	double x1 = startX;
-	double y1 = startY;
-	double x2 = endX;
-	double y2 = endY;
+        double dx = endX - startX;
+        double dy = endY - startY;
+        double dx2 = x4 - x3;
+        double dy2 = y4 - y3;
 	
-	double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-	double d1 = y1 - y3;
-	double d2 = x1 - x3;
-	double num_Ua = (x4 - x3) * d1 - (y4 - y3) * d2;
-	double num_Ub = (x2 - x1) * d1 - (y2 - y1) * d2;
+        double d1 = startY - y3;
+        double d2 = startX - x3;
+	double denom = dy2 * dx - dx2 * dy;
+	double num_Ua = dx2 * d1 - dy2 * d2;
+	double num_Ub = dx * d1 - dy * d2;
 	
-	if (denom == 0) {
-            if (num_Ua == 0 && num_Ub == 0) {
-	        if (Point.compare(x3, y3, x4, y4) > 0)
-		    return coincidentWithOverlap(x1, y1, x2, y2, x4, y4, x3, y3);
-	        return coincidentWithOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
-            }
-            return false;
-	} else {
-	    /*
-	     * Substituting either of these into the corresponding equation for the line gives the intersection point. For example the intersection point (x,y) is
-	    x = x1 + ua (x2 - x1)
-
-	    y = y1 + ua (y2 - y1)
-
-	    Notes:
-
-	        * The denominators for the equations for ua and ub are the same.
-
-	        * If the denominator for the equations for ua and ub is 0 then the
-	        * two lines are parallel.
-
-	        * If the denominator and numerator for the equations for ua and ub are 0
-	        * then the two lines are coincident.
-
-	        * The equations apply to lines, if the intersection of line segments is
-	        * required then it is only necessary to test if ua and ub lie
-	        * between 0 and 1. Whichever one lies within that range then the
-	        * corresponding line segment contains the intersection point.
-	        * If both lie within the range of 0 to 1 then the intersection
-	        * point is within both line segments. 
-	     */
-
-            if (denom > 0)
-                return (num_Ua >= 0 && num_Ua <= denom && num_Ub >= 0 && num_Ub <= denom);
+        if (denom > 0) {
+            return (num_Ua >= 0 && num_Ua <= denom && num_Ub >= 0 && num_Ub <= denom);
+        }
+	if (denom < 0) {
             return (num_Ua <= 0 && num_Ua >= denom && num_Ub <= 0 && num_Ub >= denom);
 	}
+	// denom == 0
+	if (num_Ua == 0 && num_Ub == 0) {
+	    if (Point.compare(x3, y3, x4, y4) > 0)
+	        return coincidentWithOverlap(startX, startY, endX, endY, x4, y4, x3, y3);
+	    return coincidentWithOverlap(startX, startY, endX, endY, x3, y3, x4, y4);
+	}
+	return false;
     }
     
     /**
