@@ -84,6 +84,14 @@ public class Map {
      * @param wall a Line
      */
     public void addWall(Line wall) {
+        for (Line w : thinWalls) {
+            Line ext = w.extend(wall);
+            if (ext != null) {
+                thinWalls.remove(w);
+                addWall(ext);
+                return;
+            }
+        }
         thinWalls.add(wall);
     }
     
@@ -93,10 +101,14 @@ public class Map {
      * @return A set of Lines.
      */
     public Set<Line> getWalls(boolean smokeBlocksLOS) {
-	Set<Line> walls = new HashSet<Line>(thinWalls);
+	Set<Line> walls = new HashSet<Line>();
+	for (Line w : thinWalls) {
+	    if (!isBorderWall(w))
+	        walls.add(w);
+	}
         for (Polygon wall : thickWalls) {
             for (Line e : wall.getEdges())
-                walls.add(e);
+                addWall(walls, e);
         }
 	for (int x = 0; x < width; x++) {
 	    for (int y = 0; y < height; y++) {
@@ -121,13 +133,7 @@ public class Map {
     }
     
     private void addWall(Set<Line> walls, Line wall) {
-	if (wall.getStart().getX() == 0 && wall.getEnd().getX() == 0)
-	    return;
-	if (wall.getStart().getX() == width && wall.getEnd().getX() == width)
-	    return;
-	if (wall.getStart().getY() == 0 && wall.getEnd().getY() == 0)
-	    return;
-	if (wall.getStart().getY() == height && wall.getEnd().getY() == height)
+	if (isBorderWall(wall))
 	    return;
 	for (Line w : walls) {
 	    Line ext = w.extend(wall);
@@ -138,6 +144,18 @@ public class Map {
 	    }
 	}
 	walls.add(wall);
+    }
+
+    private boolean isBorderWall(Line wall) {
+        if (wall.getStart().getX() == 0 && wall.getEnd().getX() == 0)
+            return true;
+        if (wall.getStart().getX() == width && wall.getEnd().getX() == width)
+            return true;
+        if (wall.getStart().getY() == 0 && wall.getEnd().getY() == 0)
+            return true;
+        if (wall.getStart().getY() == height && wall.getEnd().getY() == height)
+            return true;
+        return false;
     }
     
     

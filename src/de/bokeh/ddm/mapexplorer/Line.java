@@ -198,22 +198,33 @@ public class Line {
      * @return a new line, or null.
      */
     public Line extend(Line ln) {
-	Direction d = getDirection();
-	if (d.equals(ln.getDirection())) {
-	    if (endX == ln.startX && endY == ln.startY)
-		return new Line(startX, startY, ln.endX, ln.endY);
-	    if (startX == ln.endX && startY == ln.endY)
-		return new Line(ln.startX, ln.startY, endX, endY);
-	}
+        if (isVertical()) {
+            if (ln.isVertical() && ln.startX == startX) {
+                if (startY <= ln.startY) {
+                    if (endY < ln.startY)
+                        return null;
+                    return new Line(startX, startY, startX, Math.max(endY, ln.endY));
+                }
+                if (ln.endY < startY)
+                    return null;
+                return new Line(ln.startX, ln.startY, startX, Math.max(endY, ln.endY));
+            }
+            return null;
+        }
+        if (isHorizontal()) {
+            if (ln.isHorizontal() && ln.startY == startY) {
+                if (startX <= ln.startX) {
+                    if (endX < ln.startX)
+                        return null;
+                    return new Line(startX, startY, Math.max(endX, ln.endX), startY);
+                }
+                if (ln.endX < startX)
+                    return null;
+                return new Line(ln.startX, ln.startY, Math.max(endX, ln.endX), startY);
+            }
+            return null;
+        }
 	return null;
-    }
-
-    private Direction getDirection() {
-	if (isVertical()) {
-	    return Direction.NORTH;
-	}
-	assert isHorizontal();
-	return Direction.EAST;
     }
     
     /**
