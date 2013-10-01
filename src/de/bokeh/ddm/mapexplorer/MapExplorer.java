@@ -64,7 +64,7 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
     private JCheckBox chkSmoke;
     private JCheckBox chkMapImage;
     private JCheckBox chkVassalCoordinates;
-    private JComboBox cmbSize;
+    private JComboBox<CreatureSize> cmbSize;
     private JPopupMenu contextMenu;
     private boolean busy;
     private JFileChooser fileChooser;
@@ -177,7 +177,7 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	chkVassalCoordinates.setToolTipText("use Vassal coordinates");
 	toolBar.add(chkVassalCoordinates);
 
-	cmbSize = new JComboBox(CreatureSize.values());
+	cmbSize = new JComboBox<CreatureSize>(CreatureSize.values());
 	cmbSize.setSelectedItem(CreatureSize.MEDIUM);
 	cmbSize.setEditable(false);
 	cmbSize.setToolTipText("choose creature size");
