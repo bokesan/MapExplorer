@@ -118,7 +118,7 @@ public enum MapFeature {
 	tagNames.put("bloodrock", BLOOD_ROCK);
 	tagNames.put("haunted", HAUNTED);
 	tagNames.put("teleporter", TELEPORTER);
-	tagNames.put("elementel_wall", ELEMENTAL_WALL);
+	tagNames.put("elemental_wall", ELEMENTAL_WALL);
 	tagNames.put("steep_slope", STEEP_SLOPE);
 	tagNames.put("death_zone", ZONE_OF_DEATH);
 	tagNames.put("waterfall", WATERFALL);
