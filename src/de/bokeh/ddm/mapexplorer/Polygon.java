@@ -84,8 +84,6 @@ public class Polygon {
     /**
      * Does this Polygon contain a given point?
      * <p>
-     * FIXME: depends on <code>java.awt.geom.GeneralPath</code>. Should be rewritten completely.
-     * <p>
      * Code snipped from W. Randolph Franklin
      *   http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
      * 
