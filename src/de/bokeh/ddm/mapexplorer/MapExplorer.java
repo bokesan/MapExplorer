@@ -311,7 +311,7 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	    mapFile = p + File.separator + mapFile;
 	
 	int numCPUs = Runtime.getRuntime().availableProcessors();
-	int rndTests = 100;
+	int rndTests = -1;
 
 	Properties properties = loadProperties();
 	p = properties.getProperty("mapexplorer.rndtests");
@@ -346,8 +346,9 @@ public class MapExplorer implements ActionListener, ItemListener, DropTargetList
 	    }
 	}
 
-	if (rndTests < 0)
-	    rndTests = 0;
+	if (rndTests < 0) {
+	    rndTests = (mode == RunMode.BENCHMARK) ? 0 : 100;
+	}
 	if (numCPUs <= 0)
 	    numCPUs = 1;
 	
