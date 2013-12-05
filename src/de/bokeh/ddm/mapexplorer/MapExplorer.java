@@ -1,7 +1,7 @@
 /*
  * This file is part of Map Explorer.
  * 
- * Copyright © 2005-2007 Christoph Breitkopf
+ * Copyright 2005-2007 Christoph Breitkopf
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
