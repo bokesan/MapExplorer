@@ -41,8 +41,8 @@
   <target name="compile" depends="init" description="Compile">
     <javac srcdir="src"
            destdir="${classes.dir}"
-	   source="1.5"
-	   target="1.5"
+	   source="7"
+	   target="7"
 	   encoding="utf-8"
 	   debug="${build.debug}">
       <classpath refid="compile.classpath" />
@@ -54,8 +54,8 @@
     <javac destdir="${test.dir}"
            debug="${build.debug}"
            includeAntRuntime="true"
-           source="1.5"
-	   target="1.5"
+           source="7"
+	   target="7"
     	   encoding="utf-8"
            srcdir="test">
       <classpath refid="test.classpath" />
@@ -138,7 +138,7 @@
     <javadoc destdir="doc"
              packagenames="de.bokeh.ddm.*"
              sourcepath="src"
-             source="1.5"
+             source="7"
 	     encoding="utf-8"
 	     locale="de_DE"
 	     use="true">
@@ -167,7 +167,7 @@
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath" />
     <pmd shortFilenames="true"
          encoding="UTF-8"
-	 targetjdk="1.5">
+	 targetjdk="1.7">
       <ruleset>basic</ruleset>
       <ruleset>imports</ruleset>    
       <ruleset>coupling</ruleset>
