@@ -15,16 +15,11 @@
 
   <path id="compile.classpath">
     <pathelement location="${classes.dir}" />
-  	<fileset dir="lib">
-  	  <include name="*.jar" />
-    </fileset>
   </path>
 
   <path id="test.classpath">
     <path refid="compile.classpath" />
-    <fileset dir="/usr/share/java">
-  	  <include name="junit4.jar" />
-    </fileset>
+    <pathelement location="lib/junit4.jar" />
     <pathelement location="${test.dir}" />
   </path>
 
@@ -72,7 +67,9 @@
     <junit printsummary="false"
            errorProperty="test.failed"
            failureProperty="test.failed">
-      <classpath refid="test.classpath" />
+      <classpath>
+        <path refid="test.classpath" />
+      </classpath>
       <formatter type="brief" usefile="false" />
       <formatter type="xml" />
       <batchtest todir="${test.data.dir}">
