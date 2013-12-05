@@ -74,30 +74,59 @@ public class LosBenchmark {
 	logger.info("Starting full benchmark.");
 	logger.info("Number of processors: " + nCpus);
 	Stack<Integer> threads = new Stack<Integer>();
-	for (int n = nCpus; n >= 1; n /= 2)
+	for (int n = nCpus;; ) {
 	    threads.push(n);
+	    if (n == 1)
+	        break;
+	    if ((n & 1) != 0) {
+	        n = n / 2 + 1;
+	    } else {
+	        n = n / 2;
+	    }
+	}
 
 	losCalculator.shutdown();
 
+	long[][] times = new long[nCpus + 1][];
+	
 	while (!threads.empty()) {
 	    numThreads = threads.pop();
 	    losCalculator = new LosCalculator(numThreads);
 	    losCalculator.setRandomTestsPerSquare(randomTestsPerSquare);
 	    losCalculator.setSmokeBlocksLos(false);
 	    losCalculator.setMap(map, losMap);
-	    long[] times = new long[repetitions];
+	    times[numThreads] = new long[repetitions];
 	    for (int i = 0; i < repetitions; i++) {
 		logger.info("Threads: " + numThreads + ", run " + (i + 1) + " of " + repetitions);
 		long[] result = run();
-		times[i] = result[3];
+		times[numThreads][i] = result[3];
+		try {
+		    Thread.sleep(100);
+		} catch (InterruptedException ex) {
+		    logger.warning("sleep interrupted");
+		}
 	    }
-	    Arrays.sort(times);
-	    logger.info("Threads: " + numThreads + " times: " + Arrays.toString(times));
 	    losCalculator.shutdown();
 	    try {
-		Thread.sleep(2000);
+		Thread.sleep(500);
 	    } catch (InterruptedException ex) {
 		logger.warning("sleep interrupted");
+	    }
+	}
+	
+	long seqTime = 0;
+	for (int i = 1; i <= nCpus; i++) {
+	    long[] ts = times[i];
+	    if (ts != null) {
+	        Arrays.sort(ts);
+	        long med = ts[repetitions / 2];
+	        if (i == 1)
+	            seqTime = med;
+	        String msg = String.format("%d %s: %.3f seconds, efficiency %d%%",
+	                                   i, (i == 1) ? "thread" : "threads",
+	                                   med / 1000.0,
+	                                   100 * seqTime / (i * med));
+	        logger.info(msg);
 	    }
 	}
     }
