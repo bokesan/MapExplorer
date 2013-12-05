@@ -67,7 +67,7 @@ public class ComputationThread extends Thread {
 	    }
 	});
 	
-	long startTime = System.currentTimeMillis();
+	long startTime = System.nanoTime();
 	
 	Thread bgCalcLos = new Thread() {
 	    public void run() {
@@ -86,7 +86,7 @@ public class ComputationThread extends Thread {
 	    }
 	    SwingUtilities.invokeLater(new ProgressSetter(losCalculator.getPercentCompleted()));
 	}
-	long elapsedTime = System.currentTimeMillis() - startTime;
+	long elapsedTime = (System.nanoTime() - startTime) / 1000000;
 	final String resultMsg = "LOS elapsed time: " + elapsedTime + "ms";
 	
 	SwingUtilities.invokeLater(new Runnable() {

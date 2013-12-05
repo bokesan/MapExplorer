@@ -128,7 +128,7 @@ public class LosBenchmark {
 	    }
 	}
 	
-	long startTime = System.currentTimeMillis();
+	long startTime = System.nanoTime();
 
 	Creature creature = new Creature(CreatureSize.MEDIUM);
 	Set<Creature> creatures = new HashSet<Creature>();
@@ -152,9 +152,9 @@ public class LosBenchmark {
 		    if (losFile != null)
 		        losFile.print(loc);
 		    creature.setLocation(loc);
-		    long start = System.currentTimeMillis();
+		    long start = System.nanoTime();
 		    losCalculator.computeLos();
-		    long elapsed = System.currentTimeMillis() - start;
+		    long elapsed = (System.nanoTime() - start) / 1000000;
 		    if (losFile != null) {
 		        LosMap los = losCalculator.getLos();
 		        for (int y = 0; y < height; y++) {
@@ -183,7 +183,7 @@ public class LosBenchmark {
 	    }
 	}
 	
-	long elapsedTime = System.currentTimeMillis() - startTime;
+	long elapsedTime = (System.nanoTime() - startTime) / 1000000;
 	if (losFile != null)
 	    losFile.close();
 	logger.info("Total time: " + elapsedTime + " ms.");
