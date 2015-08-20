@@ -27,6 +27,9 @@ package de.bokeh.ddm.mapexplorer;
 import java.util.*;
 import java.util.logging.*;
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
 
 
 /**
@@ -70,9 +73,13 @@ public class LosBenchmark {
     }
 
     public void fullBenchmark() {
+        setLogLevel(Level.WARNING);
+        System.out.println("MapExplorer Benchmark - version " + MapExplorer.VERSION);
 	int nCpus = Runtime.getRuntime().availableProcessors();
 	logger.info("Starting full benchmark.");
 	logger.info("Number of processors: " + nCpus);
+	logConfig();
+	System.out.println("Available threads: " + nCpus);
 	Stack<Integer> threads = new Stack<Integer>();
 	for (int n = nCpus;; ) {
 	    threads.push(n);
@@ -91,6 +98,12 @@ public class LosBenchmark {
 	
 	while (!threads.empty()) {
 	    numThreads = threads.pop();
+	    if (numThreads == 1) {
+	        System.out.print("1 thread:  ");
+	    } else {
+	        System.out.print(numThreads + " threads: ");
+	    }
+            System.out.flush();
 	    losCalculator = new LosCalculator(numThreads);
 	    losCalculator.setRandomTestsPerSquare(randomTestsPerSquare);
 	    losCalculator.setSmokeBlocksLos(false);
@@ -100,12 +113,16 @@ public class LosBenchmark {
 		logger.info("Threads: " + numThreads + ", run " + (i + 1) + " of " + repetitions);
 		long[] result = run();
 		times[numThreads][i] = result[3];
+		System.out.print('#');
+		System.out.flush();
+		System.gc();
 		try {
 		    Thread.sleep(100);
 		} catch (InterruptedException ex) {
 		    logger.warning("sleep interrupted");
 		}
 	    }
+	    System.out.println();
 	    losCalculator.shutdown();
 	    try {
 		Thread.sleep(500);
@@ -119,18 +136,37 @@ public class LosBenchmark {
 	    long[] ts = times[i];
 	    if (ts != null) {
 	        Arrays.sort(ts);
+	        long min = ts[0];
 	        long med = ts[repetitions / 2];
 	        if (i == 1)
-	            seqTime = med;
-	        String msg = String.format("%d %s: %.3f seconds, efficiency %d%%",
+	            seqTime = min;
+	        String msg = String.format("%d %s: %.3f seconds (median %.3f seconds), speedup: %.2fx",
 	                                   i, (i == 1) ? "thread" : "threads",
-	                                   med / 1000.0,
-	                                   100 * seqTime / (i * med));
+	                                   min / 1000.0, med / 1000.0,
+	                                   (double) seqTime / min);
 	        logger.info(msg);
+	        System.out.println(msg);
 	    }
 	}
     }
     
+    private void logConfig() {
+        RuntimeMXBean b = ManagementFactory.getRuntimeMXBean();
+        System.out.println("  \"java.vm.name\" : \"" + b.getVmName() + "\",");
+        System.out.println("  \"java.vm.version\" : \"" + b.getVmVersion() + "\",");
+        System.out.print("  \"vm_args\" : [");
+        String sep = "";
+        for (String s : b.getInputArguments()) {
+            System.out.print(sep + " \"" + s + "\"");
+            sep = ",";
+        }
+        System.out.println("],");
+        OperatingSystemMXBean o = ManagementFactory.getOperatingSystemMXBean();
+        System.out.println("  \"os.name\" : \"" + o.getName() + "\",");
+        System.out.println("  \"os.arch\" : \"" + o.getArch() + "\",");
+        System.out.println("  \"os.version\" : \"" + o.getVersion() + "\",");
+    }
+
     /**
      * Run benchmark.
      * 
@@ -222,7 +258,7 @@ public class LosBenchmark {
 	    logger.info("Avg. " + (elapsedTime / numSquaresTested) + " ms. per tested square.");
 	}
 	logger.info(numRnd + " found by random testing.");
-	//losCalculator.shutdown();
+	// losCalculator.shutdown();
         return new long[]{numSquaresTested, totalLos, numRnd, elapsedTime};
     }
     
